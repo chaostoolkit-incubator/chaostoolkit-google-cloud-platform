@@ -8,11 +8,12 @@
 
 -   Initial release
     This extension has the following internal structure:
-    `chaosgcp` package with GCP products as first level subpackage.
+    ``chaosgcp`` package with GCP products as first level subpackage.
     This structure intends to follow GCP products navigation, as seen
     on the GCP console to keep some consistency for the user.
 -   New `chaosgcp.gke` package for Google Kubernetes Engine probes & actions.
 -   New `chaosgcp.sql` package for Google Cloud SQL probes and actions.
+-   New `chaosgcp.storage` package for Google Cloud Storage probes and actions.
 
 ### Changed
 
@@ -21,3 +22,5 @@
      `chaosgcp.gke.nodepool`.
 -   Allow optional values in GCPContext
 -   Refactored wait_on_operation to accept multiple & various keyword arguments
+-   Expose a load_credentials function in `chaosgcp` to load credentials
+    from secrets.

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from fixtures import nodepool
 from fixtures import sql
+from fixtures import storage
 
 secrets = {
     "service_account_file": "tests/fixtures/fake_creds.json"

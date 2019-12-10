@@ -16,7 +16,7 @@ from logzero import logger
 from chaosgcp.types import GCPContext
 
 __all__ = ["__version__", "client", "discover", "get_context", "get_service",
-           "wait_on_operation"]
+           "wait_on_operation", "load_credentials"]
 __version__ = '0.0.0'
 
 
@@ -59,10 +59,9 @@ def wait_on_operation(operation_service: Any,
         time.sleep(1)
 
 
-def client(service_name: str, version: str = 'v1',
-           secrets: Secrets = None) -> Resource:
+def load_credentials(secrets: Secrets = None):
     """
-    Create a client for the given service. 
+    Load GCP credentials from the experiment secrets
 
     To authenticate, you need to create a service account manually and either
     pass the filename or the content of the file into the `secrets` object.
@@ -139,6 +138,15 @@ def client(service_name: str, version: str = 'v1',
             "missing a service account to authenticate with the "
             "Google Cloud Platform")
 
+    return credentials
+
+
+def client(service_name: str, version: str = 'v1',
+           secrets: Secrets = None) -> Resource:
+    """
+    Create a client for the given service.
+    """
+    credentials = load_credentials(secrets=secrets)
     return build(service_name, version=version, credentials=credentials)
 
 
@@ -165,4 +173,5 @@ def load_exported_activities() -> List[DiscoveredActivities]:
     activities.extend(discover_actions("chaosgcp.gke.nodepool.actions"))
     activities.extend(discover_actions("chaosgcp.sql.actions"))
     activities.extend(discover_probes("chaosgcp.sql.probes"))
+    activities.extend(discover_probes("chaosgcp.storage.probes"))
     return activities
