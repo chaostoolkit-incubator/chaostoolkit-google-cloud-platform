@@ -5,7 +5,7 @@
 
 This project is a collection of [actions][] and [probes][], gathered as an
 extension to the [Chaos Toolkit][chaostoolkit]. It targets the
-[Google Cloud Platform][gcp] platform.
+[Google Cloud Platform][gcp].
 
 [actions]: http://chaostoolkit.org/reference/api/experiment/#action
 [probes]: http://chaostoolkit.org/reference/api/experiment/#probe
@@ -204,10 +204,10 @@ recap of changes you'll need to go through to update your experiments.
     You will need to update the `module` key for the python providers.
 -   The configuration keys in the `configuration` section have been
     renamed accordingly:
-    - "gce_project_id" -> "gcp_project_id"
-    - "gce_region" -> "gcp_region"
-    - "gce_zone" -> "gcp_zone"
-    - "gce_cluster_name" -> "gcp_gke_cluster_name"
+    - `"gce_project_id"` -> `"gcp_project_id"`
+    - `"gce_region"` -> `"gcp_region"`
+    - `"gce_zone"` -> `"gcp_zone"`
+    - `"gce_cluster_name"` -> `"gcp_gke_cluster_name"`
 
 ## Contribute
 
