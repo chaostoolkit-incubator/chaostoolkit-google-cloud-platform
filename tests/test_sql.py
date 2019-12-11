@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, ANY
 
-from chaosgcp.sql.actions import trigger_failover
+from chaosgcp.sql.actions import trigger_failover, export_data, import_data
 from chaosgcp.sql.probes import list_instances, describe_instance
 
 import fixtures
@@ -107,3 +107,84 @@ def test_trigger_failover(Credentials, service_builder, wait_on_operation):
 
     wait_on_operation.assert_called_with(ops_svc,
         project=project_id, operation="mysqlfailover")
+
+
+@patch('chaosgcp.sql.actions.wait_on_operation', autospec=False)
+@patch('chaosgcp.build', autospec=True)
+@patch('chaosgcp.Credentials', autospec=True)
+def test_export_data(Credentials, service_builder, wait_on_operation):
+    project_id = fixtures.configuration["gcp_project_id"]
+    instance_id = fixtures.sql.instances[0]["name"]
+
+    Credentials.from_service_account_file.return_value = MagicMock()
+
+    service = MagicMock()
+    service_builder.return_value = service
+
+    instances_svc = MagicMock()
+    service.instances.return_value = instances_svc
+    _export_data = MagicMock()
+    instances_svc.export = _export_data
+    _export_data.return_value.execute.return_value = \
+        fixtures.sql.export_operation
+
+    ops_svc = MagicMock()
+    service.operations.return_value = ops_svc
+
+    response = export_data(
+        instance_id,
+        "gs://chaosiqdemos/dump.sql",
+        secrets=fixtures.secrets,
+        configuration=fixtures.configuration
+    )
+
+    _export_data.assert_called_with(
+        project=project_id,
+        instance=instance_id,
+        body=ANY
+    )
+
+    wait_on_operation.assert_called_with(ops_svc,
+        project=project_id, operation="mysqlexport")
+
+
+@patch('chaosgcp.sql.actions.wait_on_operation', autospec=False)
+@patch('chaosgcp.build', autospec=True)
+@patch('chaosgcp.Credentials', autospec=True)
+def test_import_data(Credentials, service_builder, wait_on_operation):
+    project_id = fixtures.configuration["gcp_project_id"]
+    instance_id = fixtures.sql.instances[0]["name"]
+
+    Credentials.from_service_account_file.return_value = MagicMock()
+
+    service = MagicMock()
+    service_builder.return_value = service
+
+    instances_svc = MagicMock()
+    service.instances.return_value = instances_svc
+    _import_data = MagicMock()
+    instances_svc.import_ = _import_data
+    _import_data.return_value.execute.return_value = \
+        fixtures.sql.import_operation
+
+    ops_svc = MagicMock()
+    service.operations.return_value = ops_svc
+
+    response = import_data(
+        instance_id,
+        "gs://chaosiqdemos/dump.sql",
+        "demo",
+        import_user="chaosiq",
+        project_id=project_id,
+        secrets=fixtures.secrets,
+        configuration=fixtures.configuration
+    )
+
+    _import_data.assert_called_with(
+        project=project_id,
+        instance=instance_id,
+        body=ANY
+    )
+
+    wait_on_operation.assert_called_with(ops_svc,
+        project=project_id, operation="mysqlimport")

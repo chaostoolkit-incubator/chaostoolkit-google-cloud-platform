@@ -78,3 +78,59 @@ failover_operation = {
     "targetId": "pgsql-20191115184040913900000001",
     "targetProject": "chaosiqdemos",
 }
+
+
+sql_operation_done = {
+    "kind": "sql#operation",
+    "name": "mysqloperation",
+    "status": "DONE",
+    "error": {},
+}
+
+
+export_operation = {
+    "kind": "sql#operation",
+    "status": "DONE",
+    "insertTime": "2019-12-10T15:16:04.381Z",
+    "startTime": "2019-12-10T15:16:04.661Z",
+    "endTime": "2019-12-10T15:16:15.045Z",
+    "operationType": "EXPORT",
+    "exportContext": {
+      "uri": "gs://chaosiqdemos/dump.sql",
+      "databases": [
+        "demo"
+      ],
+      "kind": "sql#exportContext",
+      "sqlExportOptions": {
+        "schemaOnly": False,
+        "mysqlExportOptions": {
+          "masterData": 0
+        }
+      },
+      "fileType": "SQL"
+    },
+    "name": "mysqlexport",
+    "targetId": "pgsql-20191115184040913900000001",
+    "targetProject": "chaosiqdemos"
+}
+
+
+import_operation = {
+    "kind": "sql#operation",
+    "status": "DONE",
+    "insertTime": "2019-12-10T15:16:17.240Z",
+    "startTime": "2019-12-10T15:16:17.449Z",
+    "endTime": "2019-12-10T15:16:27.767Z",
+    "error": {},
+    "operationType": "IMPORT",
+    "importContext": {
+      "uri": "gs://chaosiqdemos/dump.sql",
+      "database": "demo",
+      "kind": "sql#importContext",
+      "fileType": "SQL",
+      "importUser": "chaosiq"
+    },
+    "name": "mysqlimport",
+    "targetId": "pgsql-20191115184040913900000001",
+    "targetProject": "chaosiqdemos"
+}
