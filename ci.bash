@@ -32,6 +32,15 @@ function release () {
         -H "Authorization: token "$TRAVIS_CI_TOKEN"" \
         -d '{"request": {"branch":"master", "message": "Rebuilding after new chaostoolkit-google-cloud-platform release"}}' \
         https://api.travis-ci.org/repo/chaostoolkit%2Fchaostoolkit-bundler/requests
+
+    echo "Building the toolkit documentation to update the driver's exported activiates"
+    curl -s -X POST \
+        -H "Content-Type: application/json" \
+        -H "Accept: application/json" \
+        -H "Travis-API-Version: 3" \
+        -H "Authorization: token "$TRAVIS_CI_TOKEN"" \
+        -d '{"request": {"branch":"master", "message": "Rebuilding after new chaostoolkit-google-cloud-platform release"}}' \
+        https://api.travis-ci.org/repo/chaostoolkit%2Fchaostoolkit-documentation/requests
 }
 
 function main () {
