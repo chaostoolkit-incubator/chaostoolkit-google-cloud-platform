@@ -192,6 +192,23 @@ Here is a full example:
 }
 ```
 
+## Migrate from GCE extension
+
+If you previously used the deprecated [GCE extension][ctk-gce], here is a quick
+recap of changes you'll need to go through to update your experiments.
+
+[ctk-gce]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud
+
+-   The module `chaosgce.nodepool.actions` has been replaced by
+    `chaosgcp.gke.nodepool.actions`.
+    You will need to update the `module` key for the python providers.
+-   The configuration keys in the `configuration` section have been
+    renamed accordingly:
+    - "gce_project_id" -> "gcp_project_id"
+    - "gce_region" -> "gcp_region"
+    - "gce_zone" -> "gcp_zone"
+    - "gce_cluster_name" -> "gcp_gke_cluster_name"
+
 ## Contribute
 
 If you wish to contribute more functions to this package, you are more than
