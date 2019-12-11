@@ -23,6 +23,8 @@ def get_version_from_package() -> str:
 
 name = 'chaostoolkit-google-cloud-platform'
 desc = 'Chaos Toolkit Extension for Google Cloud Platform'
+repo_slug = 'chaostoolkit-incubator/chaostoolkit-google-cloud-platform'
+repo_url = 'https://github.com/{}'.format(repo_slug)
 
 with io.open('README.md', encoding='utf-8') as strm:
     long_desc = strm.read()
@@ -43,7 +45,7 @@ classifiers = [
 ]
 author = "chaostoolkit Team"
 author_email = 'contact@chaostoolkit.org'
-url = 'http://chaostoolkit.org'
+url = 'https://chaostoolkit.org'
 license = 'Apache License Version 2.0'
 packages = setuptools.find_packages()
 
@@ -63,6 +65,7 @@ setup_params = dict(
     version=get_version_from_package(),
     description=desc,
     long_description=long_desc,
+    long_description_content_type='text/markdown',
     classifiers=classifiers,
     author=author,
     author_email=author_email,
@@ -73,7 +76,12 @@ setup_params = dict(
     install_requires=install_require,
     tests_require=test_require,
     setup_requires=pytest_runner,
-    python_requires='>=3.5.*'
+    python_requires='>=3.5.*',
+    project_urls={
+        'CI: Travis': 'https://travis-ci.com/{}'.format(repo_slug),
+        'GitHub: issues': '{}/issues'.format(repo_url),
+        'GitHub: repo': repo_url,
+    },
 )
 
 

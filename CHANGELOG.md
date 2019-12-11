@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/tree/HEAD
 
+## [0.1.0][] - 2019-12-11
+
+[0.1.0]: https://github.com/chaostoolkit/chaostoolkit-google-cloud-platform/tree/0.1.0
+
 ### Added
 
 -   Initial release

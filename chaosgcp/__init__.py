@@ -17,7 +17,7 @@ from chaosgcp.types import GCPContext
 
 __all__ = ["__version__", "client", "discover", "get_context", "get_service",
            "wait_on_operation", "load_credentials"]
-__version__ = '0.0.0'
+__version__ = '0.1.0'
 
 
 def get_service(service_name: str, version: str = 'v1',
