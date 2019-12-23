@@ -40,7 +40,8 @@ experiment file:
         "func": "swap_nodepool",
         "secrets": ["gcp"],
         "arguments": {
-            "body": {
+            "old_node_pool_id": "...",
+            "new_nodepool_body": {
                 "nodePool": {
                     "config": { 
                         "oauthScopes": [
