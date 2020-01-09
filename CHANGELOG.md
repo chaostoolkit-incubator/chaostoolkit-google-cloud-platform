@@ -4,6 +4,14 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/tree/HEAD
 
+### Changed
+
+-   Pass the secrets to the `drain_nodes` action, that is called in the
+    `swap_nodepool` action, so that it knows how to connect to the Kubernetes
+    cluster to be drained. [#9][9]
+
+[#9]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/issues/9
+
 ## [0.1.0][] - 2019-12-11
 
 [0.1.0]: https://github.com/chaostoolkit/chaostoolkit-google-cloud-platform/tree/0.1.0

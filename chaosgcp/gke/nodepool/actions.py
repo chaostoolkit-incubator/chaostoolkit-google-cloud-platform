@@ -87,6 +87,10 @@ def swap_nodepool(old_node_pool_id: str, new_nodepool_body: Dict[str, Any],
     new pool. Delete the old nodepool only `delete_old_node_pool` is set to
     `True`, which is not the default. Otherwise, leave the old node pool
     cordonned so it cannot be scheduled any longer.
+
+    Please ensure to provide the Kubernetes secrets as well when calling this
+    action.
+    See https://github.com/chaostoolkit/chaostoolkit-kubernetes#configuration
     """
     new_nodepool_response = create_new_nodepool(
         body=new_nodepool_body,
@@ -97,6 +101,7 @@ def swap_nodepool(old_node_pool_id: str, new_nodepool_body: Dict[str, Any],
 
     drain_nodes(
         timeout=drain_timeout, delete_pods_with_local_storage=False,
+        secrets=secrets,
         label_selector="cloud.google.com/gke-nodepool={}".format(
             old_node_pool_id))
 

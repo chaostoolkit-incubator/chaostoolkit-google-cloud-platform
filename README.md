@@ -38,7 +38,7 @@ experiment file:
         "type": "python",
         "module": "chaosgcp.gke.nodepool.actions",
         "func": "swap_nodepool",
-        "secrets": ["gcp"],
+        "secrets": ["gcp", "k8s"],
         "arguments": {
             "old_node_pool_id": "...",
             "new_nodepool_body": {
@@ -120,6 +120,9 @@ While the embedded way looks like this:
 ```json
 {
     "secrets": {
+        "k8s": {
+            "KUBERNETES_CONTEXT": "gke_project_name-g70e8ya0_us-central1_cluster-hello-world"
+        },
         "gcp": {
             "service_account_info": {
                 "type": "service_account",
@@ -138,6 +141,13 @@ While the embedded way looks like this:
 }
 ```
 
+Notice also how we provided here the `k8s` entry. This is only because, in our
+example we use the `swap_nodepool` action which drains the Kubernetes nodes
+and it requires the Kubernetes cluster credentials to work. These are documented
+in the [Kubernetes extension for Chaos Toolkit][k8sctk]. This is the only
+action that requires such a secret payload, others only speak to the GCP API.
+
+[k8sctk]: https://docs.chaostoolkit.org/drivers/kubernetes/
 
 ### Putting it all together
 
@@ -157,7 +167,10 @@ Here is a full example:
     "secrets": {
         "gcp": {
             "service_account_file": "/path/to/sa.json"
-        }
+        },
+        "k8s": {
+            "KUBERNETES_CONTEXT": "gke_project_name-g70e8ya0_us-central1_cluster-hello-world"
+        },
     },
     "method": [
         {
@@ -167,7 +180,7 @@ Here is a full example:
                 "type": "python",
                 "module": "chaosgcp.gke.nodepool.actions",
                 "func": "swap_nodepool",
-                "secrets": ["gcp"],
+                "secrets": ["gcp", "k8s"],
                 "arguments": {
                     "old_node_pool_id": "...",
                     "new_nodepool_body": {
