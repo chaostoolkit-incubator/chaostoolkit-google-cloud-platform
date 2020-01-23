@@ -7,6 +7,11 @@ secrets = {
     "service_account_file": "tests/fixtures/fake_creds.json"
 }
 
+secrets_with_k8s = {
+    "service_account_file": "tests/fixtures/fake_creds.json",
+    "KUBERNETES_CONTEXT": "minikube"
+}
+
 
 configuration = {
     "gcp_project_id": "chaosiqdemos",

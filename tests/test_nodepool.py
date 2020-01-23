@@ -124,13 +124,19 @@ def test_swap_nodepool(Credentials, service_builder, wait_on_operation,
         old_node_pool_id="mynodepool",
         new_nodepool_body=fixtures.nodepool.body,
         delete_old_node_pool=True,
-        secrets=fixtures.secrets,
+        secrets=fixtures.secrets_with_k8s,
         configuration=fixtures.configuration
     )
 
     create_np.assert_called_with(
         projectId=project_id, zone=zone, clusterId=cluster_name,
         body=fixtures.nodepool.body)
+
+    drain_nodes.assert_called_with(
+        timeout=120, delete_pods_with_local_storage=False,
+        secrets=fixtures.secrets_with_k8s,
+        label_selector="cloud.google.com/gke-nodepool=mynodepool"
+    )
 
     delete_np.assert_called_with(
         projectId=project_id, zone=zone, clusterId=cluster_name,
@@ -179,12 +185,18 @@ def test_swap_nodepool_without_delete(Credentials, service_builder,
         old_node_pool_id="mynodepool",
         new_nodepool_body=fixtures.nodepool.body,
         delete_old_node_pool=False,
-        secrets=fixtures.secrets,
+        secrets=fixtures.secrets_with_k8s,
         configuration=fixtures.configuration
     )
 
     create_np.assert_called_with(
         projectId=project_id, zone=zone, clusterId=cluster_name,
         body=fixtures.nodepool.body)
+
+    drain_nodes.assert_called_with(
+        timeout=120, delete_pods_with_local_storage=False,
+        secrets=fixtures.secrets_with_k8s,
+        label_selector="cloud.google.com/gke-nodepool=mynodepool"
+    )
 
     delete_np.assert_not_called()
