@@ -54,3 +54,51 @@ def describe_instance(instance_id: str,
                                       instance=instance_id)
     response = request.execute()
     return response
+
+
+def list_databases(instance_id: str,
+                   configuration: Configuration = None,
+                   secrets: Secrets = None) -> Dict[str, Any]:
+    """
+    Lists databases in the specified Cloud SQL instance
+
+    See: https://cloud.google.com/sql/docs/postgres/admin-api/rest/v1beta4/databases/list
+
+    :param instance_id: Cloud SQL instance ID.
+    """  # noqa: E501
+    ctx = get_context(configuration=configuration, secrets=secrets)
+    service = get_service('sqladmin', version='v1beta4',
+                          configuration=configuration, secrets=secrets)
+
+    request = service.databases().list(
+        project=ctx.project_id, instance=instance_id)
+    response = request.execute()
+
+    databases = response.get("items", [])
+    return {"databases": databases}
+
+
+def describe_database(instance_id: str,
+                      database_name: str,
+                      configuration: Configuration = None,
+                      secrets: Secrets = None) -> Dict[str, Any]:
+    """
+    Displays configuration and metadata about a Cloud SQL database
+
+    Information such as database name, charset, and collation
+    will be displayed.
+
+    See: https://cloud.google.com/sql/docs/postgres/admin-api/rest/v1beta4/databases/get
+
+    :param instance_id: Cloud SQL instance ID.
+    :param database: Cloud SQL database name.
+    """  # noqa: E501
+    ctx = get_context(configuration=configuration, secrets=secrets)
+    service = get_service('sqladmin', version='v1beta4',
+                          configuration=configuration, secrets=secrets)
+
+    request = service.databases().get(
+        project=ctx.project_id, instance=instance_id, database=database_name)
+    response = request.execute()
+
+    return response

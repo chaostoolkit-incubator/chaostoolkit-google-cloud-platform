@@ -4,6 +4,11 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/tree/HEAD
 
+### Added
+
+-   New probes for listing and describing instance databases in
+    `chaosgcp.sql.probes` module: `list_databases`and `describe_database`.
+
 ### Changed
 
 -   Pass the secrets to the `drain_nodes` action, that is called in the

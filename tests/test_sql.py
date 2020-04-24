@@ -2,7 +2,8 @@
 from unittest.mock import MagicMock, patch, ANY
 
 from chaosgcp.sql.actions import trigger_failover, export_data, import_data
-from chaosgcp.sql.probes import list_instances, describe_instance
+from chaosgcp.sql.probes import list_instances, describe_instance, \
+    list_databases, describe_database
 
 import fixtures
 
@@ -188,3 +189,65 @@ def test_import_data(Credentials, service_builder, wait_on_operation):
 
     wait_on_operation.assert_called_with(ops_svc,
         project=project_id, operation="mysqlimport")
+
+
+@patch('chaosgcp.build', autospec=True)
+@patch('chaosgcp.Credentials', autospec=True)
+def test_list_databases(Credentials, service_builder):
+    project_id = fixtures.configuration["gcp_project_id"]
+    instance_id = fixtures.sql.instances[0]["name"]
+
+    Credentials.from_service_account_file.return_value = MagicMock()
+
+    service = MagicMock()
+    service_builder.return_value = service
+
+    databases_svc = MagicMock()
+    service.databases.return_value = databases_svc
+    _list_databases = MagicMock()
+    databases_svc.list = _list_databases
+    _list_databases_resp = {
+        "items": fixtures.sql.databases
+    }
+    _list_databases.return_value.execute.return_value = _list_databases_resp
+
+    response = list_databases(
+        secrets=fixtures.secrets,
+        configuration=fixtures.configuration,
+        instance_id=instance_id
+    )
+    databases = response["databases"]
+    assert len(databases) == 2
+    assert [db["name"] for db in databases] == ["postgres", "chaos"]
+
+    _list_databases.assert_called_with(
+        project=project_id, instance=instance_id)
+
+
+@patch('chaosgcp.build', autospec=True)
+@patch('chaosgcp.Credentials', autospec=True)
+def test_describe_database(Credentials, service_builder):
+    project_id = fixtures.configuration["gcp_project_id"]
+    instance_id = fixtures.sql.instances[0]["name"]
+    database_name = fixtures.sql.databases[1]["name"]
+
+    Credentials.from_service_account_file.return_value = MagicMock()
+
+    service = MagicMock()
+    service_builder.return_value = service
+
+    databases_svc = MagicMock()
+    service.databases.return_value = databases_svc
+    databases_get = MagicMock()
+    databases_svc.get = databases_get
+    databases_get.return_value.execute.return_value = fixtures.sql.databases[1]
+
+    response = describe_database(
+        instance_id,
+        database_name,
+        secrets=fixtures.secrets,
+        configuration=fixtures.configuration
+    )
+
+    databases_get.assert_called_with(
+        project=project_id, instance=instance_id, database=database_name)
