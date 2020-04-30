@@ -48,7 +48,6 @@ author_email = 'contact@chaostoolkit.org'
 url = 'https://chaostoolkit.org'
 license = 'Apache License Version 2.0'
 packages = setuptools.find_packages(
-    include=['chaosgcp'],
     exclude=['tests', 'tests.*', '*.tests.*', '*.tests']
 )
 

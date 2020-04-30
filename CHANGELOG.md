@@ -4,6 +4,11 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.2.0...HEAD
 
+### Added
+
+-   `chaosgcp.cloudbuild` package is embedded into distributed source package;
+    it was missing from previous 0.2.0 release.
+
 ### Changed
 
 -   Allow discovering probes & actions from `chaosgcp.cloudbuld` package
