@@ -41,6 +41,12 @@ function release () {
         -H "Authorization: token "$TRAVIS_CI_TOKEN"" \
         -d '{"request": {"branch":"master", "message": "Rebuilding after new chaostoolkit-google-cloud-platform release"}}' \
         https://api.travis-ci.org/repo/chaostoolkit%2Fchaostoolkit-documentation/requests
+
+    echo "Sends notification to Slack #releases channel"
+    curl -s -X POST \
+        -H "Content-Type: application/json" \
+        -d '{"text": "New version `'$TRAVIS_TAG'` for Google Cloud Platform extension has been released!"}' \
+        ${SLACK_WEBHOOK}
 }
 
 function main () {
