@@ -174,4 +174,6 @@ def load_exported_activities() -> List[DiscoveredActivities]:
     activities.extend(discover_actions("chaosgcp.sql.actions"))
     activities.extend(discover_probes("chaosgcp.sql.probes"))
     activities.extend(discover_probes("chaosgcp.storage.probes"))
+    activities.extend(discover_probes("chaosgcp.cloudbuild.actions"))
+    activities.extend(discover_probes("chaosgcp.cloudbuild.probes"))
     return activities

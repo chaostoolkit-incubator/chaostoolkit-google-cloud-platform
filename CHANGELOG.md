@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.2.0...HEAD
 
+### Changed
+
+-   Allow discovering probes & actions from `chaosgcp.cloudbuld` package
+
 ## [0.2.0][] - 2020-04-30
 
 [0.2.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.1.0...0.2.0
