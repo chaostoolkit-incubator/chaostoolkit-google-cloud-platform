@@ -2,7 +2,11 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/tree/HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.2.0...HEAD
+
+## [0.2.0][] - 2020-04-30
+
+[0.2.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.1.0...0.2.0
 
 ### Added
 
@@ -11,7 +15,6 @@
 -   New `chaosgcp.cloudbuild` package for Google Cloud Build probes and actions.
     List, retrieve and run cloud build triggers.
     
-
 ### Changed
 
 -   Pass the secrets to the `drain_nodes` action, that is called in the
@@ -22,7 +25,7 @@
 
 ## [0.1.0][] - 2019-12-11
 
-[0.1.0]: https://github.com/chaostoolkit/chaostoolkit-google-cloud-platform/tree/0.1.0
+[0.1.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/tree/0.1.0
 
 ### Added
 
