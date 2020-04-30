@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from fixtures import cloudbuild
 from fixtures import nodepool
 from fixtures import sql
 from fixtures import storage
