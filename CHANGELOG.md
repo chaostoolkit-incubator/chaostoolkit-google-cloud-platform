@@ -8,6 +8,9 @@
 
 -   New probes for listing and describing instance databases in
     `chaosgcp.sql.probes` module: `list_databases`and `describe_database`.
+-   New `chaosgcp.cloudbuild` package for Google Cloud Build probes and actions.
+    List, retrieve and run cloud build triggers.
+    
 
 ### Changed
 
