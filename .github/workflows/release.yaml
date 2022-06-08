@@ -28,10 +28,10 @@ jobs:
         twine upload dist/*
     # push artifacts for other jobs to use
     - name: Upload packages as artifacts
-      uses: actions/upload-artifact@v2-preview
+      uses: actions/upload-artifact@v3
       with:
         name: chaostoolkit-google-cloud-platform-packages
-        path: dist/chaostoolkit_google-cloud-platform-*
+        path: dist/chaostoolkit-*
 
   create-gh-release:
     runs-on: ubuntu-20.04
@@ -53,7 +53,7 @@ jobs:
       - release-to-pypi
     steps:
       - name: Download pypi artifacts
-        uses: actions/download-artifact@v2-preview
+        uses: actions/download-artifact@v3
         with:
           name: chaostoolkit-google-cloud-platform-packages
           path: dist
