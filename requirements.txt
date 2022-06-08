@@ -1,7 +1,7 @@
-chaostoolkit-lib>=0.16.0
-chaostoolkit-kubernetes>=0.15.0
+chaostoolkit-lib~=1.27
+chaostoolkit-kubernetes~=0.26
 google-auth
 google-auth-httplib2
 google-api-python-client
 google-cloud-storage
-logzero
+google-cloud-run

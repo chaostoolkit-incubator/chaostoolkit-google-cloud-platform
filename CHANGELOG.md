@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.2.1...HEAD
 
+### Added
+
+- `chaosgcp.cloudrun` package for Cloud Run support
+
 ## [0.2.1][] - 2020-04-30
 
 [0.2.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.2.0...0.2.1
