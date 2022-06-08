@@ -3,34 +3,52 @@ import os.path
 import time
 from typing import Any, Dict, List
 
-from chaoslib.discovery.discover import discover_actions, discover_probes, \
-    initialize_discovery_result
-from chaoslib.exceptions import FailedActivity
-from chaoslib.types import Configuration, Discovery, DiscoveredActivities, \
-    Secrets
-from google.oauth2.service_account import Credentials
-from googleapiclient.discovery import build, Resource
 import httplib2
+from chaoslib.discovery.discover import (
+    discover_actions,
+    discover_probes,
+    initialize_discovery_result,
+)
+from chaoslib.exceptions import FailedActivity
+from chaoslib.types import (
+    Configuration,
+    DiscoveredActivities,
+    Discovery,
+    Secrets,
+)
+from google.oauth2.service_account import Credentials
+from googleapiclient.discovery import Resource, build
 from logzero import logger
 
 from chaosgcp.types import GCPContext
 
-__all__ = ["__version__", "client", "discover", "get_context", "get_service",
-           "wait_on_operation", "load_credentials"]
-__version__ = '0.2.1'
+__all__ = [
+    "__version__",
+    "client",
+    "discover",
+    "get_context",
+    "get_service",
+    "wait_on_operation",
+    "load_credentials",
+]
+__version__ = "0.2.1"
 
 
-def get_service(service_name: str, version: str = 'v1',
-                configuration: Configuration = None,
-                secrets: Secrets = None) -> Resource:
+def get_service(
+    service_name: str,
+    version: str = "v1",
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> Resource:
     """
     Create a client for the given service/version couple.
     """
     return client(service_name, version=version, secrets=secrets)
 
 
-def get_context(configuration: Configuration,
-                secrets: Secrets = None) -> GCPContext:
+def get_context(
+    configuration: Configuration, secrets: Secrets = None
+) -> GCPContext:
     """
     Collate all the GCP context information.
     """
@@ -42,18 +60,20 @@ def get_context(configuration: Configuration,
     )
 
 
-def wait_on_operation(operation_service: Any,
-                      **kwargs: Dict) -> Dict[str, Any]:
+def wait_on_operation(operation_service: Any, **kwargs: Dict) -> Dict[str, Any]:
     """
     Wait until the given operation is completed and return the result.
     """
     while True:
-        logger.debug("Waiting for operation '{}'".format(
-            kwargs.get('operationId', kwargs.get('operation'))))
+        logger.debug(
+            "Waiting for operation '{}'".format(
+                kwargs.get("operationId", kwargs.get("operation"))
+            )
+        )
 
         result = operation_service.get(**kwargs).execute()
 
-        if result['status'] == 'DONE':
+        if result["status"] == "DONE":
             return result
 
         time.sleep(1)
@@ -115,19 +135,25 @@ def load_credentials(secrets: Secrets = None):
         if not os.path.exists(service_account_file):
             raise FailedActivity(
                 "GCP account settings not found at {}".format(
-                    service_account_file))
+                    service_account_file
+                )
+            )
 
         logger.debug(
-            "Using GCP credentials from file: {}".format(service_account_file))
+            "Using GCP credentials from file: {}".format(service_account_file)
+        )
         credentials = Credentials.from_service_account_file(
-            service_account_file)
+            service_account_file
+        )
     elif service_account_info and isinstance(service_account_info, dict):
         logger.debug("Using GCP credentials embedded into secrets")
         credentials = Credentials.from_service_account_info(
-            service_account_info)
+            service_account_info
+        )
     else:
         raise FailedActivity(
-            "missing GCP credentials settings in secrets of this activity")
+            "missing GCP credentials settings in secrets of this activity"
+        )
 
     if credentials is not None and credentials.expired:
         logger.debug("GCP credentials need to be refreshed as they expired")
@@ -136,13 +162,15 @@ def load_credentials(secrets: Secrets = None):
     if not credentials:
         raise FailedActivity(
             "missing a service account to authenticate with the "
-            "Google Cloud Platform")
+            "Google Cloud Platform"
+        )
 
     return credentials
 
 
-def client(service_name: str, version: str = 'v1',
-           secrets: Secrets = None) -> Resource:
+def client(
+    service_name: str, version: str = "v1", secrets: Secrets = None
+) -> Resource:
     """
     Create a client for the given service.
     """
@@ -157,7 +185,8 @@ def discover(discover_system: bool = True) -> Discovery:
     logger.info("Discovering capabilities from chaostoolkit-google-cloud")
 
     discovery = initialize_discovery_result(
-        "chaostoolkit-google-cloud", __version__, "gcp")
+        "chaostoolkit-google-cloud", __version__, "gcp"
+    )
     discovery["activities"].extend(load_exported_activities())
     return discovery
 

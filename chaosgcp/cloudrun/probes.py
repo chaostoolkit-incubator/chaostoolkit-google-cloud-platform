@@ -53,10 +53,12 @@ def list_services(
 
     client = run_v2.ServicesClient(credentials=credentials)
     request = run_v2.ListServicesRequest(parent=parent)
-    return list(map(
-        lambda p: p.__class__.to_dict(p),
-        client.list_services(request=request)
-    ))
+    return list(
+        map(
+            lambda p: p.__class__.to_dict(p),
+            client.list_services(request=request),
+        )
+    )
 
 
 def list_service_revisions(
@@ -79,7 +81,9 @@ def list_service_revisions(
 
     client = run_v2.RevisionsClient(credentials=credentials)
     request = run_v2.ListRevisionsRequest(parent=parent)
-    return list(map(
-        lambda p: p.__class__.to_dict(p),
-        client.list_revisions(request=request)
-    ))
+    return list(
+        map(
+            lambda p: p.__class__.to_dict(p),
+            client.list_revisions(request=request),
+        )
+    )

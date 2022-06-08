@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
-from unittest.mock import MagicMock, patch, ANY
-
-from chaosgcp.sql.actions import trigger_failover, export_data, import_data
-from chaosgcp.sql.probes import list_instances, describe_instance, \
-    list_databases, describe_database
-from chaosgcp.cloudbuild.actions import run_trigger
-from chaosgcp.cloudbuild.probes import list_triggers, list_trigger_names, \
-    get_trigger
+from unittest.mock import MagicMock, patch
 
 import fixtures
 
+from chaosgcp.cloudbuild.actions import run_trigger
+from chaosgcp.cloudbuild.probes import (
+    get_trigger,
+    list_trigger_names,
+    list_triggers,
+)
 
 
-@patch('chaosgcp.build', autospec=True)
-@patch('chaosgcp.Credentials', autospec=True)
+@patch("chaosgcp.build", autospec=True)
+@patch("chaosgcp.Credentials", autospec=True)
 def test_list_triggers(Credentials, service_builder):
     project_id = fixtures.configuration["gcp_project_id"]
 
@@ -26,14 +25,15 @@ def test_list_triggers(Credentials, service_builder):
     triggers_svc = MagicMock()
     triggers_list = MagicMock()
 
-    triggers_list.return_value.execute.return_value = fixtures.cloudbuild.triggers
+    triggers_list.return_value.execute.return_value = (
+        fixtures.cloudbuild.triggers
+    )
     triggers_svc.list = triggers_list
     projects_svc.triggers.return_value = triggers_svc
     service.projects.return_value = projects_svc
 
     response = list_triggers(
-        secrets=fixtures.secrets,
-        configuration=fixtures.configuration
+        secrets=fixtures.secrets, configuration=fixtures.configuration
     )
 
     triggers_list.assert_called_with(projectId=project_id)
@@ -48,8 +48,8 @@ def test_list_triggers(Credentials, service_builder):
 #     assert names == ["a-dummy-trigger"]
 
 
-@patch('chaosgcp.build', autospec=True)
-@patch('chaosgcp.Credentials', autospec=True)
+@patch("chaosgcp.build", autospec=True)
+@patch("chaosgcp.Credentials", autospec=True)
 def test_list_trigger_names(Credentials, service_builder):
     project_id = fixtures.configuration["gcp_project_id"]
 
@@ -62,14 +62,15 @@ def test_list_trigger_names(Credentials, service_builder):
     triggers_svc = MagicMock()
     triggers_list = MagicMock()
 
-    triggers_list.return_value.execute.return_value = fixtures.cloudbuild.triggers
+    triggers_list.return_value.execute.return_value = (
+        fixtures.cloudbuild.triggers
+    )
     triggers_svc.list = triggers_list
     projects_svc.triggers.return_value = triggers_svc
     service.projects.return_value = projects_svc
 
     response = list_trigger_names(
-        secrets=fixtures.secrets,
-        configuration=fixtures.configuration
+        secrets=fixtures.secrets, configuration=fixtures.configuration
     )
 
     triggers_list.assert_called_with(projectId=project_id)
@@ -77,8 +78,8 @@ def test_list_trigger_names(Credentials, service_builder):
     assert response == ["a-dummy-trigger"]
 
 
-@patch('chaosgcp.build', autospec=True)
-@patch('chaosgcp.Credentials', autospec=True)
+@patch("chaosgcp.build", autospec=True)
+@patch("chaosgcp.Credentials", autospec=True)
 def test_get_trigger(Credentials, service_builder):
     project_id = fixtures.configuration["gcp_project_id"]
     trigger_name = "a-dummy-trigger"
@@ -100,17 +101,17 @@ def test_get_trigger(Credentials, service_builder):
     response = get_trigger(
         name=trigger_name,
         secrets=fixtures.secrets,
-        configuration=fixtures.configuration
+        configuration=fixtures.configuration,
     )
 
-    triggers_get.assert_called_with(projectId=project_id, triggerId=trigger_name)
+    triggers_get.assert_called_with(
+        projectId=project_id, triggerId=trigger_name
+    )
     assert response["name"] == trigger_name
 
 
-
-
-@patch('chaosgcp.build', autospec=True)
-@patch('chaosgcp.Credentials', autospec=True)
+@patch("chaosgcp.build", autospec=True)
+@patch("chaosgcp.Credentials", autospec=True)
 def test_run_trigger(Credentials, service_builder):
     project_id = fixtures.configuration["gcp_project_id"]
     trigger_name = "a-dummy-trigger"
@@ -125,7 +126,9 @@ def test_run_trigger(Credentials, service_builder):
     triggers_svc = MagicMock()
     triggers_run = MagicMock()
 
-    triggers_run.return_value.execute.return_value = fixtures.cloudbuild.triggered_build
+    triggers_run.return_value.execute.return_value = (
+        fixtures.cloudbuild.triggered_build
+    )
     triggers_svc.run = triggers_run
     projects_svc.triggers.return_value = triggers_svc
     service.projects.return_value = projects_svc
@@ -134,8 +137,10 @@ def test_run_trigger(Credentials, service_builder):
         name=trigger_name,
         source=source,
         secrets=fixtures.secrets,
-        configuration=fixtures.configuration
+        configuration=fixtures.configuration,
     )
 
-    triggers_run.assert_called_with(projectId=project_id, triggerId=trigger_name, body=source)
+    triggers_run.assert_called_with(
+        projectId=project_id, triggerId=trigger_name, body=source
+    )
     assert response["metadata"]["build"]["status"] == "QUEUED"

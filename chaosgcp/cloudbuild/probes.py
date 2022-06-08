@@ -8,9 +8,9 @@ __all__ = ["list_triggers", "list_trigger_names", "get_trigger"]
 
 
 def list_triggers(
-        configuration: Configuration = None,
-        secrets: Secrets = None,
-        ):
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+):
     """
     Lists existing BuildTriggers.
 
@@ -22,8 +22,9 @@ def list_triggers(
     :return:
     """  # noqa: E501
     ctx = get_context(configuration=configuration, secrets=secrets)
-    service = get_service('cloudbuild', version='v1',
-                          configuration=configuration, secrets=secrets)
+    service = get_service(
+        "cloudbuild", version="v1", configuration=configuration, secrets=secrets
+    )
 
     request = service.projects().triggers().list(projectId=ctx.project_id)
     response = request.execute()
@@ -31,9 +32,9 @@ def list_triggers(
 
 
 def list_trigger_names(
-        configuration: Configuration = None,
-        secrets: Secrets = None,
-        ):
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+):
     """
     List only the trigger names of a project
 
@@ -47,10 +48,10 @@ def list_trigger_names(
 
 
 def get_trigger(
-        name: str,
-        configuration: Configuration = None,
-        secrets: Secrets = None,
-        ):
+    name: str,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+):
     """
     Returns information about a BuildTrigger.
 
@@ -62,10 +63,14 @@ def get_trigger(
     :return:
     """  # noqa: E501
     ctx = get_context(configuration=configuration, secrets=secrets)
-    service = get_service('cloudbuild', version='v1',
-                          configuration=configuration, secrets=secrets)
+    service = get_service(
+        "cloudbuild", version="v1", configuration=configuration, secrets=secrets
+    )
 
-    request = service.projects().triggers().get(
-        projectId=ctx.project_id, triggerId=name)
+    request = (
+        service.projects()
+        .triggers()
+        .get(projectId=ctx.project_id, triggerId=name)
+    )
     response = request.execute()
     return response

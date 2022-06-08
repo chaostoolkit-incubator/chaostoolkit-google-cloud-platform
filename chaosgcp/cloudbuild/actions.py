@@ -9,11 +9,11 @@ __all__ = ["run_trigger"]
 
 
 def run_trigger(
-        name: str,
-        source: Dict[Any, Any],
-        configuration: Configuration = None,
-        secrets: Secrets = None,
-        ):
+    name: str,
+    source: Dict[Any, Any],
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+):
     """
     Runs a BuildTrigger at a particular source revision.
 
@@ -29,10 +29,14 @@ def run_trigger(
     :return:
     """  # noqa: E501
     ctx = get_context(configuration=configuration, secrets=secrets)
-    service = get_service('cloudbuild', version='v1',
-                          configuration=configuration, secrets=secrets)
+    service = get_service(
+        "cloudbuild", version="v1", configuration=configuration, secrets=secrets
+    )
 
-    request = service.projects().triggers().run(
-        projectId=ctx.project_id, triggerId=name, body=source)
+    request = (
+        service.projects()
+        .triggers()
+        .run(projectId=ctx.project_id, triggerId=name, body=source)
+    )
     response = request.execute()
     return response

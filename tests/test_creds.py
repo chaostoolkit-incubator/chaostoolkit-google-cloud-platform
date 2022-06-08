@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from chaosgcp import get_context
-
 import fixtures
+
+from chaosgcp import get_context
 
 
 def test_context_from_config():
@@ -14,7 +14,7 @@ def test_context_from_config():
 
 
 def test_context_default_values():
-    """ alllow for optional keys in the configuration with None as default """
+    """alllow for optional keys in the configuration with None as default"""
     ctx = get_context({}, fixtures.secrets)
     assert ctx.project_id is None
     assert ctx.zone is None

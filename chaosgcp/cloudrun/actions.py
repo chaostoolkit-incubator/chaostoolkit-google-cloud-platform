@@ -10,19 +10,19 @@ __all__ = ["create_service", "delete_service", "update_service"]
 
 
 def create_service(
-        parent: str,
-        service_id: str,
-        container: Dict[str, Any],
-        description: str = None,
-        container_concurrency: int = 100,
-        service_account: str = None,
-        encryption_key: str = None,
-        traffic: List[Dict[str, Any]] = None,
-        labels: Dict[str, str] = None,
-        annotations: Dict[str, str] = None,
-        configuration: Configuration = None,
-        secrets: Secrets = None,
-        ):
+    parent: str,
+    service_id: str,
+    container: Dict[str, Any],
+    description: str = None,
+    container_concurrency: int = 100,
+    service_account: str = None,
+    encryption_key: str = None,
+    traffic: List[Dict[str, Any]] = None,
+    labels: Dict[str, str] = None,
+    annotations: Dict[str, str] = None,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+):
     """
     Deletes a Cloud Run service and all its revisions. Cannot be undone.
 
@@ -50,19 +50,17 @@ def create_service(
         container_concurrency=container_concurrency,
         service_account=service_account,
         encryption_key=encryption_key,
-        containers=[run_v2.Container(**container)]
+        containers=[run_v2.Container(**container)],
     )
     svc = run_v2.Service(
         description=description,
         labels=labels,
         annotations=annotations,
         template=tpl,
-        traffic=traffics
+        traffic=traffics,
     )
     request = run_v2.CreateServiceRequest(
-        parent=parent,
-        service_id=service_id,
-        service=svc
+        parent=parent, service_id=service_id, service=svc
     )
 
     operation = client.create_service(request=request)
@@ -71,10 +69,10 @@ def create_service(
 
 
 def delete_service(
-        name: str,
-        configuration: Configuration = None,
-        secrets: Secrets = None,
-        ):
+    name: str,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+):
     """
     Deletes a Cloud Run service and all its revisions. Cannot be undone.
 
@@ -99,17 +97,17 @@ def delete_service(
 
 
 def update_service(
-        name: str,
-        container: Dict[str, Any] = None,
-        container_concurrency: int = 100,
-        service_account: str = None,
-        encryption_key: str = None,
-        traffic: List[Dict[str, Any]] = None,
-        labels: Dict[str, str] = None,
-        annotations: Dict[str, str] = None,
-        configuration: Configuration = None,
-        secrets: Secrets = None,
-        ):
+    name: str,
+    container: Dict[str, Any] = None,
+    container_concurrency: int = 100,
+    service_account: str = None,
+    encryption_key: str = None,
+    traffic: List[Dict[str, Any]] = None,
+    labels: Dict[str, str] = None,
+    annotations: Dict[str, str] = None,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+):
     """
     Updates a Cloud Run service.
 
@@ -142,7 +140,7 @@ def update_service(
     ```
 
     See: https://cloud.google.com/python/docs/reference/run/latest/google.cloud.run_v2.services.services.ServicesClient#google_cloud_run_v2_services_services_ServicesClient_delete_service
-    
+
     :param container: definition of the container as per https://cloud.google.com/python/docs/reference/run/latest/google.cloud.run_v2.types.Container
     :param labels: optional labels to set on the service
     :param annotations: optional annotations to set on the service
@@ -166,18 +164,16 @@ def update_service(
         container_concurrency=container_concurrency,
         service_account=service_account,
         encryption_key=encryption_key,
-        containers=containers
+        containers=containers,
     )
     svc = run_v2.Service(
         name=name,
         labels=labels,
         annotations=annotations,
         template=tpl,
-        traffic=traffics
+        traffic=traffics,
     )
-    request = run_v2.UpdateServiceRequest(
-        service=svc
-    )
+    request = run_v2.UpdateServiceRequest(service=svc)
 
     operation = client.update_service(request=request)
     response = operation.result()

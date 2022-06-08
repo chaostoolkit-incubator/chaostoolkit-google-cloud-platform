@@ -8,6 +8,10 @@
 
 - `chaosgcp.cloudrun` package for Cloud Run support
 
+### Changed
+
+- Switched from travis to github actions
+
 ## [0.2.1][] - 2020-04-30
 
 [0.2.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.2.0...0.2.1

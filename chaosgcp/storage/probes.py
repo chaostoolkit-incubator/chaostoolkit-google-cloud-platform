@@ -9,11 +9,12 @@ from chaosgcp import storage
 __all__ = ["object_exists"]
 
 
-def object_exists(bucket_name: str,
-                  object_name: str,
-                  configuration: Configuration = None,
-                  secrets: Secrets = None
-                  ) -> bool:
+def object_exists(
+    bucket_name: str,
+    object_name: str,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> bool:
     """
     Indicates whether a file in Cloud Storage bucket exists.
 
@@ -28,9 +29,11 @@ def object_exists(bucket_name: str,
     bucket = client.get_bucket(bucket_name)
     blob = bucket.get_blob(object_name)
 
-    logger.debug("Object {o} exists in bucket {b}? {blob}".format(
-        b=bucket_name, o=object_name, blob=blob
-    ))
+    logger.debug(
+        "Object {o} exists in bucket {b}? {blob}".format(
+            b=bucket_name, o=object_name, blob=blob
+        )
+    )
 
     return blob is not None
 
@@ -46,10 +49,6 @@ def validate_bucket_object_args(bucket_name, object_name):
     :param object_name: Name of the object (as path format)
     """
     if not bucket_name:
-        raise ActivityFailed(
-            "Cannot get object. "
-            "Bucket name is mandatory.")
+        raise ActivityFailed("Cannot get object. " "Bucket name is mandatory.")
     if not object_name:
-        raise ActivityFailed(
-            "Cannot get object. "
-            "Object name is mandatory.")
+        raise ActivityFailed("Cannot get object. " "Object name is mandatory.")

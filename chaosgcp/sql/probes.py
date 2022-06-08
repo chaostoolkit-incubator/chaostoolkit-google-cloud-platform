@@ -8,8 +8,9 @@ from chaosgcp import get_context, get_service
 __all__ = ["list_instances", "describe_instance"]
 
 
-def list_instances(configuration: Configuration = None,
-                   secrets: Secrets = None) -> Dict[str, Any]:
+def list_instances(
+    configuration: Configuration = None, secrets: Secrets = None
+) -> Dict[str, Any]:
 
     """
     Lists Cloud SQL instances in a given project in the alphabetical order of
@@ -18,8 +19,12 @@ def list_instances(configuration: Configuration = None,
     See: https://cloud.google.com/sql/docs/postgres/admin-api/v1beta4/instances/list
     """  # noqa: E501
     ctx = get_context(configuration=configuration, secrets=secrets)
-    service = get_service('sqladmin', version='v1beta4',
-                          configuration=configuration, secrets=secrets)
+    service = get_service(
+        "sqladmin",
+        version="v1beta4",
+        configuration=configuration,
+        secrets=secrets,
+    )
 
     instances = []
 
@@ -28,14 +33,17 @@ def list_instances(configuration: Configuration = None,
         response = request.execute()
         instances.extend(response["items"])
         request = service.instances().list_next(
-            previous_request=request, previous_response=response)
+            previous_request=request, previous_response=response
+        )
 
     return {"instances": instances}
 
 
-def describe_instance(instance_id: str,
-                      configuration: Configuration = None,
-                      secrets: Secrets = None) -> Dict[str, Any]:
+def describe_instance(
+    instance_id: str,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> Dict[str, Any]:
     """
     Displays configuration and metadata about a Cloud SQL instance.
 
@@ -47,18 +55,25 @@ def describe_instance(instance_id: str,
     :param instance_id: Cloud SQL instance ID.
     """  # noqa: E501
     ctx = get_context(configuration=configuration, secrets=secrets)
-    service = get_service('sqladmin', version='v1beta4',
-                          configuration=configuration, secrets=secrets)
+    service = get_service(
+        "sqladmin",
+        version="v1beta4",
+        configuration=configuration,
+        secrets=secrets,
+    )
 
-    request = service.instances().get(project=ctx.project_id,
-                                      instance=instance_id)
+    request = service.instances().get(
+        project=ctx.project_id, instance=instance_id
+    )
     response = request.execute()
     return response
 
 
-def list_databases(instance_id: str,
-                   configuration: Configuration = None,
-                   secrets: Secrets = None) -> Dict[str, Any]:
+def list_databases(
+    instance_id: str,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> Dict[str, Any]:
     """
     Lists databases in the specified Cloud SQL instance
 
@@ -67,21 +82,28 @@ def list_databases(instance_id: str,
     :param instance_id: Cloud SQL instance ID.
     """  # noqa: E501
     ctx = get_context(configuration=configuration, secrets=secrets)
-    service = get_service('sqladmin', version='v1beta4',
-                          configuration=configuration, secrets=secrets)
+    service = get_service(
+        "sqladmin",
+        version="v1beta4",
+        configuration=configuration,
+        secrets=secrets,
+    )
 
     request = service.databases().list(
-        project=ctx.project_id, instance=instance_id)
+        project=ctx.project_id, instance=instance_id
+    )
     response = request.execute()
 
     databases = response.get("items", [])
     return {"databases": databases}
 
 
-def describe_database(instance_id: str,
-                      database_name: str,
-                      configuration: Configuration = None,
-                      secrets: Secrets = None) -> Dict[str, Any]:
+def describe_database(
+    instance_id: str,
+    database_name: str,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> Dict[str, Any]:
     """
     Displays configuration and metadata about a Cloud SQL database
 
@@ -94,11 +116,16 @@ def describe_database(instance_id: str,
     :param database: Cloud SQL database name.
     """  # noqa: E501
     ctx = get_context(configuration=configuration, secrets=secrets)
-    service = get_service('sqladmin', version='v1beta4',
-                          configuration=configuration, secrets=secrets)
+    service = get_service(
+        "sqladmin",
+        version="v1beta4",
+        configuration=configuration,
+        secrets=secrets,
+    )
 
     request = service.databases().get(
-        project=ctx.project_id, instance=instance_id, database=database_name)
+        project=ctx.project_id, instance=instance_id, database=database_name
+    )
     response = request.execute()
 
     return response

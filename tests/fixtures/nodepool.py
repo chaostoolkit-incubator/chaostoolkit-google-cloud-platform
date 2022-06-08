@@ -2,7 +2,7 @@
 
 body = {
     "nodePool": {
-        "config": { 
+        "config": {
             "oauthScopes": [
                 "gke-version-default",
                 "https://www.googleapis.com/auth/devstorage.read_only",
@@ -10,10 +10,10 @@ body = {
                 "https://www.googleapis.com/auth/monitoring",
                 "https://www.googleapis.com/auth/service.management.readonly",
                 "https://www.googleapis.com/auth/servicecontrol",
-                "https://www.googleapis.com/auth/trace.append"
+                "https://www.googleapis.com/auth/trace.append",
             ]
         },
         "initialNodeCount": 3,
-        "name": "default-pool"
+        "name": "default-pool",
     }
 }

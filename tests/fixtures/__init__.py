@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
-from fixtures import cloudbuild
-from fixtures import nodepool
-from fixtures import sql
-from fixtures import storage
+from fixtures import cloudbuild, nodepool, sql, storage  # noqa
 
-secrets = {
-    "service_account_file": "tests/fixtures/fake_creds.json"
-}
+secrets = {"service_account_file": "tests/fixtures/fake_creds.json"}
 
 secrets_with_k8s = {
     "service_account_file": "tests/fixtures/fake_creds.json",
-    "KUBERNETES_CONTEXT": "minikube"
+    "KUBERNETES_CONTEXT": "minikube",
 }
 
 

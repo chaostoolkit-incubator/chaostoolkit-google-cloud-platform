@@ -3,13 +3,12 @@
 from chaoslib.types import Configuration, Secrets
 from google.cloud import storage as gc_storage
 
-from chaosgcp import load_credentials, get_context
+from chaosgcp import get_context, load_credentials
 
 __all__ = ["client"]
 
 
-def client(configuration: Configuration = None,
-           secrets: Secrets = None):
+def client(configuration: Configuration = None, secrets: Secrets = None):
     """
     Create a client for Google Cloud Storage
     """

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from unittest.mock import MagicMock
 
-from chaosgcp import wait_on_operation
-
 import fixtures
+
+from chaosgcp import wait_on_operation
 
 
 def test_wait_on_operation_kwargs():
@@ -19,21 +19,25 @@ def test_wait_on_operation_kwargs():
         ops_svc,
         projectId=fixtures.configuration["gcp_project_id"],
         zone=fixtures.configuration["gcp_zone"],
-        operationId="operation-xyz")
+        operationId="operation-xyz",
+    )
 
     ops_svc.get.assert_called_with(
         projectId=fixtures.configuration["gcp_project_id"],
         zone=fixtures.configuration["gcp_zone"],
-        operationId="operation-xyz")
+        operationId="operation-xyz",
+    )
     assert response["status"] == "DONE"
 
     # case 2
     response = wait_on_operation(
         ops_svc,
         project=fixtures.configuration["gcp_project_id"],
-        operation="operation-xyz")
+        operation="operation-xyz",
+    )
 
     ops_svc.get.assert_called_with(
         project=fixtures.configuration["gcp_project_id"],
-        operation="operation-xyz")
+        operation="operation-xyz",
+    )
     assert response["status"] == "DONE"

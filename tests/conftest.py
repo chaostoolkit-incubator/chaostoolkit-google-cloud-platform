@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-import fixtures
+import fixtures  # noqa
