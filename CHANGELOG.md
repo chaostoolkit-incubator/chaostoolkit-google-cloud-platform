@@ -4,6 +4,11 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.3.0...HEAD
 
+### Added
+
+- `chaosgcp.nodepool.probes` to `list` and `get` nodepools of a cluster
+- `chaosgcp.nodepool.actions.rollback` when the upgrade of nodepool failed
+
 ## [0.3.0][] - 2022-06-08
 
 [0.3.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.2.1...0.3.0

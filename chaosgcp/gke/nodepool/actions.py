@@ -144,3 +144,44 @@ def swap_nodepool(
         )
 
     return new_nodepool_response
+
+
+def rollback_nodepool(
+    node_pool_id: str,
+    wait_until_complete: bool = True,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> Dict[str, Any]:
+    """
+    Rollback a previously Aborted or Failed NodePool upgrade.
+
+    If `wait_until_complete` is set to `True` (the default), the function
+    will block until the node pool is ready. Otherwise, will return immediatly
+    with the operation information.
+
+    See: https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.zones.clusters.nodePools/create
+    """  # noqa: E501
+    ctx = get_context(configuration=configuration, secrets=secrets)
+    service = get_service(
+        "container", configuration=configuration, secrets=secrets
+    )
+    np = service.projects().zones().clusters().nodePools()
+    response = np.rollback(
+        projectId=ctx.project_id,
+        zone=ctx.zone,
+        clusterId=ctx.cluster_name,
+        nodePoolId=node_pool_id
+    ).execute()
+
+    logger.debug("NodePool creation: {}".format(str(response)))
+
+    if wait_until_complete:
+        ops = service.projects().zones().operations()
+        response = wait_on_operation(
+            ops,
+            projectId=ctx.project_id,
+            zone=ctx.zone,
+            operationId=response["name"],
+        )
+
+    return response
