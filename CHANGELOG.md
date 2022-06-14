@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.4.0...HEAD
 
+### Changed
+
+- Expose `chaosgcp.nodepool.actions.rollback` through the `dicover` interface
+
 ## [0.4.0][] - 2022-06-14
 
 [0.4.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.3.0...0.4.0

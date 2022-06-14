@@ -7,7 +7,12 @@ from logzero import logger
 
 from chaosgcp import get_context, get_service, wait_on_operation
 
-__all__ = ["create_new_nodepool", "delete_nodepool", "swap_nodepool"]
+__all__ = [
+    "create_new_nodepool",
+    "delete_nodepool",
+    "swap_nodepool",
+    "rollback_nodepool",
+]
 
 
 def create_new_nodepool(
