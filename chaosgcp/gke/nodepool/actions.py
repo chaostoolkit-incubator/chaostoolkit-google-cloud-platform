@@ -170,7 +170,7 @@ def rollback_nodepool(
         projectId=ctx.project_id,
         zone=ctx.zone,
         clusterId=ctx.cluster_name,
-        nodePoolId=node_pool_id
+        nodePoolId=node_pool_id,
     ).execute()
 
     logger.debug("NodePool creation: {}".format(str(response)))

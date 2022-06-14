@@ -4,7 +4,7 @@ from typing import Any, Dict
 from chaoslib.types import Configuration, Secrets
 from logzero import logger
 
-from chaosgcp import get_context, get_service, wait_on_operation
+from chaosgcp import get_context, get_service
 
 __all__ = ["list_nodepools", "get_nodepool"]
 
@@ -53,7 +53,7 @@ def get_nodepool(
         projectId=ctx.project_id,
         zone=ctx.zone,
         clusterId=ctx.cluster_name,
-        nodePoolId=node_pool_id
+        nodePoolId=node_pool_id,
     ).execute()
 
     logger.debug("NodePool retrieved: {}".format(str(response)))
