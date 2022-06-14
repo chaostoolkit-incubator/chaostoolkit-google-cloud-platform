@@ -31,7 +31,7 @@ __all__ = [
     "wait_on_operation",
     "load_credentials",
 ]
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 
 
 def get_service(
