@@ -200,12 +200,12 @@ def load_exported_activities() -> List[DiscoveredActivities]:
     """
     activities = []
     activities.extend(discover_actions("chaosgcp.gke.nodepool.actions"))
-    activities.extend(discover_actions("chaosgcp.gke.nodepool.probes"))
+    activities.extend(discover_probes("chaosgcp.gke.nodepool.probes"))
     activities.extend(discover_actions("chaosgcp.sql.actions"))
     activities.extend(discover_probes("chaosgcp.sql.probes"))
     activities.extend(discover_probes("chaosgcp.storage.probes"))
-    activities.extend(discover_probes("chaosgcp.cloudbuild.actions"))
+    activities.extend(discover_actions("chaosgcp.cloudbuild.actions"))
     activities.extend(discover_probes("chaosgcp.cloudbuild.probes"))
-    activities.extend(discover_probes("chaosgcp.cloudrun.actions"))
+    activities.extend(discover_actions("chaosgcp.cloudrun.actions"))
     activities.extend(discover_probes("chaosgcp.cloudrun.probes"))
     return activities

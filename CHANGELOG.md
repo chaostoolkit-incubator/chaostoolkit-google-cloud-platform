@@ -4,6 +4,8 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.4.1...HEAD
 
+- Fix discover between probes and actions
+
 ## [0.4.1][] - 2022-06-14
 
 [0.4.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.4.0...0.4.1
