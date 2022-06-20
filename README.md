@@ -16,7 +16,7 @@ extension to the [Chaos Toolkit][chaostoolkit]. It targets the
 
 ## Install
 
-This package requires Python 3.5+
+This package requires Python 3.7+
 
 To be used from your experiment, this package must be installed in the Python
 environment where [chaostoolkit][] already lives.
@@ -85,8 +85,17 @@ You can pass the context via the `configuration` section of your experiment:
 }
 ```
 
-Note that most functions exposed in this package also take those values
-directly when you want specific values for them.
+This is only valuable when you want to reuse the same context everywhere.
+A finer approach is to set the the `parent` argument on activities that
+support it. It should be of the form
+`projects/*/locations/*` or `projects/*/locations/*/clusters/*`, where
+`location` is either a region or a zone, depending on the context and defined
+by the GCP API.
+
+When provided, this takes precedence over the context defined in the
+configuration. In some cases, it also means you do not need to pass the
+values in the configuration at all as the extension will derive the
+context from the `parent` value.
 
 ### Credentials
 
@@ -121,7 +130,7 @@ While the embedded way looks like this:
 {
     "secrets": {
         "k8s": {
-            "KUBERNETES_CONTEXT": "gke_project_name-g70e8ya0_us-central1_cluster-hello-world"
+            "KUBERNETES_CONTEXT": "..."
         },
         "gcp": {
             "service_account_info": {
@@ -151,54 +160,89 @@ action that requires such a secret payload, others only speak to the GCP API.
 
 ### Putting it all together
 
-Here is a full example:
+Here is a full example which creates a node pool then swap it for a new one.
 
 ```json
 {
     "version": "1.0.0",
-    "title": "...",
-    "description": "...",
-    "configuration": {
-        "gcp_project_id": "...",
-        "gcp_gke_cluster_name": "...",
-        "gcp_region": "...",
-        "gcp_zone": "..."
-    },
+    "title": "do stuff ye",
+    "description": "n/a",
     "secrets": {
-        "gcp": {
-            "service_account_file": "/path/to/sa.json"
-        },
         "k8s": {
-            "KUBERNETES_CONTEXT": "gke_project_name-g70e8ya0_us-central1_cluster-hello-world"
+            "KUBERNETES_CONTEXT": "gke_..."
         },
+        "gcp": {
+            "service_account_file": "service-account.json"
+        }
     },
     "method": [
         {
+            "name": "create-our-nodepool",
             "type": "action",
-            "name": "swap-nodepool-for-a-new-one",
+            "provider": {
+                "type": "python",
+                "module": "chaosgcp.gke.nodepool.actions",
+                "func": "create_new_nodepool",
+                "secrets": ["gcp"],
+                "arguments": {
+                    "parent": "projects/.../locations/.../clusters/...",
+                    "body": {
+                        "config": { 
+                            "oauth_scopes": [
+                                "gke-version-default",
+                                "https://www.googleapis.com/auth/devstorage.read_only",
+                                "https://www.googleapis.com/auth/logging.write",
+                                "https://www.googleapis.com/auth/monitoring",
+                                "https://www.googleapis.com/auth/service.management.readonly",
+                                "https://www.googleapis.com/auth/servicecontrol",
+                                "https://www.googleapis.com/auth/trace.append"
+                            ]
+                        },
+                        "initial_node_count": 1,
+                        "name": "default-pool"
+                    }
+                }
+            }
+        },
+        {
+            "name": "fetch-our-nodepool",
+            "type": "probe",
+            "provider": {
+                "type": "python",
+                "module": "chaosgcp.gke.nodepool.probes",
+                "func": "get_nodepool",
+                "secrets": ["gcp"],
+                "arguments": {
+                    "parent": "projects/.../locations/.../clusters/.../nodePools/default-pool"
+                }
+            }
+        },
+        {
+            "name": "swap-our-nodepool",
+            "type": "action",
             "provider": {
                 "type": "python",
                 "module": "chaosgcp.gke.nodepool.actions",
                 "func": "swap_nodepool",
                 "secrets": ["gcp", "k8s"],
                 "arguments": {
-                    "old_node_pool_id": "...",
+                    "parent": "projects/.../locations/.../clusters/...",
+                    "delete_old_node_pool": true,
+                    "old_node_pool_id": "default-pool",
                     "new_nodepool_body": {
-                        "nodePool": {
-                            "config": { 
-                                "oauthScopes": [
-                                    "gke-version-default",
-                                    "https://www.googleapis.com/auth/devstorage.read_only",
-                                    "https://www.googleapis.com/auth/logging.write",
-                                    "https://www.googleapis.com/auth/monitoring",
-                                    "https://www.googleapis.com/auth/service.management.readonly",
-                                    "https://www.googleapis.com/auth/servicecontrol",
-                                    "https://www.googleapis.com/auth/trace.append"
-                                ]
-                            },
-                            "initialNodeCount": 3,
-                            "name": "new-default-pool"
-                        }
+                        "config": { 
+                            "oauth_scopes": [
+                                "gke-version-default",
+                                "https://www.googleapis.com/auth/devstorage.read_only",
+                                "https://www.googleapis.com/auth/logging.write",
+                                "https://www.googleapis.com/auth/monitoring",
+                                "https://www.googleapis.com/auth/service.management.readonly",
+                                "https://www.googleapis.com/auth/servicecontrol",
+                                "https://www.googleapis.com/auth/trace.append"
+                            ]
+                        },
+                        "initial_node_count": 1,
+                        "name": "default-pool-1"
                     }
                 }
             }
@@ -206,6 +250,7 @@ Here is a full example:
     ]
 }
 ```
+
 
 ## Migrate from GCE extension
 

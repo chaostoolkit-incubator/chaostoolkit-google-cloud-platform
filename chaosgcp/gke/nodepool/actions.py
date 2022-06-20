@@ -5,7 +5,8 @@ from chaosk8s.node.actions import drain_nodes
 from chaoslib.types import Configuration, Secrets
 from logzero import logger
 
-from chaosgcp import get_context, get_service, wait_on_operation
+from chaosgcp import context_from_parent_path, get_parent, to_dict
+from chaosgcp.gke.nodepool import get_client, wait_on_operation
 
 __all__ = [
     "create_new_nodepool",
@@ -17,6 +18,7 @@ __all__ = [
 
 def create_new_nodepool(
     body: Dict[str, Any],
+    parent: str = None,
     wait_until_complete: bool = True,
     configuration: Configuration = None,
     secrets: Secrets = None,
@@ -33,34 +35,22 @@ def create_new_nodepool(
 
     See: https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.zones.clusters.nodePools/create
     """  # noqa: E501
-    ctx = get_context(configuration=configuration, secrets=secrets)
-    service = get_service(
-        "container", configuration=configuration, secrets=secrets
-    )
-    np = service.projects().zones().clusters().nodePools()
-    response = np.create(
-        projectId=ctx.project_id,
-        zone=ctx.zone,
-        clusterId=ctx.cluster_name,
-        body=body,
-    ).execute()
-
-    logger.debug("NodePool creation: {}".format(str(response)))
+    parent = get_parent(parent, configuration=configuration, secrets=secrets)
+    client = get_client(configuration, secrets)
+    response = client.create_node_pool(parent=parent, node_pool=body)
 
     if wait_until_complete:
-        ops = service.projects().zones().operations()
-        response = wait_on_operation(
-            ops,
-            projectId=ctx.project_id,
-            zone=ctx.zone,
-            operationId=response["name"],
-        )
+        logger.info("Waiting on node pool to be created...")
+        ctx = context_from_parent_path(parent)
+        response = wait_on_operation(client, response, ctx)
 
-    return response
+    logger.debug("NodePool creation: {}".format(str(response)))
+    return to_dict(response)
 
 
 def delete_nodepool(
-    node_pool_id: str,
+    parent: str = None,
+    node_pool_id: str = None,
     wait_until_complete: bool = True,
     configuration: Configuration = None,
     secrets: Secrets = None,
@@ -74,35 +64,23 @@ def delete_nodepool(
 
     See: https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.zones.clusters.nodePools/create
     """  # noqa: E501
-    ctx = get_context(configuration=configuration, secrets=secrets)
-    service = get_service(
-        "container", configuration=configuration, secrets=secrets
-    )
-    np = service.projects().zones().clusters().nodePools()
-    response = np.delete(
-        projectId=ctx.project_id,
-        zone=ctx.zone,
-        clusterId=ctx.cluster_name,
-        nodePoolId=node_pool_id,
-    ).execute()
-
-    logger.debug("NodePool deletion: {}".format(str(response)))
+    parent = get_parent(parent, node_pool_id, configuration, secrets)
+    client = get_client(configuration, secrets)
+    response = client.delete_node_pool(name=parent)
 
     if wait_until_complete:
-        ops = service.projects().zones().operations()
-        response = wait_on_operation(
-            ops,
-            projectId=ctx.project_id,
-            zone=ctx.zone,
-            operationId=response["name"],
-        )
+        logger.info("Waiting on node pool to be deleted...")
+        ctx = context_from_parent_path(parent)
+        response = wait_on_operation(client, response, ctx)
 
-    return response
+    logger.debug("NodePool deletion: {}".format(str(response)))
+    return to_dict(response)
 
 
 def swap_nodepool(
     old_node_pool_id: str,
     new_nodepool_body: Dict[str, Any],
+    parent: str = None,
     wait_until_complete: bool = True,
     delete_old_node_pool: bool = False,
     drain_timeout: int = 120,
@@ -120,6 +98,7 @@ def swap_nodepool(
     See https://github.com/chaostoolkit/chaostoolkit-kubernetes#configuration
     """
     new_nodepool_response = create_new_nodepool(
+        parent=parent,
         body=new_nodepool_body,
         wait_until_complete=wait_until_complete,
         configuration=configuration,
@@ -137,11 +116,12 @@ def swap_nodepool(
         ),
     )
 
-    logger.debug("Old nodepool '{}' drained".format(old_node_pool_id))
+    logger.info("Old nodepool '{}' drained".format(old_node_pool_id))
 
     if delete_old_node_pool:
         logger.debug("Deleting now nodepool '{}'".format(old_node_pool_id))
         delete_nodepool(
+            parent=parent,
             node_pool_id=old_node_pool_id,
             wait_until_complete=wait_until_complete,
             configuration=configuration,
@@ -153,6 +133,7 @@ def swap_nodepool(
 
 def rollback_nodepool(
     node_pool_id: str,
+    parent: str = None,
     wait_until_complete: bool = True,
     configuration: Configuration = None,
     secrets: Secrets = None,
@@ -166,27 +147,14 @@ def rollback_nodepool(
 
     See: https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.zones.clusters.nodePools/create
     """  # noqa: E501
-    ctx = get_context(configuration=configuration, secrets=secrets)
-    service = get_service(
-        "container", configuration=configuration, secrets=secrets
-    )
-    np = service.projects().zones().clusters().nodePools()
-    response = np.rollback(
-        projectId=ctx.project_id,
-        zone=ctx.zone,
-        clusterId=ctx.cluster_name,
-        nodePoolId=node_pool_id,
-    ).execute()
+    parent = get_parent(parent, node_pool_id, configuration, secrets)
+    client = get_client(configuration, secrets)
+    response = client.rollback_node_pool_upgrade(name=parent)
 
-    logger.debug("NodePool creation: {}".format(str(response)))
+    logger.debug("NodePool upgrade rollback: {}".format(str(response)))
 
     if wait_until_complete:
-        ops = service.projects().zones().operations()
-        response = wait_on_operation(
-            ops,
-            projectId=ctx.project_id,
-            zone=ctx.zone,
-            operationId=response["name"],
-        )
+        ctx = context_from_parent_path(parent)
+        response = wait_on_operation(client, response, ctx)
 
     return response

@@ -9,7 +9,7 @@ from chaoslib.discovery.discover import (
     discover_probes,
     initialize_discovery_result,
 )
-from chaoslib.exceptions import FailedActivity
+from chaoslib.exceptions import ActivityFailed, FailedActivity
 from chaoslib.types import (
     Configuration,
     DiscoveredActivities,
@@ -27,9 +27,12 @@ __all__ = [
     "client",
     "discover",
     "get_context",
+    "get_parent",
     "get_service",
     "wait_on_operation",
     "load_credentials",
+    "to_dict",
+    "context_from_parent_path",
 ]
 __version__ = "0.4.1"
 
@@ -57,6 +60,33 @@ def get_context(
         cluster_name=configuration.get("gcp_gke_cluster_name"),
         region=configuration.get("gcp_region"),
         zone=configuration.get("gcp_zone"),
+        parent=configuration.get("gcp_parent"),
+    )
+
+
+def context_from_parent_path(parent: str) -> GCPContext:
+    logger.debug(f"Loading GCP context from '{parent}'")
+    _, project_id, _, location, *rest = parent.split("/")
+    region = location
+    zone = None
+
+    elements = location.rsplit("-", 1)
+
+    if len(elements) == 2:
+        zone = location
+        region = elements[0]
+
+    cluster_name = None
+    index_of_clusters = rest.index("clusters")
+    if index_of_clusters > 0:
+        cluster_name = rest[index_of_clusters + 1]
+
+    return GCPContext(
+        project_id=project_id,
+        region=region,
+        zone=zone,
+        cluster_name=cluster_name,
+        parent=parent,
     )
 
 
@@ -189,6 +219,33 @@ def discover(discover_system: bool = True) -> Discovery:
     )
     discovery["activities"].extend(load_exported_activities())
     return discovery
+
+
+def get_parent(
+    parent: str = None,
+    node_pool_id: str = None,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> str:
+    if parent:
+        return parent
+
+    ctx = get_context(configuration=configuration, secrets=secrets)
+    parent = ctx.get_cluster_parent()
+
+    if not parent:
+        raise ActivityFailed(
+            "Missing GCP configuration keys to the path of the resource"
+        )
+
+    if node_pool_id:
+        parent = f"{parent}/nodePools/{node_pool_id}"
+
+    return parent
+
+
+def to_dict(response: Any) -> dict:
+    return response.__class__.to_dict(response)
 
 
 ###############################################################################
