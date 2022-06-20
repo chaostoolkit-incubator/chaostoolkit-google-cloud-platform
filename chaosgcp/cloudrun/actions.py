@@ -69,7 +69,7 @@ def create_service(
 
 
 def delete_service(
-    name: str,
+    parent: str,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ):
@@ -78,7 +78,7 @@ def delete_service(
 
     See: https://cloud.google.com/python/docs/reference/run/latest/google.cloud.run_v2.services.services.ServicesClient#google_cloud_run_v2_services_services_ServicesClient_delete_service
 
-    :param name: the path to the service 'projects/PROJECT_ID/locations/LOC/services/SVC
+    :param parent: the path to the service 'projects/PROJECT_ID/locations/LOC/services/SVC
     :param configuration:
     :param secrets:
 
@@ -88,7 +88,7 @@ def delete_service(
 
     client = run_v2.ServicesClient(credentials=credentials)
     request = run_v2.DeleteServiceRequest(
-        name=name,
+        name=parent,
     )
 
     operation = client.delete_service(request=request)
@@ -97,7 +97,7 @@ def delete_service(
 
 
 def update_service(
-    name: str,
+    parent: str,
     container: Dict[str, Any] = None,
     container_concurrency: int = 100,
     service_account: str = None,
@@ -122,7 +122,7 @@ def update_service(
             "module": chaosgcp.cloudrun.actions",
             "func": "update_service",
             "arguments": {
-                "name": "projects/${gcp_project_id}/locations/${gcp_location}/services/${service_name}",
+                "parent": "projects/${gcp_project_id}/locations/${gcp_location}/services/${service_name}",
                 "container": {
                     "image": "eu.gcr.io/${gcp_project_id}/demo"
                 },
@@ -167,7 +167,7 @@ def update_service(
         containers=containers,
     )
     svc = run_v2.Service(
-        name=name,
+        name=parent,
         labels=labels,
         annotations=annotations,
         template=tpl,

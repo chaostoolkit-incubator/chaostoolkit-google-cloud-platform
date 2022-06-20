@@ -22,7 +22,7 @@ To be used from your experiment, this package must be installed in the Python
 environment where [chaostoolkit][] already lives.
 
 ```
-$ pip install -U chaostoolkit-google-cloud-platform
+$ pip install --prefer-binary -U chaostoolkit-google-cloud-platform
 ```
 
 ## Usage
@@ -32,34 +32,47 @@ experiment file:
 
 ```json
 {
-    "type": "action",
-    "name": "swap-nodepool-for-a-new-one",
-    "provider": {
-        "type": "python",
-        "module": "chaosgcp.gke.nodepool.actions",
-        "func": "swap_nodepool",
-        "secrets": ["gcp", "k8s"],
-        "arguments": {
-            "old_node_pool_id": "...",
-            "new_nodepool_body": {
-                "nodePool": {
-                    "config": { 
-                        "oauthScopes": [
-                            "gke-version-default",
-                            "https://www.googleapis.com/auth/devstorage.read_only",
-                            "https://www.googleapis.com/auth/logging.write",
-                            "https://www.googleapis.com/auth/monitoring",
-                            "https://www.googleapis.com/auth/service.management.readonly",
-                            "https://www.googleapis.com/auth/servicecontrol",
-                            "https://www.googleapis.com/auth/trace.append"
-                        ]
-                    },
-                    "initialNodeCount": 3,
-                    "name": "new-default-pool"
+    "version": "1.0.0",
+    "title": "create and delete a cloud run service",
+    "description": "n/a",
+    "secrets": {
+        "gcp": {
+            "service_account_file": "service_account.json"
+        }
+    },
+    "method": [
+        {
+            "name": "create-cloud-run-service",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosgcp.cloudrun.actions",
+                "func": "create_service",
+                "secrets": ["gcp"],
+                "arguments": {
+                    "parent": "projects/.../locations/...",
+                    "service_id": "demo",
+                    "container": {
+                        "name": "demo",
+                        "image": "gcr.io/google-samples/hello-app:1.0"
+                    }
+                }
+            }
+        },
+        {
+            "name": "delete-cloud-run-service",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosgcp.cloudrun.actions",
+                "func": "delete_service",
+                "secrets": ["gcp"],
+                "arguments": {
+                    "parent": "projects/.../locations/.../services/demo"
                 }
             }
         }
-    }
+    ]
 }
 ```
 
