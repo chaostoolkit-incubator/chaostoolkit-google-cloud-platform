@@ -5,3 +5,4 @@ google-auth-httplib2
 google-api-python-client
 google-cloud-storage
 google-cloud-run
+google-cloud-container

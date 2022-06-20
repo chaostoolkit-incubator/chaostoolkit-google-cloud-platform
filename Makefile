@@ -1,11 +1,11 @@
 .PHONY: install
 install:
-	pip install --upgrade pip setuptools wheel
-	pip install -r requirements.txt
+	pip install --prefer-binary --upgrade pip setuptools wheel
+	pip install --prefer-binary -r requirements.txt
 
 .PHONY: install-dev
 install-dev: install
-	pip install -r requirements-dev.txt
+	pip install --prefer-binary -r requirements-dev.txt
 	python setup.py develop
 
 .PHONY: build
