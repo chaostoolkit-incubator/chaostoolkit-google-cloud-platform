@@ -1,7 +1,7 @@
 import time
 
+from chaoslib.exceptions import ActivityFailed
 from chaoslib.types import Configuration, Secrets
-from chaosreliably import ActivityFailed
 from google.cloud import container_v1
 from logzero import logger
 
