@@ -6,7 +6,11 @@ from chaoslib.types import Configuration, Secrets
 from logzero import logger
 
 from chaosgcp import context_from_parent_path, get_parent, to_dict
-from chaosgcp.gke.nodepool import get_client, wait_on_operation
+from chaosgcp.gke.nodepool import (
+    convert_nodepool_format,
+    get_client,
+    wait_on_operation,
+)
 
 __all__ = [
     "create_new_nodepool",
@@ -37,7 +41,8 @@ def create_new_nodepool(
     """  # noqa: E501
     parent = get_parent(parent, configuration=configuration, secrets=secrets)
     client = get_client(configuration, secrets)
-    response = client.create_node_pool(parent=parent, node_pool=body)
+    node_pool = convert_nodepool_format(body)
+    response = client.create_node_pool(parent=parent, node_pool=node_pool)
 
     if wait_until_complete:
         logger.info("Waiting on node pool to be created...")

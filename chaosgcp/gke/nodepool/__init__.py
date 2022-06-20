@@ -1,4 +1,6 @@
+import re
 import time
+from typing import Any, Dict
 
 from chaoslib.exceptions import ActivityFailed
 from chaoslib.types import Configuration, Secrets
@@ -44,3 +46,76 @@ def wait_on_operation(
 
         logger.debug(f"Waiting on operation: {parent} => {response.status}")
         time.sleep(poll_frequency)
+
+
+def convert_nodepool_format(body: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    The newer version of the GCP API requires snake_case. We try our best
+    to convert camelCase on the fly and warn users they ought to update
+    accordingly.
+
+    ```json
+    "body": {
+        "config": {
+            "oauthScopes": [
+                "gke-version-default",
+                "https://www.googleapis.com/auth/devstorage.read_only",
+                "https://www.googleapis.com/auth/logging.write",
+                "https://www.googleapis.com/auth/monitoring",
+                "https://www.googleapis.com/auth/service.management.readonly",
+                "https://www.googleapis.com/auth/servicecontrol",
+                "https://www.googleapis.com/auth/trace.append"
+            ]
+        },
+        "initialNodeCount": 1,
+        "name": "default-pool"
+    }
+    ```
+
+    becomes:
+
+    ```json
+    "body": {
+        "config": {
+            "oauth_scopes": [
+                "gke-version-default",
+                "https://www.googleapis.com/auth/devstorage.read_only",
+                "https://www.googleapis.com/auth/logging.write",
+                "https://www.googleapis.com/auth/monitoring",
+                "https://www.googleapis.com/auth/service.management.readonly",
+                "https://www.googleapis.com/auth/servicecontrol",
+                "https://www.googleapis.com/auth/trace.append"
+            ]
+        },
+        "initial_node_count": 1,
+        "name": "default-pool"
+    }
+    ```
+    """
+    pattern = re.compile(r"(?<!^)(?=[A-Z])")
+    converted_once = False
+
+    def convert(d: Dict[str, Any]) -> Dict[str, Any]:
+        nonlocal converted_once
+        r = {}
+        for k, v in d.items():
+            new_key = pattern.sub("_", k).lower()
+            if converted_once is False and k != new_key:
+                converted_once = True
+            if isinstance(v, dict):
+                r[new_key] = convert(v)
+            else:
+                r[new_key] = v
+        return r
+
+    result = convert(body)
+
+    if converted_once:
+        logger.debug(
+            "The nodepool payload should now use snake_case for all its keys."
+            "Please update your experiment's payload accordingly:"
+        )
+        logger.debug(f"Got: {body}")
+        logger.debug(f"Converted to: {result}")
+
+    return result
