@@ -2,12 +2,19 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.4.1...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.5.0...HEAD
+
+## [0.5.0][] - 2022-06-21
+
+[0.5.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.4.1...0.5.0
 
 ### Changed
 
+[CAUTION]: We took care of not breaking compatibility but please report if you
+have a changed behavior with this version!
+
 - Fix discover between probes and actions
-- Migrated to newer gcp Python client
+- Migrated to newer gcp Python client 
 - Introducing support for the `parent` argument to locate resources
 
 ## [0.4.1][] - 2022-06-14
