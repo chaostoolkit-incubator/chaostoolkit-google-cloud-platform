@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.5.0...HEAD
 
+### Changed
+
+- Updated RevisionTemplate field name max_instance_request_concurrency 
+
 ## [0.5.0][] - 2022-06-21
 
 [0.5.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.4.1...0.5.0
