@@ -99,7 +99,7 @@ def delete_service(
 def update_service(
     parent: str,
     container: Dict[str, Any] = None,
-    container_concurrency: int = 100,
+    max_instance_request_concurrency: int = 100,
     service_account: str = None,
     encryption_key: str = None,
     traffic: List[Dict[str, Any]] = None,
@@ -161,7 +161,7 @@ def update_service(
 
     client = run_v2.ServicesClient(credentials=credentials)
     tpl = run_v2.RevisionTemplate(
-        container_concurrency=container_concurrency,
+        max_instance_request_concurrency=max_instance_request_concurrency,
         service_account=service_account,
         encryption_key=encryption_key,
         containers=containers,
