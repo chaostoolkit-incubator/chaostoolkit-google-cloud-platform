@@ -3,6 +3,9 @@
 ## [Unreleased][]
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.5.0...HEAD
+### Changed - 2022-12-19
+- Added vpc_access parameter to RevisionTemplate object
+- Added test for 'chaosgcp.cloudrun.actions.update_service'
 
 ### Changed
 

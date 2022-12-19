@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from fixtures import cloudbuild, nodepool, sql, storage  # noqa
+from fixtures import cloudbuild, nodepool, sql, storage, cloudrun  # noqa
 
 secrets = {"service_account_file": "tests/fixtures/fake_creds.json"}
 
