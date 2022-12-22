@@ -4,25 +4,27 @@ import fixtures
 
 from chaosgcp.cloudrun.actions import run_v2
 
+
 @patch("chaosgcp.cloudrun.actions.run_v2.ServicesClient", autospec=True)
 @patch("chaosgcp.cloudrun.actions.run_v2.UpdateServiceRequest", autospec=True)
 @patch("chaosgcp.cloudrun.actions.run_v2.RevisionTemplate", autospec=True)
 @patch("chaosgcp.cloudrun.actions.run_v2.Service", autospec=True)
-def test_update_service( service, tpl, request, client):
+def test_update_service(service, tpl, request, client):
     credentials = MagicMock()
     credentials.load_credentials.return_value = MagicMock()
 
     client.return_value = MagicMock()
 
     service_name = "a-dummy-service"
-    parent = f"projects/{fixtures.configuration['gcp_project_id']}/locations/{fixtures.configuration['gcp_zone']}/services/{service_name}"
+    parent = f"projects/{fixtures.configuration['gcp_project_id']}/locations/{fixtures.configuration['gcp_zone']}" \
+             f"/services/{service_name}"
 
-    tpl.return_value = run_v2.RevisionTemplate (
-        max_instance_request_concurrency = fixtures.cloudrun.max_instance_request_concurrency,
-        service_account = fixtures.cloudrun.service_account,
-        encryption_key = fixtures.cloudrun.encryption_key,
-        containers = fixtures.cloudrun.containers,
-        vpc_access = fixtures.cloudrun.vpc_access,
+    tpl.return_value = run_v2.RevisionTemplate(
+        max_instance_request_concurrency=fixtures.cloudrun.max_instance_request_concurrency,
+        service_account=fixtures.cloudrun.service_account,
+        encryption_key=fixtures.cloudrun.encryption_key,
+        containers=fixtures.cloudrun.containers,
+        vpc_access=fixtures.cloudrun.vpc_access,
     )
 
     tpl.assert_called_with(
