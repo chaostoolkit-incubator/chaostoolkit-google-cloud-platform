@@ -21,7 +21,8 @@ def test_update_service(service, tpl, request, client):
              f"/services/{service_name}"
 
     tpl.return_value = run_v2.RevisionTemplate(
-        max_instance_request_concurrency=fixtures.cloudrun.max_instance_request_concurrency,
+        max_instance_request_concurrency=\
+        fixtures.cloudrun.max_instance_request_concurrency,
         service_account=fixtures.cloudrun.service_account,
         encryption_key=fixtures.cloudrun.encryption_key,
         containers=fixtures.cloudrun.containers,
@@ -29,7 +30,8 @@ def test_update_service(service, tpl, request, client):
     )
 
     tpl.assert_called_with(
-        max_instance_request_concurrency=fixtures.cloudrun.max_instance_request_concurrency,
+        max_instance_request_concurrency=\
+        fixtures.cloudrun.max_instance_request_concurrency,
         service_account=fixtures.cloudrun.service_account,
         encryption_key=fixtures.cloudrun.encryption_key,
         containers=fixtures.cloudrun.containers,
