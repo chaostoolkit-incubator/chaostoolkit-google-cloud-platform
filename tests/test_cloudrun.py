@@ -16,7 +16,8 @@ def test_update_service(service, tpl, request, client):
     client.return_value = MagicMock()
 
     service_name = "a-dummy-service"
-    parent = f"projects/{fixtures.configuration['gcp_project_id']}/locations/{fixtures.configuration['gcp_zone']}" \
+    parent = f"projects/{fixtures.configuration['gcp_project_id']}" \
+             f"/locations/{fixtures.configuration['gcp_zone']}" \
              f"/services/{service_name}"
 
     tpl.return_value = run_v2.RevisionTemplate(
@@ -56,7 +57,9 @@ def test_update_service(service, tpl, request, client):
     )
 
     request.assert_called_with(
-        name=parent, template=fixtures.cloudrun.template, traffic=fixtures.cloudrun.traffics
+        name=parent,
+        template=fixtures.cloudrun.template,
+        traffic=fixtures.cloudrun.traffics
     )
 
     client.update_service(request)
