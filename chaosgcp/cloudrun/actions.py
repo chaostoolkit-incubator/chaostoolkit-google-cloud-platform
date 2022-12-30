@@ -32,6 +32,7 @@ def create_service(
     :param service_id: unique identifier for the service
     :param container: definition of the container as per https://cloud.google.com/python/docs/reference/run/latest/google.cloud.run_v2.types.Container
     :param description: optional text description of the service
+    :param max_instance_request_concurrency: optional maximum number of requests that each serving instance can receive
     :param labels: optional labels to set on the service
     :param annotations: optional annotations to set on the service
     :param configuration:
@@ -51,7 +52,7 @@ def create_service(
 
     client = run_v2.ServicesClient(credentials=credentials)
     tpl = run_v2.RevisionTemplate(
-        max_instance_request_concurrency=max_instance_request_concurrency,
+        max_instance_request_concurrency=max_instances,
         service_account=service_account,
         encryption_key=encryption_key,
         containers=[run_v2.Container(**container)],
