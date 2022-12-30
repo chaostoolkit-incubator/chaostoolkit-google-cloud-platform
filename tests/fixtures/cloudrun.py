@@ -1,29 +1,25 @@
-containers = {
-    "image": "gcr.io/cloudrun/hello"
-}
+containers = {"image": "gcr.io/cloudrun/hello"}
 
-max_instance_request_concurrency = 100,
+max_instances:int = 100
 
 service_account = "12345-dummy@developer.gserviceaccount.com"
 
-encryption_key = None,
+encryption_key = (None,)
 
 traffics = [
-    {'type_': 1, 'percent': 10},
-    {'type_': 2, 'revision': 'dummy-12345', 'percent': 90}
+    {"type_": 1, "percent": 10},
+    {"type_": 2, "revision": "dummy-12345", "percent": 90},
 ]
 
-labels = None,
+labels = (None,)
 
 vpc_access = {
-    'connector': 'projects/myproject/locations/../connectors/foo-vpc-connector',
-    'egress': 'ALL_TRAFFIC'
+    "connector": "projects/myproject/locations/../connectors/foo-vpc-connector",
+    "egress": "ALL_TRAFFIC",
 }
 
 template = {
-    'service_account': f"{service_account}",
-    'containers': {
-        'image': 'gcr.io/cloudrun/hello'
-    },
-    'max_instance_request_concurrency': f"{max_instance_request_concurrency}"
+    "service_account": f"{service_account}",
+    "containers": {"image": "gcr.io/cloudrun/hello"},
+    "max_instance_request_concurrency": f"{max_instances}",
 }

@@ -14,7 +14,7 @@ def create_service(
     service_id: str,
     container: Dict[str, Any],
     description: str = None,
-    container_concurrency: int = 100,
+    max_instance_request_concurrency: int = 0,
     service_account: str = None,
     encryption_key: str = None,
     traffic: List[Dict[str, Any]] = None,
@@ -45,9 +45,13 @@ def create_service(
     if traffic:
         traffics = list(map(lambda t: run_v2.TrafficTarget(**t), traffic))
 
+    max_instances = 0
+    if max_instance_request_concurrency:
+        max_instances = max_instance_request_concurrency
+
     client = run_v2.ServicesClient(credentials=credentials)
     tpl = run_v2.RevisionTemplate(
-        container_concurrency=container_concurrency,
+        max_instance_request_concurrency=max_instance_request_concurrency,
         service_account=service_account,
         encryption_key=encryption_key,
         containers=[run_v2.Container(**container)],

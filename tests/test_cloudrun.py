@@ -16,13 +16,14 @@ def test_update_service(service, tpl, request, client):
     client.return_value = MagicMock()
 
     service_name = "a-dummy-service"
-    parent = f"projects/{fixtures.configuration['gcp_project_id']}" \
-             f"/locations/{fixtures.configuration['gcp_zone']}" \
-             f"/services/{service_name}"
+    parent = (
+        f"projects/{fixtures.configuration['gcp_project_id']}"
+        f"/locations/{fixtures.configuration['gcp_zone']}"
+        f"/services/{service_name}"
+    )
 
     tpl.return_value = run_v2.RevisionTemplate(
-        max_instance_request_concurrency=\
-        fixtures.cloudrun.max_instance_request_concurrency,
+        max_instance_request_concurrency=fixtures.cloudrun.max_instances,
         service_account=fixtures.cloudrun.service_account,
         encryption_key=fixtures.cloudrun.encryption_key,
         containers=fixtures.cloudrun.containers,
@@ -30,8 +31,7 @@ def test_update_service(service, tpl, request, client):
     )
 
     tpl.assert_called_with(
-        max_instance_request_concurrency=\
-        fixtures.cloudrun.max_instance_request_concurrency,
+        max_instance_request_concurrency=fixtures.cloudrun.max_instances,
         service_account=fixtures.cloudrun.service_account,
         encryption_key=fixtures.cloudrun.encryption_key,
         containers=fixtures.cloudrun.containers,
@@ -61,7 +61,7 @@ def test_update_service(service, tpl, request, client):
     request.assert_called_with(
         name=parent,
         template=fixtures.cloudrun.template,
-        traffic=fixtures.cloudrun.traffics
+        traffic=fixtures.cloudrun.traffics,
     )
 
     client.update_service(request)
