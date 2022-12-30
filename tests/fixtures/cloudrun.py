@@ -1,6 +1,6 @@
 containers = {"image": "gcr.io/cloudrun/hello"}
 
-max_instances:int = 100
+max_instances: int = 100
 
 service_account = "12345-dummy@developer.gserviceaccount.com"
 
