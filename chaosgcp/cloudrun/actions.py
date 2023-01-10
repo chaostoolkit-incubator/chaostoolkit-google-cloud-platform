@@ -14,7 +14,7 @@ def create_service(
     service_id: str,
     container: Dict[str, Any],
     description: str = None,
-    container_concurrency: int = 100,
+    max_instance_request_concurrency: int = 0,
     service_account: str = None,
     encryption_key: str = None,
     traffic: List[Dict[str, Any]] = None,
@@ -32,6 +32,7 @@ def create_service(
     :param service_id: unique identifier for the service
     :param container: definition of the container as per https://cloud.google.com/python/docs/reference/run/latest/google.cloud.run_v2.types.Container
     :param description: optional text description of the service
+    :param max_instance_request_concurrency: optional maximum number of requests that each serving instance can receive
     :param labels: optional labels to set on the service
     :param annotations: optional annotations to set on the service
     :param configuration:
@@ -45,9 +46,13 @@ def create_service(
     if traffic:
         traffics = list(map(lambda t: run_v2.TrafficTarget(**t), traffic))
 
+    max_instances = 0
+    if max_instance_request_concurrency:
+        max_instances = max_instance_request_concurrency
+
     client = run_v2.ServicesClient(credentials=credentials)
     tpl = run_v2.RevisionTemplate(
-        container_concurrency=container_concurrency,
+        max_instance_request_concurrency=max_instances,
         service_account=service_account,
         encryption_key=encryption_key,
         containers=[run_v2.Container(**container)],
@@ -105,6 +110,7 @@ def update_service(
     traffic: List[Dict[str, Any]] = None,
     labels: Dict[str, str] = None,
     annotations: Dict[str, str] = None,
+    vpc_access_config: Dict[str, str] = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ):
@@ -146,9 +152,11 @@ def update_service(
     :param annotations: optional annotations to set on the service
     :param configuration:
     :param secrets:
+    :param vpc_access_config: optional value for vpc_connect
 
     :return:
     """  # noqa: E501
+
     credentials = load_credentials(secrets)
 
     traffics = None
@@ -159,13 +167,20 @@ def update_service(
     if container:
         containers = [run_v2.Container(**container)]
 
+    vpc_access = None
+    if vpc_access_config:
+        vpc_access = vpc_access_config
+
     client = run_v2.ServicesClient(credentials=credentials)
+
     tpl = run_v2.RevisionTemplate(
         max_instance_request_concurrency=max_instance_request_concurrency,
         service_account=service_account,
         encryption_key=encryption_key,
         containers=containers,
+        vpc_access=vpc_access,
     )
+
     svc = run_v2.Service(
         name=parent,
         labels=labels,
@@ -177,4 +192,5 @@ def update_service(
 
     operation = client.update_service(request=request)
     response = operation.result()
+
     return response.__class__.to_dict(response)
