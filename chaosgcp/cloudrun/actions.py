@@ -155,7 +155,8 @@ def update_service(
     :param vpc_access_config: optional value for vpc_connect
 
     :return:
-    """ # noqa: E501
+    """  # noqa: E501
+
     credentials = load_credentials(secrets)
 
     traffics = None
