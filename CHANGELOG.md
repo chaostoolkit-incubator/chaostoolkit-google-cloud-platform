@@ -3,14 +3,11 @@
 ## [Unreleased][]
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.5.0...HEAD
-### Changed - 2022-12-30
-- Renamed field max_instance_request_concurrency in create_service method. Modified init value.
-### Changed - 2022-12-19
-- Added vpc_access parameter to RevisionTemplate object
-- Added test for 'chaosgcp.cloudrun.actions.update_service'
 
 ### Changed
-
+- Renamed field max_instance_request_concurrency in create_service method. Modified init value.
+- Added vpc_access parameter to RevisionTemplate object
+- Added test for 'chaosgcp.cloudrun.actions.update_service'
 - Updated RevisionTemplate field name max_instance_request_concurrency 
 
 ## [0.5.0][] - 2022-06-21
