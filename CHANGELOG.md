@@ -8,7 +8,9 @@
 - Renamed field max_instance_request_concurrency in create_service method. Modified init value.
 - Added vpc_access parameter to RevisionTemplate object
 - Added test for 'chaosgcp.cloudrun.actions.update_service'
-- Updated RevisionTemplate field name max_instance_request_concurrency 
+- Updated RevisionTemplate field name max_instance_request_concurrency
+- Updated Cloud SQL activities to the `v1` API
+
 
 ## [0.5.0][] - 2022-06-21
 

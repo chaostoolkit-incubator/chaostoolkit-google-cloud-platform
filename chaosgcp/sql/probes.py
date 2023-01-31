@@ -16,12 +16,12 @@ def list_instances(
     Lists Cloud SQL instances in a given project in the alphabetical order of
     the instance name.
 
-    See: https://cloud.google.com/sql/docs/postgres/admin-api/v1beta4/instances/list
+    See: https://cloud.google.com/sql/docs/postgres/admin-api/v1/instances/list
     """  # noqa: E501
     ctx = get_context(configuration=configuration, secrets=secrets)
     service = get_service(
         "sqladmin",
-        version="v1beta4",
+        version="v1",
         configuration=configuration,
         secrets=secrets,
     )
@@ -50,14 +50,14 @@ def describe_instance(
     Information such as instance name, IP address, region, the CA certificate
     and configuration settings will be displayed.
 
-    See: https://cloud.google.com/sql/docs/postgres/admin-api/v1beta4/instances/get
+    See: https://cloud.google.com/sql/docs/postgres/admin-api/v1/instances/get
 
     :param instance_id: Cloud SQL instance ID.
     """  # noqa: E501
     ctx = get_context(configuration=configuration, secrets=secrets)
     service = get_service(
         "sqladmin",
-        version="v1beta4",
+        version="v1",
         configuration=configuration,
         secrets=secrets,
     )
@@ -77,14 +77,14 @@ def list_databases(
     """
     Lists databases in the specified Cloud SQL instance
 
-    See: https://cloud.google.com/sql/docs/postgres/admin-api/rest/v1beta4/databases/list
+    See: https://cloud.google.com/sql/docs/postgres/admin-api/rest/v1/databases/list
 
     :param instance_id: Cloud SQL instance ID.
     """  # noqa: E501
     ctx = get_context(configuration=configuration, secrets=secrets)
     service = get_service(
         "sqladmin",
-        version="v1beta4",
+        version="v1",
         configuration=configuration,
         secrets=secrets,
     )
@@ -110,7 +110,7 @@ def describe_database(
     Information such as database name, charset, and collation
     will be displayed.
 
-    See: https://cloud.google.com/sql/docs/postgres/admin-api/rest/v1beta4/databases/get
+    See: https://cloud.google.com/sql/docs/postgres/admin-api/rest/v1/databases/get
 
     :param instance_id: Cloud SQL instance ID.
     :param database: Cloud SQL database name.
@@ -118,7 +118,7 @@ def describe_database(
     ctx = get_context(configuration=configuration, secrets=secrets)
     service = get_service(
         "sqladmin",
-        version="v1beta4",
+        version="v1",
         configuration=configuration,
         secrets=secrets,
     )

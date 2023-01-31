@@ -21,7 +21,7 @@ def trigger_failover(
     """
     Causes a high-availability Cloud SQL instance to failover.
 
-    See: https://cloud.google.com/sql/docs/postgres/admin-api/v1beta4/instances/failover
+    See: https://cloud.google.com/sql/docs/postgres/admin-api/v1/instances/failover
 
     :param instance_id: Cloud SQL instance ID.
     :param wait_until_complete: wait for the operation in progress to complete.
@@ -32,7 +32,7 @@ def trigger_failover(
     ctx = get_context(configuration=configuration, secrets=secrets)
     service = get_service(
         "sqladmin",
-        version="v1beta4",
+        version="v1",
         configuration=configuration,
         secrets=secrets,
     )
@@ -84,7 +84,7 @@ def export_data(
     Exports data from a Cloud SQL instance to a Cloud Storage bucket
     as a SQL dump or CSV file.
 
-    See: https://cloud.google.com/sql/docs/postgres/admin-api/v1beta4/instances/export
+    See: https://cloud.google.com/sql/docs/postgres/admin-api/v1/instances/export
 
     If `project_id` is given, it will take precedence over the global
     project ID defined at the configuration level.
@@ -127,7 +127,7 @@ def export_data(
 
     service = get_service(
         "sqladmin",
-        version="v1beta4",
+        version="v1",
         configuration=configuration,
         secrets=secrets,
     )
@@ -170,7 +170,7 @@ def import_data(
     Imports data into a Cloud SQL instance from a SQL dump or CSV file
     in Cloud Storage.
 
-    See: https://cloud.google.com/sql/docs/postgres/admin-api/v1beta4/instances/import
+    See: https://cloud.google.com/sql/docs/postgres/admin-api/v1/instances/import
 
     If `project_id` is given, it will take precedence over the global
     project ID defined at the configuration level.
@@ -223,7 +223,7 @@ def import_data(
 
     service = get_service(
         "sqladmin",
-        version="v1beta4",
+        version="v1",
         configuration=configuration,
         secrets=secrets,
     )
