@@ -8,7 +8,7 @@ from logzero import logger
 from chaosgcp import get_context, get_service, wait_on_operation
 from chaosgcp.sql.probes import describe_instance
 
-__all__ = ["trigger_failover", "export_data", "import_data"]
+__all__ = ["trigger_failover", "export_data", "import_data", "restore_backup"]
 
 
 def trigger_failover(
