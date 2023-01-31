@@ -7,6 +7,9 @@
 ### Added
 
 - A `restore_backup` action to restore Cloud SQL backups
+- A `promote_replica` action to promote a read replica to a standalone instance
+- A `enable_replication` action to enable replication on a a read replica
+- A `disable_replication` action to disable replication on a a read replica
 
 ### Changed
 - Renamed field max_instance_request_concurrency in create_service method. Modified init value.

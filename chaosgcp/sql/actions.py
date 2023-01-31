@@ -8,7 +8,14 @@ from logzero import logger
 from chaosgcp import get_context, get_service, wait_on_operation
 from chaosgcp.sql.probes import describe_instance
 
-__all__ = ["trigger_failover", "export_data", "import_data", "restore_backup"]
+__all__ = [
+    "trigger_failover",
+    "export_data",
+    "import_data",
+    "restore_backup",
+    "disable_replication",
+    "enable_replication",
+]
 
 
 def trigger_failover(
@@ -298,6 +305,129 @@ def restore_backup(
         project=project_id or ctx.project_id,
         instance=source_instance_id,
         body=backup_request_body,
+    )
+    response = request.execute()
+
+    if wait_until_complete:
+        ops = service.operations()
+        response = wait_on_operation(
+            ops,
+            frequency=30,
+            project=ctx.project_id,
+            operation=response["name"],
+        )
+
+    return response
+
+
+def disable_replication(
+    replica_name: str,
+    project_id: str = None,
+    wait_until_complete: bool = True,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> Dict[str, Any]:
+    """
+    Disable replication on a read replica.
+
+    See also: https://cloud.google.com/sql/docs/postgres/replication/manage-replicas#disable_replication
+    """  # noqa: E501
+    ctx = get_context(configuration=configuration, secrets=secrets)
+
+    service = get_service(
+        "sqladmin",
+        version="v1",
+        configuration=configuration,
+        secrets=secrets,
+    )
+
+    settings_body = {"settings": {"databaseReplicationEnabled": "False"}}
+
+    request = service.instances().patch(
+        project=project_id or ctx.project_id,
+        instance=replica_name,
+        body=settings_body,
+    )
+    response = request.execute()
+
+    if wait_until_complete:
+        ops = service.operations()
+        response = wait_on_operation(
+            ops,
+            frequency=30,
+            project=ctx.project_id,
+            operation=response["name"],
+        )
+
+    return response
+
+
+def enable_replication(
+    replica_name: str,
+    project_id: str = None,
+    wait_until_complete: bool = True,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> Dict[str, Any]:
+    """
+    Enable replication on a read replica.
+
+    See also: https://cloud.google.com/sql/docs/postgres/replication/manage-replicas#enable_replication
+    """  # noqa: E501
+    ctx = get_context(configuration=configuration, secrets=secrets)
+
+    service = get_service(
+        "sqladmin",
+        version="v1",
+        configuration=configuration,
+        secrets=secrets,
+    )
+
+    settings_body = {"settings": {"databaseReplicationEnabled": "True"}}
+
+    request = service.instances().patch(
+        project=project_id or ctx.project_id,
+        instance=replica_name,
+        body=settings_body,
+    )
+    response = request.execute()
+
+    if wait_until_complete:
+        ops = service.operations()
+        response = wait_on_operation(
+            ops,
+            frequency=30,
+            project=ctx.project_id,
+            operation=response["name"],
+        )
+
+    return response
+
+
+def promote_replica(
+    replica_name: str,
+    project_id: str = None,
+    wait_until_complete: bool = True,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> Dict[str, Any]:
+    """
+    Promote a replica to a standalone instance.
+
+    See also: https://cloud.google.com/sql/docs/postgres/replication/manage-replicas#promote-replica
+    """  # noqa: E501
+    ctx = get_context(configuration=configuration, secrets=secrets)
+
+    service = get_service(
+        "sqladmin",
+        version="v1",
+        configuration=configuration,
+        secrets=secrets,
+    )
+
+    request = service.instances().promoteReplica(
+        project=project_id or ctx.project_id,
+        instance=replica_name,
     )
     response = request.execute()
 
