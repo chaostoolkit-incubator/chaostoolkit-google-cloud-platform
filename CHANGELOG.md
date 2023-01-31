@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.5.0...HEAD
 
+### Added
+
+- A `restore_backup` action to restore Cloud SQL backups
+
 ### Changed
 - Renamed field max_instance_request_concurrency in create_service method. Modified init value.
 - Added vpc_access parameter to RevisionTemplate object

@@ -90,7 +90,9 @@ def context_from_parent_path(parent: str) -> GCPContext:
     )
 
 
-def wait_on_operation(operation_service: Any, **kwargs: Dict) -> Dict[str, Any]:
+def wait_on_operation(
+    operation_service: Any, frequency: int = 1, **kwargs: Dict
+) -> Dict[str, Any]:
     """
     Wait until the given operation is completed and return the result.
     """
@@ -106,7 +108,7 @@ def wait_on_operation(operation_service: Any, **kwargs: Dict) -> Dict[str, Any]:
         if result["status"] == "DONE":
             return result
 
-        time.sleep(1)
+        time.sleep(frequency)
 
 
 def load_credentials(secrets: Secrets = None):

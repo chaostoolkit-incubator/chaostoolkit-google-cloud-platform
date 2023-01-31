@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from chaoslib.exceptions import ActivityFailed
 from chaoslib.types import Configuration, Secrets
@@ -244,6 +244,70 @@ def import_data(
         ops = service.operations()
         response = wait_on_operation(
             ops, project=ctx.project_id, operation=response["name"]
+        )
+
+    return response
+
+
+def restore_backup(
+    source_instance_id: str,
+    target_instance_id: Optional[str] = None,
+    backup_run_id: Optional[str] = None,
+    project_id: str = None,
+    wait_until_complete: bool = True,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> Dict[str, Any]:
+    """
+    Performs a restore of a given backup. If `target_instance_id` is not set
+    then source and target are the same. If `backup_run_id` is not set, then
+    it picks the most recent backup automatically.
+
+    You may wait for the operation to complete, but bear in mind this can
+    take several minutes.
+    """
+
+    ctx = get_context(configuration=configuration, secrets=secrets)
+
+    service = get_service(
+        "sqladmin",
+        version="v1",
+        configuration=configuration,
+        secrets=secrets,
+    )
+
+    if not backup_run_id:
+        request = service.backupRuns().list(
+            project=project_id or ctx.project_id,
+            instance=source_instance_id,
+            maxResults=1,
+        )
+        response = request.execute()
+        backup_run_id = response["items"][0]["id"]
+
+    backup_request_body = {
+        "restoreBackupContext": {
+            "kind": "sql#restoreBackupContext",
+            "instanceId": target_instance_id or source_instance_id,
+            "project": project_id or ctx.project_id,
+            "backupRunId": backup_run_id,
+        }
+    }
+
+    request = service.instances().restoreBackup(
+        project=project_id or ctx.project_id,
+        instance=source_instance_id,
+        body=backup_request_body,
+    )
+    response = request.execute()
+
+    if wait_until_complete:
+        ops = service.operations()
+        response = wait_on_operation(
+            ops,
+            frequency=30,
+            project=ctx.project_id,
+            operation=response["name"],
         )
 
     return response
