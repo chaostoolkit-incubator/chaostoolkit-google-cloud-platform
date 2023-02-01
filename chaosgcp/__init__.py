@@ -161,6 +161,10 @@ def load_credentials(secrets: Secrets = None):
     service_account_file = secrets.get("service_account_file")
     service_account_info = secrets.get("service_account_info")
 
+    google_app_creds = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    if google_app_creds:
+        service_account_file = google_app_creds
+
     credentials = None
     if service_account_file:
         service_account_file = os.path.expanduser(service_account_file)

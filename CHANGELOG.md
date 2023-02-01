@@ -5,6 +5,10 @@
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.6.0...HEAD
 
 
+### Added
+
+- Support for `GOOGLE_APPLICATION_CREDENTIALS` as the default way to authenticate
+
 ## [0.6.0][] - 2023-02-01
 
 [0.6.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.5.0...0.6.0
