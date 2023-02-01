@@ -136,6 +136,11 @@ Here is the first way:
 }
 ```
 
+You can also use the well-known `GOOGLE_APPLICATION_CREDENTIALS` environment
+variables. iI that case, you do not need to set any secrets in the
+experiment.
+
+
 While the embedded way looks like this:
 
 

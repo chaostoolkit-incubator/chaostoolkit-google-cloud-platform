@@ -34,7 +34,7 @@ __all__ = [
     "to_dict",
     "context_from_parent_path",
 ]
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 
 
 def get_service(
