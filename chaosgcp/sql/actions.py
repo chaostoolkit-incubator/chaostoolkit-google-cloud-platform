@@ -21,7 +21,7 @@ __all__ = [
 def trigger_failover(
     instance_id: str,
     wait_until_complete: bool = True,
-    settings_version: int = None,
+    settings_version: Optional[int] = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
@@ -69,7 +69,8 @@ def trigger_failover(
     if wait_until_complete:
         ops = service.operations()
         response = wait_on_operation(
-            ops, project=ctx.project_id, operation=response["name"]
+            ops, project=ctx.project_id, operation=response["name"],
+            frequency=10
         )
 
     return response
