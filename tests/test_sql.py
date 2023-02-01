@@ -110,7 +110,7 @@ def test_trigger_failover(Credentials, service_builder, wait_on_operation):
     )
 
     wait_on_operation.assert_called_with(
-        ops_svc, project=project_id, operation="mysqlfailover"
+        ops_svc, project=project_id, operation="mysqlfailover", frequency=10
     )
 
 
