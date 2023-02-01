@@ -9,7 +9,6 @@ from chaosgcp.storage.probes import object_exists
 @patch("chaosgcp.storage.gc_storage.Client", autospec=True)
 @patch("chaosgcp.Credentials", autospec=True)
 def test_storage_object_exists(Credentials, gcs_client):
-
     Credentials.from_service_account_file.return_value = MagicMock()
 
     bucket = MagicMock()
@@ -28,7 +27,6 @@ def test_storage_object_exists(Credentials, gcs_client):
 @patch("chaosgcp.storage.gc_storage", autospec=True)
 @patch("chaosgcp.Credentials", autospec=True)
 def test_storage_object_does_not_exist(Credentials, gc_storage):
-
     Credentials.from_service_account_file.return_value = MagicMock()
 
     gcs_client = MagicMock()

@@ -11,7 +11,6 @@ __all__ = ["list_instances", "describe_instance"]
 def list_instances(
     configuration: Configuration = None, secrets: Secrets = None
 ) -> Dict[str, Any]:
-
     """
     Lists Cloud SQL instances in a given project in the alphabetical order of
     the instance name.
