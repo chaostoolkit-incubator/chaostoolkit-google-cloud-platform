@@ -69,8 +69,10 @@ def trigger_failover(
     if wait_until_complete:
         ops = service.operations()
         response = wait_on_operation(
-            ops, project=ctx.project_id, operation=response["name"],
-            frequency=10
+            ops,
+            project=ctx.project_id,
+            operation=response["name"],
+            frequency=10,
         )
 
     return response
