@@ -7,4 +7,5 @@ requests
 requests_mock
 black
 flake8
+pyflakes==2.4.0
 isort
