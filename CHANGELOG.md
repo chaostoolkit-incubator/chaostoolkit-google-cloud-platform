@@ -4,6 +4,11 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.7.0...HEAD
 
+### Added
+
+- A `get_metrics` probe to query Cloud Monitoring data
+- A `get_logs_between_timestamps` probe to query Cloud Logging data
+
 ## [0.7.0][] - 2023-02-01
 
 [0.7.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.6.0...0.7.0

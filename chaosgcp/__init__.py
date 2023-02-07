@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import os.path
 import time
-from typing import Any, Dict, List
+from datetime import datetime
+from typing import Any, Dict, List, Tuple
 
+import dateparser
 import httplib2
 from chaoslib.discovery.discover import (
     discover_actions,
@@ -33,6 +35,7 @@ __all__ = [
     "load_credentials",
     "to_dict",
     "context_from_parent_path",
+    "parse_interval",
 ]
 __version__ = "0.7.0"
 
@@ -254,6 +257,29 @@ def to_dict(response: Any) -> dict:
     return response.__class__.to_dict(response)
 
 
+def parse_interval(
+    end_time: str = "now", window: str = "1h"
+) -> Tuple[datetime, datetime]:
+    end_time = dateparser.parse(
+        end_time, settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True}
+    )
+    if not end_time:
+        raise ActivityFailed("unparsable end time value")
+
+    start_time = dateparser.parse(
+        window,
+        settings={
+            "TIMEZONE": "UTC",
+            "RELATIVE_BASE": end_time,
+            "RETURN_AS_TIMEZONE_AWARE": True,
+        },
+    )
+    if not start_time:
+        raise ActivityFailed("unparsable window value")
+
+    return (start_time, end_time)
+
+
 ###############################################################################
 # Private functions
 ###############################################################################
@@ -271,4 +297,6 @@ def load_exported_activities() -> List[DiscoveredActivities]:
     activities.extend(discover_probes("chaosgcp.cloudbuild.probes"))
     activities.extend(discover_actions("chaosgcp.cloudrun.actions"))
     activities.extend(discover_probes("chaosgcp.cloudrun.probes"))
+    activities.extend(discover_probes("chaosgcp.monitoring.probes"))
+    activities.extend(discover_probes("chaosgcp.cloudlogging.probes"))
     return activities
