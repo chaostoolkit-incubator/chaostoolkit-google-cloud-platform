@@ -37,7 +37,7 @@ __all__ = [
     "context_from_parent_path",
     "parse_interval",
 ]
-__version__ = "0.8.1"
+__version__ = "0.8.2"
 
 
 def get_service(
@@ -164,9 +164,10 @@ def load_credentials(secrets: Secrets = None):
     service_account_file = secrets.get("service_account_file")
     service_account_info = secrets.get("service_account_info")
 
-    google_app_creds = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-    if google_app_creds:
-        service_account_file = google_app_creds
+    if not service_account_file:
+        google_app_creds = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+        if google_app_creds:
+            service_account_file = google_app_creds
 
     credentials = None
     if service_account_file:

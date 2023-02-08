@@ -2,7 +2,15 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.8.1...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.8.2...HEAD
+
+## [0.8.2][] - 2023-02-08
+
+[0.8.2]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.8.1...0.8.2
+
+### Changed
+
+* Default first on secret before env variable
 
 ## [0.8.1][] - 2023-02-08
 
