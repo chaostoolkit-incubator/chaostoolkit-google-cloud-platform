@@ -2,7 +2,15 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.8.2...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.9.0...HEAD
+
+## [0.9.0][] - 2023-05-18
+
+[0.9.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.8.2...0.9.0
+
+### Added
+
+* Probes to list docker images and their vulnerabilities from Artifact Registry
 
 ## [0.8.2][] - 2023-02-08
 
