@@ -118,7 +118,7 @@ def inject_traffic_faults(
                 "target_name": "allpaths",
                 "target_path": "/*",
                 "impacted_percentage": 75.0,
-                "configuration": 503,
+                "http_status": 503,
             }
         }
     }
