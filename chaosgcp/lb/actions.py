@@ -29,6 +29,10 @@ def inject_traffic_delay(
 
     This will not work with classic LB.
 
+    Note also, that the LB may be slow to reflect the change. It can take
+    up to a couple of minutes from our experience before it propagates
+    accordingly.
+
     For instance:
 
     ```json
@@ -101,7 +105,9 @@ def inject_traffic_faults(
     Add/set HTTP status codes for a percentage of requests going through a
     url map on a given path.
 
-    This will not work with classic LB.
+    Note also, that the LB may be slow to reflect the change. It can take
+    up to a couple of minutes from our experience before it propagates
+    accordingly.
 
     For instance:
 
