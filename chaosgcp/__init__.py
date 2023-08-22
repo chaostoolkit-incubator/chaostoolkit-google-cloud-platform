@@ -18,6 +18,7 @@ from chaoslib.types import (
     Discovery,
     Secrets,
 )
+from google.api_core.extended_operation import ExtendedOperation
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import Resource, build
 from logzero import logger
@@ -32,6 +33,7 @@ __all__ = [
     "get_parent",
     "get_service",
     "wait_on_operation",
+    "wait_on_extended_operation",
     "load_credentials",
     "to_dict",
     "context_from_parent_path",
@@ -112,6 +114,28 @@ def wait_on_operation(
             return result
 
         time.sleep(frequency)
+
+
+def wait_on_extended_operation(
+    operation: ExtendedOperation, frequency: int = 1, timeout: int = 60
+) -> None:
+    start = time.time()
+
+    while True:
+        logger.debug(
+            "Waiting for extended operation '{}'".format(operation.name)
+        )
+
+        if operation.done():
+            logger.debug(f"Extended operation '{operation.name}' is done")
+            return None
+
+        time.sleep(frequency)
+
+        if (start + timeout) < time.time():
+            logger.debug(f"Cancelling extended operation '{operation.name}'")
+            operation.cancel()
+            return None
 
 
 def load_credentials(secrets: Secrets = None):
@@ -301,4 +325,5 @@ def load_exported_activities() -> List[DiscoveredActivities]:
     activities.extend(discover_probes("chaosgcp.monitoring.probes"))
     activities.extend(discover_probes("chaosgcp.cloudlogging.probes"))
     activities.extend(discover_probes("chaosgcp.artifact.probes"))
+    activities.extend(discover_actions("chaosgcp.lb.actions"))
     return activities

@@ -87,3 +87,11 @@ def list_service_revisions(
             client.list_revisions(request=request),
         )
     )
+
+
+def get_active_revisions_autoscaling_config(
+    parent: str,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> Dict[str, Any]:
+    list_service_revisions(parent, configuration, secrets)
