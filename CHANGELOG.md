@@ -2,7 +2,17 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.10.1...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.11.0...HEAD
+
+## [0.11.0][] - 2023-08-23
+
+[0.11.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.10.1...0.11.0
+
+### Added
+
+* Also read credentials from `GCP_APPLICATION_CREDENTIALS` as an alternative to
+  `GOOGLE_APPLICATION_CREDENTIALS` since the latter can lead to issues when
+  running in GCP Cloud Run job which already provides its own credentials
 
 ## [0.10.1][] - 2023-08-22
 
