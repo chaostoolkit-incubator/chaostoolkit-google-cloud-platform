@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.12.1...HEAD
 
+### Changed
+
+* Make `get_slo_health` `group_by_fields` argument support comma-separated strings
+
 ## [0.12.1][] - 2023-10-09
 
 [0.12.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.12.0...0.12.1

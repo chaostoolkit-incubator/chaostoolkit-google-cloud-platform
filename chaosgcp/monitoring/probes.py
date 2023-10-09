@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from chaoslib.types import Configuration, Secrets
 from google.cloud import monitoring_v3
@@ -79,7 +79,7 @@ def get_slo_health(
     alignment_period: int = 60,
     per_series_aligner: int = 12,
     cross_series_reducer: int = 1,
-    group_by_fields: Optional[List[str]] = None,
+    group_by_fields: Optional[Union[str, List[str]]] = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> List[Dict[str, Any]]:
@@ -104,6 +104,9 @@ def get_slo_health(
         name=name,
     )
     response = client.get_service_level_objective(request=request)
+
+    if isinstance(group_by_fields, str):
+        group_by_fields = group_by_fields.split(",")
 
     client = monitoring_v3.MetricServiceClient(credentials=credentials)
     request = monitoring_v3.ListTimeSeriesRequest(
