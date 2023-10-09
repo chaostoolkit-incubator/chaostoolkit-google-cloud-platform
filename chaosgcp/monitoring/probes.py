@@ -77,8 +77,8 @@ def get_slo_health(
     end_time: str = "now",
     window: str = "5 minutes",
     alignment_period: int = 60,
-    per_series_aligner: int = 12,
-    cross_series_reducer: int = 1,
+    per_series_aligner: str = "ALIGN_MEAN",
+    cross_series_reducer: int = "REDUCE_COUNT",
     group_by_fields: Optional[Union[str, List[str]]] = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
@@ -92,6 +92,9 @@ def get_slo_health(
     See also: https://cloud.google.com/stackdriver/docs/solutions/slo-monitoring/api/timeseries-selectors
     See also: https://cloud.google.com/python/docs/reference/monitoring/latest/google.cloud.monitoring_v3.types.Aggregation
     """  # noqa: E501
+    psa = monitoring_v3.Aggregation.Aligner[per_series_aligner]
+    csr = monitoring_v3.Aggregation.Reducer[cross_series_reducer]
+
     credentials = load_credentials(secrets)
     project = credentials.project_id
     start, end = parse_interval(end_time, window)
@@ -120,8 +123,8 @@ def get_slo_health(
         ),
         aggregation=monitoring_v3.Aggregation(
             alignment_period={"seconds": alignment_period},
-            per_series_aligner=per_series_aligner,
-            cross_series_reducer=cross_series_reducer,
+            per_series_aligner=psa,
+            cross_series_reducer=csr,
             group_by_fields=group_by_fields,
         ),
     )

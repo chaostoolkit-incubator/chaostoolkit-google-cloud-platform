@@ -4,6 +4,12 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.12.2...HEAD
 
+### Changed
+
+* Make `get_slo_health` `cross_series_reducer` and per_series_aligner arguments
+  are now strings and mapped back to their numeric value as it's friendlier that
+  way
+
 ## [0.12.2][] - 2023-10-09
 
 [0.12.2]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.12.1...0.12.2
