@@ -173,7 +173,6 @@ def get_slo_budget(
     name: str,
     end_time: str = "now",
     window: str = "5 minutes",
-    loopback_period: str = "300s",
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> List[Dict[str, Any]]:

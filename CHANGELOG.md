@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.12.0...HEAD
 
+### Changed
+
+* Removed unused argument in get_slo_budget
+
 ## [0.12.0][] - 2023-10-09
 
 [0.12.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.11.0...0.12.0
