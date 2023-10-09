@@ -6,7 +6,8 @@
 
 ### Changed
 
-* Removed unused argument in get_slo_budget
+* Removed unused argument in `get_slo_budget`
+* Fix types for `per_series_aligner` and `cross_series_reducer` in `get_slo_health`
 
 ## [0.12.0][] - 2023-10-09
 
