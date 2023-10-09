@@ -211,10 +211,3 @@ def get_slo_budget(
     results = client.list_time_series(request=request)
 
     return list(map(lambda p: p.__class__.to_dict(p), results))
-
-
-if __name__ == "__main__":
-    r = get_slo_budget(
-        "projects/408679017217/services/backend-service/serviceLevelObjectives/ap6cbQNrTaOdQ7ZwWVJzaQ"
-    )
-    print(r)
