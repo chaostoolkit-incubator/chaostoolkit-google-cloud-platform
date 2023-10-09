@@ -3,6 +3,7 @@ from typing import Any, Dict
 
 from chaoslib.types import Configuration, Secrets
 from google.cloud import compute_v1
+from logzero import logger
 
 from chaosgcp import load_credentials, wait_on_extended_operation
 
@@ -33,6 +34,10 @@ def inject_traffic_delay(
     Note also, that the LB may be slow to reflect the change. It can take
     up to a couple of minutes from our experience before it propagates
     accordingly.
+
+    The `target_name` argument is the the name of a path matcher in the
+    URL map. The `target_path` argument is the path within the path matcher.
+    Be sure to put the exact one you are targeting.
 
     For instance:
 
@@ -77,16 +82,31 @@ def inject_traffic_delay(
 
     urlmap = client.get(request=request)
 
+    path_matcher_found = False
+    path_found = False
+
     for pm in urlmap.path_matchers:
         if pm.name == target_name:
+            path_matcher_found = True
             for pr in pm.path_rules:
                 for p in pr.paths:
                     if p == target_path:
+                        path_found = True
                         fip = pr.route_action.fault_injection_policy
                         fip.delay.percentage = float(impacted_percentage)
                         fip.delay.fixed_delay.seconds = int(delay_in_seconds)
                         fip.delay.fixed_delay.nanos = int(delay_in_nanos)
                         break
+
+    if not path_matcher_found:
+        logger.debug(
+            f"Failed to find path matcher '{target_name}' in URL map '{url_map}'"
+        )
+
+    if not path_found:
+        logger.debug(
+            f"Failed to find path '{target_path}' in path matcher '{target_name}'"
+        )
 
     if regional:
         request = compute_v1.UpdateRegionUrlMapRequest(
@@ -124,6 +144,10 @@ def inject_traffic_faults(
     Note also, that the LB may be slow to reflect the change. It can take
     up to a couple of minutes from our experience before it propagates
     accordingly.
+
+    The `target_name` argument is the the name of a path matcher in the
+    URL map. The `target_path` argument is the path within the path matcher.
+    Be sure to put the exact one you are targeting.
 
     For instance:
 
@@ -168,15 +192,30 @@ def inject_traffic_faults(
 
     urlmap = client.get(request=request)
 
+    path_matcher_found = False
+    path_found = False
+
     for pm in urlmap.path_matchers:
         if pm.name == target_name:
+            path_matcher_found = True
             for pr in pm.path_rules:
                 for p in pr.paths:
                     if p == target_path:
+                        path_found = True
                         fip = pr.route_action.fault_injection_policy
                         fip.abort.percentage = float(impacted_percentage)
                         fip.abort.http_status = http_status
                         break
+
+    if not path_matcher_found:
+        logger.debug(
+            f"Failed to find path matcher '{target_name}' in URL map '{url_map}'"
+        )
+
+    if not path_found:
+        logger.debug(
+            f"Failed to find path '{target_path}' in path matcher '{target_name}'"
+        )
 
     if regional:
         request = compute_v1.UpdateRegionUrlMapRequest(
@@ -207,6 +246,10 @@ def remove_fault_injection_traffic_policy(
 ) -> Dict[str, Any]:
     """
     Remove any fault injection policy from url map on a given path.
+
+    The `target_name` argument is the the name of a path matcher in the
+    URL map. The `target_path` argument is the path within the path matcher.
+    Be sure to put the exact one you are targeting.
 
     For instance:
 
@@ -249,13 +292,28 @@ def remove_fault_injection_traffic_policy(
 
     urlmap = client.get(request=request)
 
+    path_matcher_found = False
+    path_found = False
+
     for pm in urlmap.path_matchers:
         if pm.name == target_name:
+            path_matcher_found = True
             for pr in pm.path_rules:
                 for p in pr.paths:
                     if p == target_path:
+                        path_found = True
                         pr.route_action.fault_injection_policy = None
                         break
+
+    if not path_matcher_found:
+        logger.debug(
+            f"Failed to find path matcher '{target_name}' in URL map '{url_map}'"
+        )
+
+    if not path_found:
+        logger.debug(
+            f"Failed to find path '{target_path}' in path matcher '{target_name}'"
+        )
 
     if regional:
         request = compute_v1.UpdateRegionUrlMapRequest(
