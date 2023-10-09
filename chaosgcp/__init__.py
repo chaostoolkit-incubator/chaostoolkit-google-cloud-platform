@@ -39,7 +39,7 @@ __all__ = [
     "context_from_parent_path",
     "parse_interval",
 ]
-__version__ = "0.11.0"
+__version__ = "0.12.0"
 
 
 def get_service(
