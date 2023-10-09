@@ -105,6 +105,8 @@ def get_slo_health(
     )
     response = client.get_service_level_objective(request=request)
 
+    group_by_fields = group_by_fields or None
+
     if isinstance(group_by_fields, str):
         group_by_fields = group_by_fields.split(",")
 
