@@ -7,6 +7,7 @@
 ### Added
 
 * Support for regional LB access from the load-balancer actions
+* SLO probes
 
 ## [0.11.0][] - 2023-08-23
 

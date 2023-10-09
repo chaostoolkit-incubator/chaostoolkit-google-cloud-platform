@@ -7,7 +7,12 @@ from google.cloud.monitoring_v3.types.metric import TimeSeries
 
 from chaosgcp import load_credentials, parse_interval
 
-__all__ = ["get_metrics"]
+__all__ = [
+    "get_metrics",
+    "get_slo_health",
+    "get_slo_burn_rate",
+    "get_slo_budget",
+]
 
 
 def get_metrics(
@@ -65,3 +70,151 @@ def get_metrics(
         series.append(d)
 
     return series
+
+
+def get_slo_health(
+    name: str,
+    end_time: str = "now",
+    window: str = "5 minutes",
+    alignment_period: int = 60,
+    per_series_aligner: str = monitoring_v3.Aggregation.Aligner.ALIGN_MEAN,
+    cross_series_reducer: str = monitoring_v3.Aggregation.Reducer.REDUCE_MEAN,
+    group_by_fields: Optional[List[str]] = None,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> List[Dict[str, Any]]:
+    """
+    Get SLO Health of a service.
+
+    The `name` argument is a full path to an SLO such as
+    `"projects/<project_id>/services/<service_name>/serviceLevelObjectives/<slo_id>"`
+
+    See also: https://cloud.google.com/stackdriver/docs/solutions/slo-monitoring/api/timeseries-selectors
+    """  # noqa: E501
+    credentials = load_credentials(secrets)
+    project = credentials.project_id
+    start, end = parse_interval(end_time, window)
+
+    client = monitoring_v3.ServiceMonitoringServiceClient(
+        credentials=credentials
+    )
+
+    request = monitoring_v3.GetServiceLevelObjectiveRequest(
+        name=name,
+    )
+    response = client.get_service_level_objective(request=request)
+
+    client = monitoring_v3.MetricServiceClient(credentials=credentials)
+    request = monitoring_v3.ListTimeSeriesRequest(
+        name=f"projects/{project}",
+        filter=f'select_slo_health("{response.name}")',
+        interval=monitoring_v3.TimeInterval(
+            start_time=start,
+            end_time=end,
+        ),
+        aggregation=monitoring_v3.Aggregation(
+            alignment_period={"seconds": alignment_period},
+            per_series_aligner=per_series_aligner,
+            cross_series_reducer=cross_series_reducer,
+            group_by_fields=group_by_fields,
+        ),
+    )
+
+    results = client.list_time_series(request=request)
+
+    return list(map(lambda p: p.__class__.to_dict(p), results))
+
+
+def get_slo_burn_rate(
+    name: str,
+    end_time: str = "now",
+    window: str = "5 minutes",
+    loopback_period: str = "300s",
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> List[Dict[str, Any]]:
+    """
+    Get SLO burn rate of a service.
+
+    The `name` argument is a full path to an SLO such as
+    `"projects/<project_id>/services/<service_name>/serviceLevelObjectives/<slo_id>"`
+
+    See also: https://cloud.google.com/stackdriver/docs/solutions/slo-monitoring/api/timeseries-selectors
+    """  # noqa: E501
+    credentials = load_credentials(secrets)
+    project = credentials.project_id
+    start, end = parse_interval(end_time, window)
+
+    client = monitoring_v3.ServiceMonitoringServiceClient(
+        credentials=credentials
+    )
+
+    request = monitoring_v3.GetServiceLevelObjectiveRequest(
+        name=name,
+    )
+    response = client.get_service_level_objective(request=request)
+
+    client = monitoring_v3.MetricServiceClient(credentials=credentials)
+    request = monitoring_v3.ListTimeSeriesRequest(
+        name=f"projects/{project}",
+        filter=f'select_slo_burn_rate("{response.name}", "{loopback_period}")',
+        interval=monitoring_v3.TimeInterval(
+            start_time=start,
+            end_time=end,
+        ),
+    )
+
+    results = client.list_time_series(request=request)
+
+    return list(map(lambda p: p.__class__.to_dict(p), results))
+
+
+def get_slo_budget(
+    name: str,
+    end_time: str = "now",
+    window: str = "5 minutes",
+    loopback_period: str = "300s",
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> List[Dict[str, Any]]:
+    """
+    Get SLO burn rate of a service.
+
+    The `name` argument is a full path to an SLO such as
+    `"projects/<project_id>/services/<service_name>/serviceLevelObjectives/<slo_id>"`
+
+    See also: https://cloud.google.com/stackdriver/docs/solutions/slo-monitoring/api/timeseries-selectors
+    """  # noqa: E501
+    credentials = load_credentials(secrets)
+    project = credentials.project_id
+    start, end = parse_interval(end_time, window)
+
+    client = monitoring_v3.ServiceMonitoringServiceClient(
+        credentials=credentials
+    )
+
+    request = monitoring_v3.GetServiceLevelObjectiveRequest(
+        name=name,
+    )
+    response = client.get_service_level_objective(request=request)
+
+    client = monitoring_v3.MetricServiceClient(credentials=credentials)
+    request = monitoring_v3.ListTimeSeriesRequest(
+        name=f"projects/{project}",
+        filter=f'select_slo_budget("{response.name}")',
+        interval=monitoring_v3.TimeInterval(
+            start_time=start,
+            end_time=end,
+        ),
+    )
+
+    results = client.list_time_series(request=request)
+
+    return list(map(lambda p: p.__class__.to_dict(p), results))
+
+
+if __name__ == "__main__":
+    r = get_slo_budget(
+        "projects/408679017217/services/backend-service/serviceLevelObjectives/ap6cbQNrTaOdQ7ZwWVJzaQ"
+    )
+    print(r)
