@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.11.0...HEAD
 
+### Added
+
+* Support for regional LB access from the load-balancer actions
+
 ## [0.11.0][] - 2023-08-23
 
 [0.11.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.10.1...0.11.0

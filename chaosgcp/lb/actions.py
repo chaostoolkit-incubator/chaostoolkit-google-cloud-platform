@@ -20,6 +20,7 @@ def inject_traffic_delay(
     impacted_percentage: float = 50.0,
     delay_in_seconds: int = 1,
     delay_in_nanos: int = 0,
+    regional: bool = False,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
@@ -54,18 +55,25 @@ def inject_traffic_delay(
     }
     ```
 
+    Set `regional` to talk to a regional LB.
+
     See: https://cloud.google.com/load-balancing/docs/l7-internal/setting-up-traffic-management#configure_fault_injection
     """  # noqa: E501
     credentials = load_credentials(secrets)
-
-    client = compute_v1.UrlMapsClient(credentials=credentials)
-
     project = credentials.project_id
 
-    request = compute_v1.GetUrlMapRequest(
-        project=project,
-        url_map=url_map,
-    )
+    if regional:
+        client = compute_v1.RegionUrlMapsClient(credentials=credentials)
+        request = compute_v1.GetRegionUrlMapRequest(
+            project=project,
+            url_map=url_map,
+        )
+    else:
+        client = compute_v1.UrlMapsClient(credentials=credentials)
+        request = compute_v1.GetUrlMapRequest(
+            project=project,
+            url_map=url_map,
+        )
 
     urlmap = client.get(request=request)
 
@@ -80,11 +88,18 @@ def inject_traffic_delay(
                         fip.delay.fixed_delay.nanos = int(delay_in_nanos)
                         break
 
-    request = compute_v1.UpdateUrlMapRequest(
-        project=project,
-        url_map=url_map,
-        url_map_resource=urlmap,
-    )
+    if regional:
+        request = compute_v1.UpdateRegionUrlMapRequest(
+            project=project,
+            url_map=url_map,
+            url_map_resource=urlmap,
+        )
+    else:
+        request = compute_v1.UpdateUrlMapRequest(
+            project=project,
+            url_map=url_map,
+            url_map_resource=urlmap,
+        )
 
     operation = client.update(request=request)
     wait_on_extended_operation(operation=operation)
@@ -98,6 +113,7 @@ def inject_traffic_faults(
     target_path: str,
     impacted_percentage: float = 50.0,
     http_status: int = 400,
+    regional: bool = False,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
@@ -130,18 +146,25 @@ def inject_traffic_faults(
     }
     ```
 
+    Set `regional` to talk to a regional LB.
+
     See: https://cloud.google.com/load-balancing/docs/l7-internal/setting-up-traffic-management#configure_fault_injection
     """  # noqa: E501
     credentials = load_credentials(secrets)
-
-    client = compute_v1.UrlMapsClient(credentials=credentials)
-
     project = credentials.project_id
 
-    request = compute_v1.GetUrlMapRequest(
-        project=project,
-        url_map=url_map,
-    )
+    if regional:
+        client = compute_v1.RegionUrlMapsClient(credentials=credentials)
+        request = compute_v1.GetRegionUrlMapRequest(
+            project=project,
+            url_map=url_map,
+        )
+    else:
+        client = compute_v1.UrlMapsClient(credentials=credentials)
+        request = compute_v1.GetUrlMapRequest(
+            project=project,
+            url_map=url_map,
+        )
 
     urlmap = client.get(request=request)
 
@@ -155,11 +178,18 @@ def inject_traffic_faults(
                         fip.abort.http_status = http_status
                         break
 
-    request = compute_v1.UpdateUrlMapRequest(
-        project=project,
-        url_map=url_map,
-        url_map_resource=urlmap,
-    )
+    if regional:
+        request = compute_v1.UpdateRegionUrlMapRequest(
+            project=project,
+            url_map=url_map,
+            url_map_resource=urlmap,
+        )
+    else:
+        request = compute_v1.UpdateUrlMapRequest(
+            project=project,
+            url_map=url_map,
+            url_map_resource=urlmap,
+        )
 
     operation = client.update(request=request)
     wait_on_extended_operation(operation=operation)
@@ -171,6 +201,7 @@ def remove_fault_injection_traffic_policy(
     url_map: str,
     target_name: str,
     target_path: str,
+    regional: bool = False,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
@@ -196,18 +227,25 @@ def remove_fault_injection_traffic_policy(
     }
     ```
 
+    Set `regional` to talk to a regional LB.
+
     See: https://cloud.google.com/load-balancing/docs/l7-internal/setting-up-traffic-management#configure_fault_injection
     """  # noqa: E501
     credentials = load_credentials(secrets)
-
-    client = compute_v1.UrlMapsClient(credentials=credentials)
-
     project = credentials.project_id
 
-    request = compute_v1.GetUrlMapRequest(
-        project=project,
-        url_map=url_map,
-    )
+    if regional:
+        client = compute_v1.RegionUrlMapsClient(credentials=credentials)
+        request = compute_v1.GetRegionUrlMapRequest(
+            project=project,
+            url_map=url_map,
+        )
+    else:
+        client = compute_v1.UrlMapsClient(credentials=credentials)
+        request = compute_v1.GetUrlMapRequest(
+            project=project,
+            url_map=url_map,
+        )
 
     urlmap = client.get(request=request)
 
@@ -219,11 +257,18 @@ def remove_fault_injection_traffic_policy(
                         pr.route_action.fault_injection_policy = None
                         break
 
-    request = compute_v1.UpdateUrlMapRequest(
-        project=project,
-        url_map=url_map,
-        url_map_resource=urlmap,
-    )
+    if regional:
+        request = compute_v1.UpdateRegionUrlMapRequest(
+            project=project,
+            url_map=url_map,
+            url_map_resource=urlmap,
+        )
+    else:
+        request = compute_v1.UpdateUrlMapRequest(
+            project=project,
+            url_map=url_map,
+            url_map_resource=urlmap,
+        )
 
     operation = client.update(request=request)
     wait_on_extended_operation(operation=operation)
