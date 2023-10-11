@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.12.3...HEAD
 
+### Added
+
+* the `service_has_at_least_slo_across_time` probe to use in a steady-state
+
 ## [0.12.3][] - 2023-10-09
 
 [0.12.3]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.12.2...0.12.3

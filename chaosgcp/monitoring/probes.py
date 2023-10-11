@@ -4,6 +4,7 @@ from chaoslib.types import Configuration, Secrets
 from google.cloud import monitoring_v3
 from google.cloud.monitoring_v3.query import Query
 from google.cloud.monitoring_v3.types.metric import TimeSeries
+from logzero import logger
 
 from chaosgcp import load_credentials, parse_interval
 
@@ -12,6 +13,7 @@ __all__ = [
     "get_slo_health",
     "get_slo_burn_rate",
     "get_slo_budget",
+    "service_has_at_least_slo_across_time",
 ]
 
 
@@ -219,3 +221,60 @@ def get_slo_budget(
     results = client.list_time_series(request=request)
 
     return list(map(lambda p: p.__class__.to_dict(p), results))
+
+
+def service_has_at_least_slo_across_time(
+    name: str,
+    expected_ratio: float = 0.90,
+    min_level: float = 0.90,
+    end_time: str = "now",
+    window: str = "5 minutes",
+    alignment_period: int = 60,
+    per_series_aligner: str = "ALIGN_MEAN",
+    cross_series_reducer: int = "REDUCE_COUNT",
+    group_by_fields: Optional[Union[str, List[str]]] = None,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> bool:
+    """
+    Compute SLO during various intervals of the window. Then for each returned
+    interval, we compare the SLO with `min_level` (between 0 and 1.0).
+
+    Finally use the `expected_ratio` value (between 0 and 1.0) as the treshold
+    which tells us if our service was reaching `min_level` for at least
+    that number of time.
+
+    For instance, with `expected_ratio` set to `0.5` and `min_level` set to
+    `0.8`, we say that we want that 50% of the intervals have a SLO
+    above `0.8`.
+
+    The `name` argument is a full path to an SLO such as
+    `"projects/<project_id>/services/<service_name>/serviceLevelObjectives/<slo_id>"`
+
+    See also: https://cloud.google.com/stackdriver/docs/solutions/slo-monitoring/api/timeseries-selectors
+    See also: https://cloud.google.com/python/docs/reference/monitoring/latest/google.cloud.monitoring_v3.types.Aggregation
+    """  # noqa: E501
+    response = get_slo_health(
+        name,
+        end_time,
+        window,
+        alignment_period,
+        per_series_aligner,
+        cross_series_reducer,
+        group_by_fields,
+        configuration,
+        secrets,
+    )
+
+    logger.debug(f"Return SLO health: {response}")
+
+    points = response[0]["points"]
+
+    good = 0
+    total = 0
+    for pt in points:
+        total += 1
+        if pt["value"]["double_value"] >= min_level:
+            good += 1
+
+    return ((good * 100.0) / total) >= expected_ratio
