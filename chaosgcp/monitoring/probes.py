@@ -13,7 +13,7 @@ __all__ = [
     "get_slo_health",
     "get_slo_burn_rate",
     "get_slo_budget",
-    "service_has_at_least_slo_across_time",
+    "valid_slo_ratio_during_window",
 ]
 
 
@@ -223,7 +223,7 @@ def get_slo_budget(
     return list(map(lambda p: p.__class__.to_dict(p), results))
 
 
-def service_has_at_least_slo_across_time(
+def valid_slo_ratio_during_window(
     name: str,
     expected_ratio: float = 0.90,
     min_level: float = 0.90,

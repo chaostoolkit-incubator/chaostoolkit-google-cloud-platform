@@ -2,7 +2,15 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.13.0...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.13.1...HEAD
+
+## [0.13.1][] - 2023-10-11
+
+[0.13.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.13.0...0.13.1
+
+### Changed
+
+* renamed `service_has_at_least_slo_across_time` to `valid_slo_ratio_during_window`
 
 ## [0.13.0][] - 2023-10-11
 
