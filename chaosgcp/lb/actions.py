@@ -72,6 +72,7 @@ def inject_traffic_delay(
         request = compute_v1.GetRegionUrlMapRequest(
             project=project,
             url_map=url_map,
+            region=project.region,
         )
     else:
         client = compute_v1.UrlMapsClient(credentials=credentials)
@@ -183,6 +184,7 @@ def inject_traffic_faults(
         request = compute_v1.GetRegionUrlMapRequest(
             project=project,
             url_map=url_map,
+            region=project.region,
         )
     else:
         client = compute_v1.UrlMapsClient(credentials=credentials)
@@ -284,6 +286,7 @@ def remove_fault_injection_traffic_policy(
         request = compute_v1.GetRegionUrlMapRequest(
             project=project,
             url_map=url_map,
+            region=project.region,
         )
     else:
         client = compute_v1.UrlMapsClient(credentials=credentials)
