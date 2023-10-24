@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from typing import Any, Dict
 
+from chaoslib.exceptions import ActivityFailed
 from chaoslib.types import Configuration, Secrets
 from google.cloud import compute_v1
 from logzero import logger
 
-from chaosgcp import load_credentials, wait_on_extended_operation
+from chaosgcp import get_context, load_credentials, wait_on_extended_operation
 
 __all__ = [
     "inject_traffic_delay",
@@ -65,14 +66,20 @@ def inject_traffic_delay(
     See: https://cloud.google.com/load-balancing/docs/l7-internal/setting-up-traffic-management#configure_fault_injection
     """  # noqa: E501
     credentials = load_credentials(secrets)
+    context = get_context(configuration, secrets)
     project = credentials.project_id
 
     if regional:
+        if not context.region:
+            raise ActivityFailed(
+                "when `regional` is set, the `gcp_region` configuration key "
+                "must also be set"
+            )
         client = compute_v1.RegionUrlMapsClient(credentials=credentials)
         request = compute_v1.GetRegionUrlMapRequest(
             project=project,
             url_map=url_map,
-            region=project.region,
+            region=context.region,
         )
     else:
         client = compute_v1.UrlMapsClient(credentials=credentials)
@@ -114,7 +121,7 @@ def inject_traffic_delay(
             project=project,
             url_map=url_map,
             url_map_resource=urlmap,
-            region=project.region,
+            region=context.region,
         )
     else:
         request = compute_v1.UpdateUrlMapRequest(
@@ -177,14 +184,20 @@ def inject_traffic_faults(
     See: https://cloud.google.com/load-balancing/docs/l7-internal/setting-up-traffic-management#configure_fault_injection
     """  # noqa: E501
     credentials = load_credentials(secrets)
+    context = get_context(configuration, secrets)
     project = credentials.project_id
 
     if regional:
+        if not context.region:
+            raise ActivityFailed(
+                "when `regional` is set, the `gcp_region` configuration key "
+                "must also be set"
+            )
         client = compute_v1.RegionUrlMapsClient(credentials=credentials)
         request = compute_v1.GetRegionUrlMapRequest(
             project=project,
             url_map=url_map,
-            region=project.region,
+            region=context.region,
         )
     else:
         client = compute_v1.UrlMapsClient(credentials=credentials)
@@ -225,7 +238,7 @@ def inject_traffic_faults(
             project=project,
             url_map=url_map,
             url_map_resource=urlmap,
-            region=project.region,
+            region=context.region,
         )
     else:
         request = compute_v1.UpdateUrlMapRequest(
@@ -279,14 +292,20 @@ def remove_fault_injection_traffic_policy(
     See: https://cloud.google.com/load-balancing/docs/l7-internal/setting-up-traffic-management#configure_fault_injection
     """  # noqa: E501
     credentials = load_credentials(secrets)
+    context = get_context(configuration, secrets)
     project = credentials.project_id
 
     if regional:
+        if not context.region:
+            raise ActivityFailed(
+                "when `regional` is set, the `gcp_region` configuration key "
+                "must also be set"
+            )
         client = compute_v1.RegionUrlMapsClient(credentials=credentials)
         request = compute_v1.GetRegionUrlMapRequest(
             project=project,
             url_map=url_map,
-            region=project.region,
+            region=context.region,
         )
     else:
         client = compute_v1.UrlMapsClient(credentials=credentials)
@@ -325,7 +344,7 @@ def remove_fault_injection_traffic_policy(
             project=project,
             url_map=url_map,
             url_map_resource=urlmap,
-            region=project.region,
+            region=context.region,
         )
     else:
         request = compute_v1.UpdateUrlMapRequest(

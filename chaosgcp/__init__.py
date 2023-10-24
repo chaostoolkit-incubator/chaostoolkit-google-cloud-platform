@@ -39,7 +39,7 @@ __all__ = [
     "context_from_parent_path",
     "parse_interval",
 ]
-__version__ = "0.14.0"
+__version__ = "0.14.1"
 
 
 def get_service(
@@ -138,7 +138,7 @@ def wait_on_extended_operation(
             return None
 
 
-def load_credentials(secrets: Secrets = None):
+def load_credentials(secrets: Secrets = None) -> Credentials:
     """
     Load GCP credentials from the experiment secrets
 

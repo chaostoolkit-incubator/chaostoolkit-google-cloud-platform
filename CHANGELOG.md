@@ -2,7 +2,15 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.14.0...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.14.1...HEAD
+
+## [0.14.1][] - 2023-10-24
+
+[0.14.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.14.0...0.14.1
+
+### Fixed
+
+* Read region from the configuration block in the load balancer actions
 
 ## [0.14.0][] - 2023-10-24
 
