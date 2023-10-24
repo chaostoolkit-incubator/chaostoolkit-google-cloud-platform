@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.13.1...HEAD
 
+### Fixed
+
+* Set the `region` paramater in LB requests
+
 ## [0.13.1][] - 2023-10-11
 
 [0.13.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.13.0...0.13.1
