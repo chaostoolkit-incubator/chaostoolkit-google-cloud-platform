@@ -2,7 +2,15 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.13.2...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.14.0...HEAD
+
+## [0.14.0][] - 2023-10-24
+
+[0.14.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.13.2...0.14.0
+
+### Added
+
+* Network Endpoint Groups actions and probes
 
 ## [0.13.2][] - 2023-10-24
 

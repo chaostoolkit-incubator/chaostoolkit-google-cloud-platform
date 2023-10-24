@@ -39,7 +39,7 @@ __all__ = [
     "context_from_parent_path",
     "parse_interval",
 ]
-__version__ = "0.13.2"
+__version__ = "0.14.0"
 
 
 def get_service(
@@ -329,4 +329,6 @@ def load_exported_activities() -> List[DiscoveredActivities]:
     activities.extend(discover_probes("chaosgcp.cloudlogging.probes"))
     activities.extend(discover_probes("chaosgcp.artifact.probes"))
     activities.extend(discover_actions("chaosgcp.lb.actions"))
+    activities.extend(discover_probes("chaosgcp.neg.probes"))
+    activities.extend(discover_actions("chaosgcp.neg.actions"))
     return activities
