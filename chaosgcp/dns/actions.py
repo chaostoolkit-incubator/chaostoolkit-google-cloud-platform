@@ -12,7 +12,6 @@ __all__ = ["update_service"]
 def update_service(
     secrets: Secrets = None,
     project: str = None,
-    managed_zone: str = None,
     ip_address: str="10.0.0.6",
     name: str="b2e453371f40.34gubvy95ghwe.us-central1.sql.goog.",
     zone_name: str="pscsqlzone"):
