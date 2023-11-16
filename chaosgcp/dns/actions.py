@@ -12,43 +12,34 @@ __all__ = ["update_service"]
 def update_service(
     secrets: Secrets = None,
     project: str = None,
-    ip_address: str="10.0.0.6",
-    name: str="b2e453371f40.34gubvy95ghwe.us-central1.sql.goog.",
-    zone_name: str="pscsqlzone"):
+    ip_address: str= None,
+    name: str= None,
+    zone_name: str= None,
+    kind: str= "dns#resourceRecordSet",
+    ttl: int=5,
+    record_type: str="A",
+    existing_type: str="A"):
 
     credentials = load_credentials(secrets)
 
-    service = discovery.build('dns', 'v1', credentials=credentials)
-
-    # Project ID for this request.
-    project = project  # TODO(developer): Update placeholder value.
-
-    # The name of the zone for this request.
-    managed_zone = zone_name  # TODO(developer): Update placeholder value.
+    service = discovery.build('dns', 'v1', credentials=credentials) 
 
     dns_record_body = {
-        # TODO(developer): Update kind placeholder value.
-        'kind': 'dns#resourceRecordSet',
-        # TODO(developer): Update name placeholder value.
-        'name': name,
-        # TODO(developer): Update rrdatas placeholder values.
-        'rrdatas': [ip_address],
-        # TODO(developer): Update ttl placeholder value.
-        'ttl': 5,
-        # TODO(developer): Update type placeholder value.
-        'type': 'A'
+        'kind': kind,   
+        'name': name,   
+        'rrdatas': [ip_address],      
+        'ttl': ttl,  
+        'type': record_type
     }
 
     request = service.resourceRecordSets().patch(
         project=project,
-        managedZone=managed_zone,
-        # TODO(developer): Update name placeholder value.
+        managedZone=zone_name,
         name=name,
-        # TODO(developer): Update type placeholder value.
-        type='A',
+        type=existing_type,
         body=dns_record_body
         )
 
     response = request.execute()
 
-    return response.__class__.to_dict(response)
+    return response
