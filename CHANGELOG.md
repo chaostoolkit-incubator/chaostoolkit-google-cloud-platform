@@ -2,7 +2,31 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.14.1...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.15.0...HEAD
+
+## [0.15.0][] - 2023-12-08
+
+[0.15.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.14.1...0.15.0
+
+### Changed
+
+* All actions and probes now take optional `project_id` and `region` arguments
+  so that they can be set on per activity basis. In that case, they take
+  precedence over the configuration payload. But this also means, the configuration
+  block can be left unset entirely for these fields
+* It is not expected anymore that you set a service account file to authenticate
+  When none is provided, we delegate to the GCP client library to figure it out.
+  This allows for newer authentication approaches supported by that client
+  without relying on a less secure service account
+
+### Breaking
+
+* In the `chaosgcp.cloudrun.probes.get_service` probe, the `name` argument has
+  been repurposed and has been renamed to `parent`. The `name` now expects
+  the service name without its parent path as a prefix.
+* The extension will not raise an `ActivityFailed` exception when it could not
+  load credentials explicitely set from the secrets. This is so the underlying
+  client can attempt to load credentials directly and natively
 
 ## [0.14.1][] - 2023-10-24
 

@@ -35,10 +35,9 @@ experiment file:
     "version": "1.0.0",
     "title": "create and delete a cloud run service",
     "description": "n/a",
-    "secrets": {
-        "gcp": {
-            "service_account_file": "service_account.json"
-        }
+    "configuration": {
+        "gcp_project_id": "...",
+        "gcp_region": "..."
     },
     "method": [
         {
@@ -48,9 +47,9 @@ experiment file:
                 "type": "python",
                 "module": "chaosgcp.cloudrun.actions",
                 "func": "create_service",
-                "secrets": ["gcp"],
                 "arguments": {
-                    "parent": "projects/.../locations/...",
+                    "project_id": "...",
+                    "region": "europe-west2",
                     "service_id": "demo",
                     "container": {
                         "name": "demo",
@@ -66,9 +65,10 @@ experiment file:
                 "type": "python",
                 "module": "chaosgcp.cloudrun.actions",
                 "func": "delete_service",
-                "secrets": ["gcp"],
                 "arguments": {
-                    "parent": "projects/.../locations/.../services/demo"
+                    "project_id": "...",
+                    "region": "europe-west2",
+                    "name": "demo"
                 }
             }
         }
@@ -85,7 +85,13 @@ Please explore the code to see existing probes and actions.
 
 ### Project and Cluster Information
 
-You can pass the context via the `configuration` section of your experiment:
+All operations in this extension expect to know about the target project
+and, almost always, the region as well. These can be provided in two
+ways.
+
+1. Each action or probe takes a `project_id` and `region` arguments
+2. For some activities, you can also set the `parent` argument which looks like `projects/<ID>/locations/</region>`. This is equivalent to the previous approach so it's a matter of taste
+3. You can pass the context via the `configuration` section of your experiment:
 
 ```json
 {
@@ -98,24 +104,24 @@ You can pass the context via the `configuration` section of your experiment:
 }
 ```
 
-This is only valuable when you want to reuse the same context everywhere.
-A finer approach is to set the the `parent` argument on activities that
-support it. It should be of the form
-`projects/*/locations/*` or `projects/*/locations/*/clusters/*`, where
-`location` is either a region or a zone, depending on the context and defined
-by the GCP API.
+Note that the arguments will always take precedence over the configuration.
 
-When provided, this takes precedence over the context defined in the
-configuration. In some cases, it also means you do not need to pass the
-values in the configuration at all as the extension will derive the
-context from the `parent` value.
+You always need to set at least the `project_id` either with the
+configuration block (when it's the same project for all activities in the
+experiment) or on each activity directly. This is because the extension
+cannot always infer these from the credentials and therefore doesn't
+attempt to.
 
 ### Credentials
 
-This extension expects a [service account][sa] with enough permissions to
-perform its operations. Please create such a service account manually (do not
-use the default one for your cluster if you can, so you'll be able to delete
-that service account if need be).
+This extension allows you to reuse the authentication available to whichever
+user you are logged in on the machine running the experiment. In such case,
+the extension delegates the lookup of the appropriate credentials to the
+underlying
+[GCP Python client](https://googleapis.dev/python/google-api-core/latest/auth.html).
+
+In addition, the extension allows you to provide a [service account][sa] with
+enough permissions to perform its operations.
 
 [sa]: https://cloud.google.com/iam/docs/creating-managing-service-accounts 
 
@@ -141,7 +147,7 @@ variables. iI that case, you do not need to set any secrets in the
 experiment.
 
 
-While the embedded way looks like this:
+Finally, the embedded way looks like this (it should rarely be needed and avoided):
 
 
 ```json
@@ -268,24 +274,6 @@ Here is a full example which creates a node pool then swap it for a new one.
     ]
 }
 ```
-
-
-## Migrate from GCE extension
-
-If you previously used the deprecated [GCE extension][ctk-gce], here is a quick
-recap of changes you'll need to go through to update your experiments.
-
-[ctk-gce]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud
-
--   The module `chaosgce.nodepool.actions` has been replaced by
-    `chaosgcp.gke.nodepool.actions`.
-    You will need to update the `module` key for the python providers.
--   The configuration keys in the `configuration` section have been
-    renamed accordingly:
-    - `"gce_project_id"` -> `"gcp_project_id"`
-    - `"gce_region"` -> `"gcp_region"`
-    - `"gce_zone"` -> `"gcp_zone"`
-    - `"gce_cluster_name"` -> `"gcp_gke_cluster_name"`
 
 ## Contribute
 

@@ -8,6 +8,8 @@ __all__ = ["list_triggers", "list_trigger_names", "get_trigger"]
 
 
 def list_triggers(
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ):
@@ -21,7 +23,9 @@ def list_triggers(
 
     :return:
     """  # noqa: E501
-    ctx = get_context(configuration=configuration, secrets=secrets)
+    ctx = get_context(
+        configuration=configuration, project_id=project_id, region=region
+    )
     service = get_service(
         "cloudbuild", version="v1", configuration=configuration, secrets=secrets
     )
@@ -32,6 +36,8 @@ def list_triggers(
 
 
 def list_trigger_names(
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ):
@@ -43,12 +49,19 @@ def list_trigger_names(
 
     :return:
     """
-    triggers = list_triggers(configuration=configuration, secrets=secrets)
+    triggers = list_triggers(
+        project_id=project_id,
+        region=region,
+        configuration=configuration,
+        secrets=secrets,
+    )
     return [t["name"] for t in triggers["triggers"]]
 
 
 def get_trigger(
     name: str,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ):
@@ -62,7 +75,9 @@ def get_trigger(
     :param secrets:
     :return:
     """  # noqa: E501
-    ctx = get_context(configuration=configuration, secrets=secrets)
+    ctx = get_context(
+        configuration=configuration, project_id=project_id, region=region
+    )
     service = get_service(
         "cloudbuild", version="v1", configuration=configuration, secrets=secrets
     )

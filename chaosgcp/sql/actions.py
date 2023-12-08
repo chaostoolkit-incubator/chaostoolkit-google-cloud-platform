@@ -22,6 +22,7 @@ def trigger_failover(
     instance_id: str,
     wait_until_complete: bool = True,
     settings_version: Optional[int] = None,
+    project_id: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
@@ -36,7 +37,7 @@ def trigger_failover(
 
     :return:
     """  # noqa: E501
-    ctx = get_context(configuration=configuration, secrets=secrets)
+    ctx = get_context(configuration=configuration, project_id=project_id)
     service = get_service(
         "sqladmin",
         version="v1",
@@ -99,7 +100,7 @@ def export_data(
     If `project_id` is given, it will take precedence over the global
     project ID defined at the configuration level.
     """  # noqa: E501
-    ctx = get_context(configuration=configuration, secrets=secrets)
+    ctx = get_context(configuration=configuration, project_id=project_id)
 
     if file_type not in ["sql", "csv"]:
         raise ActivityFailed(
@@ -142,7 +143,7 @@ def export_data(
         secrets=secrets,
     )
     request = service.instances().export(
-        project=project_id or ctx.project_id,
+        project=ctx.project_id,
         instance=instance_id,
         body=export_request_body,
     )
@@ -150,7 +151,7 @@ def export_data(
 
     logger.debug(
         "Export data from database {db}[{proj}]: {resp}".format(
-            proj=project_id or ctx.project_id, db=instance_id, resp=response
+            proj=ctx.project_id, db=instance_id, resp=response
         )
     )
 
@@ -185,7 +186,7 @@ def import_data(
     If `project_id` is given, it will take precedence over the global
     project ID defined at the configuration level.
     """  # noqa: E501
-    ctx = get_context(configuration=configuration, secrets=secrets)
+    ctx = get_context(configuration=configuration, project_id=project_id)
 
     if file_type not in ["sql", "csv"]:
         raise ActivityFailed(
@@ -238,7 +239,7 @@ def import_data(
         secrets=secrets,
     )
     request = service.instances().import_(
-        project=project_id or ctx.project_id,
+        project=ctx.project_id,
         instance=instance_id,
         body=import_request_body,
     )
@@ -246,7 +247,7 @@ def import_data(
 
     logger.debug(
         "Import data into database {db}[{proj}]: {resp}".format(
-            proj=project_id or ctx.project_id, db=instance_id, resp=response
+            proj=ctx.project_id, db=instance_id, resp=response
         )
     )
 
@@ -276,8 +277,7 @@ def restore_backup(
     You may wait for the operation to complete, but bear in mind this can
     take several minutes.
     """
-
-    ctx = get_context(configuration=configuration, secrets=secrets)
+    ctx = get_context(configuration=configuration, project_id=project_id)
 
     service = get_service(
         "sqladmin",
@@ -288,7 +288,7 @@ def restore_backup(
 
     if not backup_run_id:
         request = service.backupRuns().list(
-            project=project_id or ctx.project_id,
+            project=ctx.project_id,
             instance=source_instance_id,
             maxResults=1,
         )
@@ -305,7 +305,7 @@ def restore_backup(
     }
 
     request = service.instances().restoreBackup(
-        project=project_id or ctx.project_id,
+        project=ctx.project_id,
         instance=source_instance_id,
         body=backup_request_body,
     )
@@ -335,7 +335,7 @@ def disable_replication(
 
     See also: https://cloud.google.com/sql/docs/postgres/replication/manage-replicas#disable_replication
     """  # noqa: E501
-    ctx = get_context(configuration=configuration, secrets=secrets)
+    ctx = get_context(configuration=configuration, project_id=project_id)
 
     service = get_service(
         "sqladmin",
@@ -347,7 +347,7 @@ def disable_replication(
     settings_body = {"settings": {"databaseReplicationEnabled": "False"}}
 
     request = service.instances().patch(
-        project=project_id or ctx.project_id,
+        project=ctx.project_id,
         instance=replica_name,
         body=settings_body,
     )
@@ -377,7 +377,7 @@ def enable_replication(
 
     See also: https://cloud.google.com/sql/docs/postgres/replication/manage-replicas#enable_replication
     """  # noqa: E501
-    ctx = get_context(configuration=configuration, secrets=secrets)
+    ctx = get_context(configuration=configuration, project_id=project_id)
 
     service = get_service(
         "sqladmin",
@@ -389,7 +389,7 @@ def enable_replication(
     settings_body = {"settings": {"databaseReplicationEnabled": "True"}}
 
     request = service.instances().patch(
-        project=project_id or ctx.project_id,
+        project=ctx.project_id,
         instance=replica_name,
         body=settings_body,
     )
@@ -419,7 +419,7 @@ def promote_replica(
 
     See also: https://cloud.google.com/sql/docs/postgres/replication/manage-replicas#promote-replica
     """  # noqa: E501
-    ctx = get_context(configuration=configuration, secrets=secrets)
+    ctx = get_context(configuration=configuration, project_id=project_id)
 
     service = get_service(
         "sqladmin",
@@ -429,7 +429,7 @@ def promote_replica(
     )
 
     request = service.instances().promoteReplica(
-        project=project_id or ctx.project_id,
+        project=ctx.project_id,
         instance=replica_name,
     )
     response = request.execute()

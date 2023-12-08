@@ -278,3 +278,57 @@ def valid_slo_ratio_during_window(
             good += 1
 
     return ((good * 100.0) / total) >= expected_ratio
+
+
+def query_time_series(
+    mql_query: str,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> List[Dict[str, Any]]:
+    """
+    Query time series using a MQL query.
+
+    See also: https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.timeSeries/query
+    """
+    credentials = load_credentials(secrets)
+    project = credentials.project_id
+
+    client = monitoring_v3.QueryServiceClient(credentials=credentials)
+    request = monitoring_v3.QueryTimeSeriesRequest(
+        name=f"projects/{project}",
+        query=mql_query,
+    )
+
+    return list(
+        map(
+            lambda p: p.__class__.to_dict(p),
+            client.query_time_series(request=request),
+        )
+    )
+
+
+q = """fetch https_lb_rule::loadbalancing.googleapis.com/https/request_count
+| filter
+    resource.url_map_name = "demo-urlmap"
+    && resource.project_id = "staging10022023"
+| { buckets:
+      filter resource.backend_target_type = 'BACKEND_BUCKET'
+      | map update[resource.backend_name: resource.backend_target_name]
+      | align delta()
+      | filter_ratio_by
+          [resource.url_map_name, resource.project_id, resource.backend_name,
+           resource.backend_target_name],
+          metric.response_code_class = 200
+  ; services:
+      filter resource.backend_target_type = 'BACKEND_SERVICE'
+      | align delta()
+      | filter_ratio_by
+          [resource.url_map_name, resource.project_id, resource.backend_name,
+           resource.backend_target_name],
+          metric.response_code_class = 200 }
+| union
+| within 60m
+"""
+r = query_time_series(q, {}, {})
+
+print(r)

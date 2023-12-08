@@ -18,11 +18,13 @@ __all__ = [
 def inject_traffic_delay(
     url_map: str,
     target_name: str,
-    target_path: str,
+    target_path: str = "/*",
     impacted_percentage: float = 50.0,
     delay_in_seconds: int = 1,
     delay_in_nanos: int = 0,
     regional: bool = False,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
@@ -66,11 +68,13 @@ def inject_traffic_delay(
     See: https://cloud.google.com/load-balancing/docs/l7-internal/setting-up-traffic-management#configure_fault_injection
     """  # noqa: E501
     credentials = load_credentials(secrets)
-    context = get_context(configuration, secrets)
-    project = credentials.project_id
+    context = get_context(configuration, project_id=project_id, region=region)
+
+    region = context.region
+    project = context.project_id
 
     if regional:
-        if not context.region:
+        if not region:
             raise ActivityFailed(
                 "when `regional` is set, the `gcp_region` configuration key "
                 "must also be set"
@@ -79,7 +83,7 @@ def inject_traffic_delay(
         request = compute_v1.GetRegionUrlMapRequest(
             project=project,
             url_map=url_map,
-            region=context.region,
+            region=region,
         )
     else:
         client = compute_v1.UrlMapsClient(credentials=credentials)
@@ -121,7 +125,7 @@ def inject_traffic_delay(
             project=project,
             url_map=url_map,
             url_map_resource=urlmap,
-            region=context.region,
+            region=region,
         )
     else:
         request = compute_v1.UpdateUrlMapRequest(
@@ -139,10 +143,12 @@ def inject_traffic_delay(
 def inject_traffic_faults(
     url_map: str,
     target_name: str,
-    target_path: str,
+    target_path: str = "/*",
     impacted_percentage: float = 50.0,
     http_status: int = 400,
     regional: bool = False,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
@@ -184,11 +190,13 @@ def inject_traffic_faults(
     See: https://cloud.google.com/load-balancing/docs/l7-internal/setting-up-traffic-management#configure_fault_injection
     """  # noqa: E501
     credentials = load_credentials(secrets)
-    context = get_context(configuration, secrets)
-    project = credentials.project_id
+    context = get_context(configuration, project_id=project_id, region=region)
+
+    region = context.region
+    project = context.project_id
 
     if regional:
-        if not context.region:
+        if not region:
             raise ActivityFailed(
                 "when `regional` is set, the `gcp_region` configuration key "
                 "must also be set"
@@ -197,7 +205,7 @@ def inject_traffic_faults(
         request = compute_v1.GetRegionUrlMapRequest(
             project=project,
             url_map=url_map,
-            region=context.region,
+            region=region,
         )
     else:
         client = compute_v1.UrlMapsClient(credentials=credentials)
@@ -238,7 +246,7 @@ def inject_traffic_faults(
             project=project,
             url_map=url_map,
             url_map_resource=urlmap,
-            region=context.region,
+            region=region,
         )
     else:
         request = compute_v1.UpdateUrlMapRequest(
@@ -256,8 +264,10 @@ def inject_traffic_faults(
 def remove_fault_injection_traffic_policy(
     url_map: str,
     target_name: str,
-    target_path: str,
+    target_path: str = "/*",
     regional: bool = False,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
@@ -292,11 +302,13 @@ def remove_fault_injection_traffic_policy(
     See: https://cloud.google.com/load-balancing/docs/l7-internal/setting-up-traffic-management#configure_fault_injection
     """  # noqa: E501
     credentials = load_credentials(secrets)
-    context = get_context(configuration, secrets)
-    project = credentials.project_id
+    context = get_context(configuration, project_id=project_id, region=region)
+
+    region = context.region
+    project = context.project_id
 
     if regional:
-        if not context.region:
+        if not region:
             raise ActivityFailed(
                 "when `regional` is set, the `gcp_region` configuration key "
                 "must also be set"
@@ -305,7 +317,7 @@ def remove_fault_injection_traffic_policy(
         request = compute_v1.GetRegionUrlMapRequest(
             project=project,
             url_map=url_map,
-            region=context.region,
+            region=region,
         )
     else:
         client = compute_v1.UrlMapsClient(credentials=credentials)
@@ -344,7 +356,7 @@ def remove_fault_injection_traffic_policy(
             project=project,
             url_map=url_map,
             url_map_resource=urlmap,
-            region=context.region,
+            region=region,
         )
     else:
         request = compute_v1.UpdateUrlMapRequest(

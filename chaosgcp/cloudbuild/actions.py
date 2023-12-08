@@ -11,6 +11,8 @@ __all__ = ["run_trigger"]
 def run_trigger(
     name: str,
     source: Dict[Any, Any],
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ):
@@ -28,7 +30,9 @@ def run_trigger(
 
     :return:
     """  # noqa: E501
-    ctx = get_context(configuration=configuration, secrets=secrets)
+    ctx = get_context(
+        configuration=configuration, project_id=project_id, region=region
+    )
     service = get_service(
         "cloudbuild", version="v1", configuration=configuration, secrets=secrets
     )

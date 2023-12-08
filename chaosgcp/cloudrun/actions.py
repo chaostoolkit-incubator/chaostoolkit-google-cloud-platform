@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from typing import Any, Dict, List
 
+from chaoslib.exceptions import ActivityFailed
 from chaoslib.types import Configuration, Secrets
 from google.cloud import run_v2
 
@@ -10,9 +11,11 @@ __all__ = ["create_service", "delete_service", "update_service"]
 
 
 def create_service(
-    parent: str,
     service_id: str,
     container: Dict[str, Any],
+    parent: str = None,
+    project_id: str = None,
+    region: str = None,
     description: str = None,
     max_instance_request_concurrency: int = 0,
     service_account: str = None,
@@ -28,7 +31,9 @@ def create_service(
 
     See: https://cloud.google.com/python/docs/reference/run/latest/google.cloud.run_v2.services.services.ServicesClient#google_cloud_run_v2_services_services_ServicesClient_delete_service
 
-    :param parent: the path to the location in the project 'projects/PROJECT_ID/locations/LOC
+    :param parent: the path to the location in the project 'projects/PROJECT_ID/locations/LOC. Otherwise set the `project_id` and `region` fields
+    :param project_id: the project identifier where to create the service when `parent` is not set
+    :param region: the region where to create the service when `parent` is not set
     :param service_id: unique identifier for the service
     :param container: definition of the container as per https://cloud.google.com/python/docs/reference/run/latest/google.cloud.run_v2.types.Container
     :param description: optional text description of the service
@@ -41,6 +46,12 @@ def create_service(
     :return:
     """  # noqa: E501
     credentials = load_credentials(secrets)
+
+    if not parent and not project_id and not region:
+        raise ActivityFailed("set the parent or (project_id, region) arguments")
+
+    if not parent:
+        parent = f"project/{project_id}/locations/{region}"
 
     traffics = None
     if traffic:
@@ -74,7 +85,10 @@ def create_service(
 
 
 def delete_service(
-    parent: str,
+    parent: str = None,
+    project_id: str = None,
+    region: str = None,
+    name: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ):
@@ -84,12 +98,23 @@ def delete_service(
     See: https://cloud.google.com/python/docs/reference/run/latest/google.cloud.run_v2.services.services.ServicesClient#google_cloud_run_v2_services_services_ServicesClient_delete_service
 
     :param parent: the path to the service 'projects/PROJECT_ID/locations/LOC/services/SVC
+    :param project_id: the project identifier where to delete the service when `parent` is not set
+    :param region: the region where to delete the service when `parent` is not set
+    :param name: the name of the service when `parent` is not set
     :param configuration:
     :param secrets:
 
     :return:
     """  # noqa: E501
     credentials = load_credentials(secrets)
+
+    if not parent and not project_id and not region and not name:
+        raise ActivityFailed(
+            "set the parent or (project_id, region, name) arguments"
+        )
+
+    if not parent:
+        parent = f"project/{project_id}/locations/{region}/services/{name}"
 
     client = run_v2.ServicesClient(credentials=credentials)
     request = run_v2.DeleteServiceRequest(
@@ -102,7 +127,10 @@ def delete_service(
 
 
 def update_service(
-    parent: str,
+    parent: str = None,
+    project_id: str = None,
+    region: str = None,
+    name: str = None,
     container: Dict[str, Any] = None,
     max_instance_request_concurrency: int = 100,
     service_account: str = None,
@@ -147,6 +175,10 @@ def update_service(
 
     See: https://cloud.google.com/python/docs/reference/run/latest/google.cloud.run_v2.services.services.ServicesClient#google_cloud_run_v2_services_services_ServicesClient_delete_service
 
+    :param parent: the path to the service 'projects/PROJECT_ID/locations/LOC/services/SVC
+    :param project_id: the project identifier where to delete the service when `parent` is not set
+    :param region: the region where to delete the service when `parent` is not set
+    :param name: the name of the service when `parent` is not set
     :param container: definition of the container as per https://cloud.google.com/python/docs/reference/run/latest/google.cloud.run_v2.types.Container
     :param labels: optional labels to set on the service
     :param annotations: optional annotations to set on the service
@@ -158,6 +190,14 @@ def update_service(
     """  # noqa: E501
 
     credentials = load_credentials(secrets)
+
+    if not parent and not project_id and not region and not name:
+        raise ActivityFailed(
+            "set the parent or (project_id, region, name) arguments"
+        )
+
+    if not parent:
+        parent = f"project/{project_id}/locations/{region}/services/{name}"
 
     traffics = None
     if traffic:

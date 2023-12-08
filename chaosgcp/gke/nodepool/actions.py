@@ -23,6 +23,8 @@ __all__ = [
 def create_new_nodepool(
     body: Dict[str, Any],
     parent: str = None,
+    project_id: str = None,
+    region: str = None,
     wait_until_complete: bool = True,
     configuration: Configuration = None,
     secrets: Secrets = None,
@@ -39,7 +41,12 @@ def create_new_nodepool(
 
     See: https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.zones.clusters.nodePools/create
     """  # noqa: E501
-    parent = get_parent(parent, configuration=configuration, secrets=secrets)
+    parent = get_parent(
+        parent,
+        configuration=configuration,
+        project_id=project_id,
+        region=region,
+    )
     client = get_client(configuration, secrets)
     node_pool = convert_nodepool_format(body)
     response = client.create_node_pool(parent=parent, node_pool=node_pool)
@@ -56,6 +63,8 @@ def create_new_nodepool(
 def delete_nodepool(
     parent: str = None,
     node_pool_id: str = None,
+    project_id: str = None,
+    region: str = None,
     wait_until_complete: bool = True,
     configuration: Configuration = None,
     secrets: Secrets = None,
@@ -69,7 +78,12 @@ def delete_nodepool(
 
     See: https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.zones.clusters.nodePools/create
     """  # noqa: E501
-    parent = get_parent(parent, node_pool_id, configuration, secrets)
+    parent = get_parent(
+        parent,
+        configuration=configuration,
+        project_id=project_id,
+        region=region,
+    )
     client = get_client(configuration, secrets)
     response = client.delete_node_pool(name=parent)
 
@@ -89,6 +103,8 @@ def swap_nodepool(
     wait_until_complete: bool = True,
     delete_old_node_pool: bool = False,
     drain_timeout: int = 120,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
@@ -140,6 +156,8 @@ def rollback_nodepool(
     node_pool_id: str,
     parent: str = None,
     wait_until_complete: bool = True,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
@@ -152,7 +170,12 @@ def rollback_nodepool(
 
     See: https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.zones.clusters.nodePools/create
     """  # noqa: E501
-    parent = get_parent(parent, node_pool_id, configuration, secrets)
+    parent = get_parent(
+        parent,
+        configuration=configuration,
+        project_id=project_id,
+        region=region,
+    )
     client = get_client(configuration, secrets)
     response = client.rollback_node_pool_upgrade(name=parent)
 
