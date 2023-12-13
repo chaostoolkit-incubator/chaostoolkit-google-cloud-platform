@@ -2,7 +2,7 @@
 from typing import Any, Dict, List
 
 from chaoslib.types import Configuration, Secrets
-from googleapiclient import discovery
+from chaosgcp import client
 
 from chaosgcp import load_credentials
 
@@ -22,7 +22,7 @@ def update_service(
 
     credentials = load_credentials(secrets)
 
-    service = discovery.build('dns', 'v1', credentials=credentials) 
+    service = client('dns', 'v1', credentials=credentials) 
 
     dns_record_body = {
         'kind': kind,   
