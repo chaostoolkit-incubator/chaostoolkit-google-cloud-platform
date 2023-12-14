@@ -2,12 +2,12 @@ from unittest.mock import MagicMock, patch
 
 import fixtures
 
-from chaosgcp.dns.actions import update_service
+from chaosgcp.dns.actions import update_dns_A_record
 
 
 @patch("chaosgcp.build", autospec=True)
 @patch("chaosgcp.Credentials", autospec=True)
-def test_update_service(Credentials, dns_client):
+def test_update_dns_A_record(Credentials, dns_client):
     project_id = fixtures.configuration["gcp_project_id"]
     zone_name = "plsqlzone"
     name = "8144911341bc.38ftc5jekg33w.us-central1.sql.goog."
@@ -23,7 +23,7 @@ def test_update_service(Credentials, dns_client):
     recordsets_svc.patch.return_value = recordsets_patch
     service.resourceRecordSets.return_value = recordsets_svc
 
-    response = update_service(
+    response = update_dns_A_record(
         name=name,
         zone_name=zone_name,
         ip_address="10.2.0.6",
