@@ -11,12 +11,12 @@ from chaosgcp import get_context, load_credentials, wait_on_extended_operation
 __all__ =["set_instance_tags"]
 
 def set_instance_tags(instance_name: str,tags_list: list, configuration: Configuration = None,
-                              secrets: Secrets = None):
+                              secrets: Secrets = None) -> Dict[str, Any]:
     
     credentials = load_credentials(secrets)
-    ctx = get_context(configuration=configuration, secrets=secrets)
+    ctx = get_context(configuration, secrets)
     # Create a client
-    client = compute_v1.InstancesClient(credentials)
+    client = compute_v1.InstancesClient()
     
     request = compute_v1.GetInstanceRequest(
         instance=instance_name,
@@ -39,7 +39,7 @@ def set_instance_tags(instance_name: str,tags_list: list, configuration: Configu
     )
 
     # Make the request
-    operation = client.set_tags(request=request,tags_resource=Tags())
+    operation = client.set_tags(request=request)
 
     # Handle the response
     wait_on_extended_operation(operation)
