@@ -8,30 +8,7 @@ from logzero import logger
 
 from chaosgcp import get_context, load_credentials, wait_on_extended_operation
 
-__all__ =["set_instance_tags","get_fingerprint_of_instance"]
-
-def get_fingerprint_of_instance(instance_name:  str, 
-                              configuration: Configuration = None,
-                              secrets: Secrets = None):
-    
-    ctx = get_context(configuration=configuration, secrets=secrets)
-    credentials = load_credentials(secrets)
-    # Create a client
-    client = compute_v1.InstancesClient(credentials=credentials)
-
-    # Initialize request argument(s)
-    request = compute_v1.GetInstanceRequest(
-        instance=instance_name,
-        project=ctx.project_id,
-        zone=ctx.zone,
-    )
-
-    # Make the request
-    response = client.get(request=request)
-
-    # Handle the response
-    #print(response)
-    return response.tags.fingerprint
+__all__ =["set_instance_tags"]
 
 def set_instance_tags(instance_name: str,tags_list: list, configuration: Configuration = None,
                               secrets: Secrets = None):
@@ -41,9 +18,16 @@ def set_instance_tags(instance_name: str,tags_list: list, configuration: Configu
     # Create a client
     client = compute_v1.InstancesClient(credentials)
     
-    fgp=get_fingerprint_of_instance(instance_name,configuration, secrets)
-   
-    
+    request = compute_v1.GetInstanceRequest(
+        instance=instance_name,
+        project=ctx.project_id,
+        zone=ctx.zone,
+    )
+
+    # Make the request
+    response = client.get(request=request)
+
+    fgp=response.tags.fingerprint
 
     # Initialize request argument(s)
     request = compute_v1.SetTagsInstanceRequest(
