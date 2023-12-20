@@ -33,7 +33,7 @@ def get_fingerprint_of_instance(instance_name:  str,
     #print(response)
     return response.tags.fingerprint
 
-def set_instance_tags(instance_name,fgp,tags_list, configuration: Configuration = None,
+def set_instance_tags(instance_name: str,tags_list: [], configuration: Configuration = None,
                               secrets: Secrets = None):
     
     credentials = load_credentials(secrets)
