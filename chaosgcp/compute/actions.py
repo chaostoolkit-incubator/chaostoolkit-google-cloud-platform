@@ -10,7 +10,7 @@ from chaosgcp import get_context, load_credentials, wait_on_extended_operation
 
 __all__ =["set_instance_tags"]
 
-def set_instance_tags(instance_name: str,tags_list: list, configuration: Configuration = None,
+def set_instance_tags(project_id:str, zone:str,instance_name: str,tags_list: list, configuration: Configuration = None,
                               secrets: Secrets = None) -> Dict[str, Any]:
     
     credentials = load_credentials(secrets)
@@ -20,8 +20,8 @@ def set_instance_tags(instance_name: str,tags_list: list, configuration: Configu
     
     request = compute_v1.GetInstanceRequest(
         instance=instance_name,
-        project=ctx.project_id,
-        zone=ctx.zone,
+        project=project_id,
+        zone=zone,
     )
 
     # Make the request
@@ -32,8 +32,8 @@ def set_instance_tags(instance_name: str,tags_list: list, configuration: Configu
     # Initialize request argument(s)
     request = compute_v1.SetTagsInstanceRequest(
         instance=instance_name,
-        project=ctx.project_id,
-        zone=ctx.zone,
+        project=project_id,
+        zone=zone,
         tags_resource=Tags(fingerprint=fgp,items=tags_list)
                 
     )
