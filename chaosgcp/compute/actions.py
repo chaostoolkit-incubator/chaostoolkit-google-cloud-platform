@@ -1,4 +1,5 @@
 # Copyright 2023 Google LLC.
+# SPDX-License-Identifier: Apache-2.0
 from typing import Any, Dict
 
 from chaoslib.exceptions import ActivityFailed
