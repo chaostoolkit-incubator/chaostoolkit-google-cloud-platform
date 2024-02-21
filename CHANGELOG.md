@@ -2,7 +2,15 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.16.0...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.16.1...HEAD
+
+## [0.16.1][] - 2024-02-21
+
+[0.16.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.16.0...0.16.1
+
+### Fixed
+
+* Remove trailing function call in monitoring/actions.py module
 
 ## [0.16.0][] - 2024-02-21
 

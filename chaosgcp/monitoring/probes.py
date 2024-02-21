@@ -305,30 +305,3 @@ def query_time_series(
             client.query_time_series(request=request),
         )
     )
-
-
-q = """fetch https_lb_rule::loadbalancing.googleapis.com/https/request_count
-| filter
-    resource.url_map_name = "demo-urlmap"
-    && resource.project_id = "staging10022023"
-| { buckets:
-      filter resource.backend_target_type = 'BACKEND_BUCKET'
-      | map update[resource.backend_name: resource.backend_target_name]
-      | align delta()
-      | filter_ratio_by
-          [resource.url_map_name, resource.project_id, resource.backend_name,
-           resource.backend_target_name],
-          metric.response_code_class = 200
-  ; services:
-      filter resource.backend_target_type = 'BACKEND_SERVICE'
-      | align delta()
-      | filter_ratio_by
-          [resource.url_map_name, resource.project_id, resource.backend_name,
-           resource.backend_target_name],
-          metric.response_code_class = 200 }
-| union
-| within 60m
-"""
-r = query_time_series(q, {}, {})
-
-print(r)
