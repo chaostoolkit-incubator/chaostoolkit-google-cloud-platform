@@ -11,6 +11,7 @@
   support
 * Read package version using `importlib_metadata`
 * Drops supports for Python 3.7 as it's been EOL since June 2023
+* Adds Code of Conduct file
 
 ## [0.15.0][] - 2023-12-08
 
