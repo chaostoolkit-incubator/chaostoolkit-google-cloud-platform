@@ -104,8 +104,9 @@ def export_data(
 
     if file_type not in ["sql", "csv"]:
         raise ActivityFailed(
-            "Cannot export database. "
-            "File type '{ft}' is invalid.".format(ft=file_type)
+            "Cannot export database. " "File type '{ft}' is invalid.".format(
+                ft=file_type
+            )
         )
     if not project_id and not ctx.project_id:
         raise ActivityFailed(

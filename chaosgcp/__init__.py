@@ -2,6 +2,7 @@
 import os.path
 import time
 from datetime import datetime
+from importlib.metadata import version, PackageNotFoundError
 from typing import Any, Dict, List, Optional, Tuple
 
 import dateparser
@@ -39,7 +40,11 @@ __all__ = [
     "context_from_parent_path",
     "parse_interval",
 ]
-__version__ = "0.15.0"
+
+try:
+    __version__ = version("chaostoolkit-google-cloud-platform")
+except PackageNotFoundError:
+    __version__ = "unknown"
 
 
 def get_service(

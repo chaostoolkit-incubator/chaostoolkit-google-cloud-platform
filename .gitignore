@@ -106,3 +106,10 @@ junit-test-results.xml
 .vscode/
 .cache/
 .idea/
+
+# pdm
+.pdm-python
+.pdm-build/
+
+# ruff
+.ruff_cache/

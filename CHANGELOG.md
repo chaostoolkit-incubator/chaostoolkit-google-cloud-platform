@@ -4,6 +4,14 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.15.0...HEAD
 
+### Changed
+
+* Switched from `setuptools`to [pdm](https://pdm-project.org) to package and
+  manage the project. This also brings a much stricter dependency management
+  support
+* Read package version using `importlib_metadata`
+* Drops supports for Python 3.7 as it's been EOL since June 2023
+
 ## [0.15.0][] - 2023-12-08
 
 [0.15.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.14.1...0.15.0

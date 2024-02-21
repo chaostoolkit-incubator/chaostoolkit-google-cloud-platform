@@ -1,8 +1,102 @@
 [build-system]
-requires = [
-    "setuptools>=51.0",
-    "wheel",
-    "setuptools_scm>=1.15",
-    "setuptools_scm_git_archive>=1.0",
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[project]
+name = "chaostoolkit-lib"
+dynamic = ["version"]
+description = "Google Cloud Platform extension for the Chaos Toolkit"
+authors = [
+    {name = "Chaos Toolkit", email = "contact@chaostoolkit.org"},
+    {name = "Sylvain Hellegouarch", email = "sh@defuze.org"},
 ]
-build-backend = "setuptools.build_meta"
+dependencies = [
+    "google-auth>=2.28.0",
+    "google-auth-httplib2>=0.2.0",
+    "google-api-python-client>=2.118.0",
+    "google-cloud-storage>=2.14.0",
+    "google-cloud-run>=0.10.3",
+    "google-cloud-container>=2.40.0",
+    "google-cloud-logging>=3.9.0",
+    "google-cloud-monitoring>=2.19.1",
+    "google-cloud-artifact-registry>=1.11.1",
+    "google-cloud-containeranalysis>=2.14.1",
+    "google-cloud-compute>=1.16.1",
+    "dateparser>=1.2.0",
+    "grafeas>=1.9.1",
+    "chaostoolkit-kubernetes>=0.34.1",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: Freely Distributable",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation",
+    "Programming Language :: Python :: Implementation :: CPython"
+]
+requires-python = ">=3.8"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+
+[project.urls]
+Homepage = "https://chaostoolkit.org/"
+Repository = "https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform"
+Documentation = "https://chaostoolkit.org/drivers/gcp/"
+Changelog = "https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/blob/main/CHANGELOG.md"
+
+[tool]
+
+[tool.pdm]
+version = { source = "scm" }
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "coverage>=7.4.2",
+    "pycodestyle>=2.11.1",
+    "pytest>=8.0.1",
+    "pytest-cov>=4.1.0",
+    "pytest-sugar>=1.0.0",
+    "requests>=2.31.0",
+    "requests-mock>=1.11.0",
+    "ruff>=0.2.2",
+]
+
+[tool.pdm.scripts]
+lint = {composite = ["ruff check ."]}
+format = {composite = ["ruff check --fix .", "ruff format ."]}
+test = {cmd = "pytest"}
+
+[tool.ruff]
+line-length = 80
+exclude = [
+    ".eggs",
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "build",
+    "dist",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = false
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = "tests"
+addopts = "-v -rxs --cov chaosgcp --cov-report term-missing:skip-covered -p no:warnings"

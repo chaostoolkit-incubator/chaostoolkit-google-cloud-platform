@@ -1,28 +1,27 @@
 # Chaos Toolkit Extension for Google Cloud Platform
 
-[![Build Status](https://travis-ci.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform.svg?branch=master)](https://travis-ci.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform)
+[![Build, Test, and Lint](https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/actions/workflows/build.yaml/badge.svg)](https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/actions/workflows/build.yaml)
 [![Python versions](https://img.shields.io/pypi/pyversions/chaostoolkit-google-cloud-platform.svg)](https://www.python.org/)
 
 This project is a collection of [actions][] and [probes][], gathered as an
 extension to the [Chaos Toolkit][chaostoolkit]. It targets the
 [Google Cloud Platform][gcp].
 
-[actions]: http://chaostoolkit.org/reference/api/experiment/#action
-[probes]: http://chaostoolkit.org/reference/api/experiment/#probe
-[chaostoolkit]: http://chaostoolkit.org
-[gce]: https://cloud.google.com/compute/
+[actions]: https://chaostoolkit.org/reference/api/experiment/#action
+[probes]: https://chaostoolkit.org/reference/api/experiment/#probe
+[chaostoolkit]: https://chaostoolkit.org
 [gcp]: https://cloud.google.com
 
 
 ## Install
 
-This package requires Python 3.7+
+This package requires Python 3.8+
 
 To be used from your experiment, this package must be installed in the Python
 environment where [chaostoolkit][] already lives.
 
 ```
-$ pip install --prefer-binary -U chaostoolkit-google-cloud-platform
+$ pip install -U chaostoolkit-google-cloud-platform
 ```
 
 ## Usage
@@ -301,19 +300,17 @@ sql, storage, ...). See the list of [GCP products and services][gcp_products].
 ### Develop
 
 If you wish to develop on this project, make sure to install the development
-dependencies. But first, [create a virtual environment][venv] and then install
-those dependencies.
-
-[venv]: http://chaostoolkit.org/reference/usage/install/#create-a-virtual-environment
+dependencies. You will need to install [PDM](https://pdm-project.org).
 
 ```console
-$ pip install -r requirements-dev.txt -r requirements.txt 
+$ pdm install --dev
 ```
 
-Then, point your environment to this directory:
+Whenever you need to make contribution, ensure to run the linter as follows:
 
 ```console
-$ python setup.py develop
+$ pdm run format
+$ pdm run lint
 ```
 
 Now, you can edit the files and they will be automatically be seen by your
@@ -324,5 +321,5 @@ environment, even when running from the `chaos` command locally.
 To run the tests for the project execute the following:
 
 ```
-$ pytest
+$ pdm run test
 ```
