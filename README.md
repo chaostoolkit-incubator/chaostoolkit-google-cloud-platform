@@ -1,24 +1,41 @@
-# Chaos Toolkit Extension for Google Cloud Platform
+<h2 align="center">
+  <br>
+  <p align="center"><img src="https://avatars.githubusercontent.com/u/32068152?s=200&v=4"></p>
+</h2>
 
-[![Build, Test, and Lint](https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/actions/workflows/build.yaml/badge.svg)](https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/actions/workflows/build.yaml)
-[![Python versions](https://img.shields.io/pypi/pyversions/chaostoolkit-google-cloud-platform.svg)](https://www.python.org/)
+<h4 align="center">Google Cloud Platform Extension for the Chaos Toolkit</h4>
 
-This project is a collection of [actions][] and [probes][], gathered as an
-extension to the [Chaos Toolkit][chaostoolkit]. It targets the
-[Google Cloud Platform][gcp].
+<p align="center">
+   <a href="https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/releases">
+   <img alt="Release" src="https://img.shields.io/pypi/v/chaostoolkit-google-cloud-platform.svg">
+   <a href="#">
+   <img alt="Build" src="https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/actions/workflows/build.yaml/badge.svg">
+   <a href="https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/issues">
+   <img alt="GitHub issues" src="https://img.shields.io/github/issues/chaostoolkit-incubator/chaostoolkit-google-cloud-platform?style=flat-square&logo=github&logoColor=white">
+   <a href="https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/blob/master/LICENSE.md">
+   <img alt="License" src="https://img.shields.io/github/license/chaostoolkit-incubator/chaostoolkit-google-cloud-platform">
+   <a href="#">
+   <img alt="Python version" src="https://img.shields.io/pypi/pyversions/chaostoolkit-lib.svg">
+   <a href="https://pkg.go.dev/github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform">
+</p>
 
-[actions]: https://chaostoolkit.org/reference/api/experiment/#action
-[probes]: https://chaostoolkit.org/reference/api/experiment/#probe
-[chaostoolkit]: https://chaostoolkit.org
-[gcp]: https://cloud.google.com
+<p align="center">
+  <a href="https://join.slack.com/t/chaostoolkit/shared_invite/zt-22c5isqi9-3YjYzucVTNFFVIG~Kzns8g">Community</a> •
+  <a href="https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/blob/master/CHANGELOG.md">ChangeLog</a>
+</p>
 
+---
+
+Welcome to the Google Cloud Platform (GCP) extension for Chaos Toolkit. The
+package aggregates activities to target your GCP projects and explore
+your resilience via Chaos Engineering experiments.
 
 ## Install
 
 This package requires Python 3.8+
 
 To be used from your experiment, this package must be installed in the Python
-environment where [chaostoolkit][] already lives.
+environment where Chaos Toolkit already lives.
 
 ```
 $ pip install -U chaostoolkit-google-cloud-platform
@@ -31,248 +48,57 @@ experiment file:
 
 ```json
 {
-    "version": "1.0.0",
-    "title": "create and delete a cloud run service",
-    "description": "n/a",
-    "configuration": {
-        "gcp_project_id": "...",
-        "gcp_region": "..."
-    },
-    "method": [
-        {
-            "name": "create-cloud-run-service",
-            "type": "action",
-            "provider": {
-                "type": "python",
-                "module": "chaosgcp.cloudrun.actions",
-                "func": "create_service",
-                "arguments": {
-                    "project_id": "...",
-                    "region": "europe-west2",
-                    "service_id": "demo",
-                    "container": {
-                        "name": "demo",
-                        "image": "gcr.io/google-samples/hello-app:1.0"
-                    }
-                }
-            }
-        },
-        {
-            "name": "delete-cloud-run-service",
-            "type": "action",
-            "provider": {
-                "type": "python",
-                "module": "chaosgcp.cloudrun.actions",
-                "func": "delete_service",
-                "arguments": {
-                    "project_id": "...",
-                    "region": "europe-west2",
-                    "name": "demo"
-                }
-            }
+  "version": "1.0.0",
+  "title": "Our users should not be impacted by increased latency from our services",
+  "description": "Use traffic shaping from the load Balancer to explore the impact of latency on our users",
+  "method": [
+    {
+      "name": "add-delay-to-traffic",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosgcp.lb.actions",
+        "func": "inject_traffic_delay",
+        "arguments": {
+          "url_map": "my-service",
+          "target_name": "all-paths",
+          "target_path": "/*",
+          "delay_in_seconds": 1,
+          "impacted_percentage": 80
         }
-    ]
+      },
+      "pauses": {
+        "after": 180
+      }
+    }
+  ],
+  "rollbacks": [
+    {
+      "name": "remove-traffic-delay",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosgcp.lb.actions",
+        "func": "remove_fault_injection_traffic_policy",
+        "arguments": {
+          "url_map": "my-service",
+          "target_name": "all-paths",
+          "target_path": "/*"
+        }
+      }
+    }
+  ]
 }
 ```
 
-That's it!
+That's it! You can now run it as `chaos run experiment.json`
 
 Please explore the code to see existing probes and actions.
 
+The extension picks up the credentials found on the machine running the
+experiment as describe in the official
+[Python GCP client](https://googleapis.dev/python/google-api-core/latest/auth.html).
 
-## Configuration
-
-### Project and Cluster Information
-
-All operations in this extension expect to know about the target project
-and, almost always, the region as well. These can be provided in two
-ways.
-
-1. Each action or probe takes a `project_id` and `region` arguments
-2. For some activities, you can also set the `parent` argument which looks like `projects/<ID>/locations/</region>`. This is equivalent to the previous approach so it's a matter of taste
-3. You can pass the context via the `configuration` section of your experiment:
-
-```json
-{
-    "configuration": {
-        "gcp_project_id": "...",
-        "gcp_gke_cluster_name": "...",
-        "gcp_region": "...",
-        "gcp_zone": "..."
-    }
-}
-```
-
-Note that the arguments will always take precedence over the configuration.
-
-You always need to set at least the `project_id` either with the
-configuration block (when it's the same project for all activities in the
-experiment) or on each activity directly. This is because the extension
-cannot always infer these from the credentials and therefore doesn't
-attempt to.
-
-### Credentials
-
-This extension allows you to reuse the authentication available to whichever
-user you are logged in on the machine running the experiment. In such case,
-the extension delegates the lookup of the appropriate credentials to the
-underlying
-[GCP Python client](https://googleapis.dev/python/google-api-core/latest/auth.html).
-
-In addition, the extension allows you to provide a [service account][sa] with
-enough permissions to perform its operations.
-
-[sa]: https://cloud.google.com/iam/docs/creating-managing-service-accounts 
-
-Once you have created your service account, either keep the file on the same
-machine where you will be running the experiment from. Or, pass its content
-as part of the `secrets` section, although this is not recommended because your
-sensitive data will be quite visible.
-
-Here is the first way:
-
-```json
-{
-    "secrets": {
-        "gcp": {
-            "service_account_file": "/path/to/sa.json"
-        }
-    }
-}
-```
-
-You can also use the well-known `GOOGLE_APPLICATION_CREDENTIALS` environment
-variables. iI that case, you do not need to set any secrets in the
-experiment.
-
-
-Finally, the embedded way looks like this (it should rarely be needed and avoided):
-
-
-```json
-{
-    "secrets": {
-        "k8s": {
-            "KUBERNETES_CONTEXT": "..."
-        },
-        "gcp": {
-            "service_account_info": {
-                "type": "service_account",
-                "project_id": "...",
-                "private_key_id": "...",
-                "private_key": "...",
-                "client_email": "...",
-                "client_id": "...",
-                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                "token_uri": "https://accounts.google.com/o/oauth2/token",
-                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-                "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/...."
-            }
-        }
-    }
-}
-```
-
-Notice also how we provided here the `k8s` entry. This is only because, in our
-example we use the `swap_nodepool` action which drains the Kubernetes nodes
-and it requires the Kubernetes cluster credentials to work. These are documented
-in the [Kubernetes extension for Chaos Toolkit][k8sctk]. This is the only
-action that requires such a secret payload, others only speak to the GCP API.
-
-[k8sctk]: https://docs.chaostoolkit.org/drivers/kubernetes/
-
-### Putting it all together
-
-Here is a full example which creates a node pool then swap it for a new one.
-
-```json
-{
-    "version": "1.0.0",
-    "title": "do stuff ye",
-    "description": "n/a",
-    "secrets": {
-        "k8s": {
-            "KUBERNETES_CONTEXT": "gke_..."
-        },
-        "gcp": {
-            "service_account_file": "service-account.json"
-        }
-    },
-    "method": [
-        {
-            "name": "create-our-nodepool",
-            "type": "action",
-            "provider": {
-                "type": "python",
-                "module": "chaosgcp.gke.nodepool.actions",
-                "func": "create_new_nodepool",
-                "secrets": ["gcp"],
-                "arguments": {
-                    "parent": "projects/.../locations/.../clusters/...",
-                    "body": {
-                        "config": { 
-                            "oauth_scopes": [
-                                "gke-version-default",
-                                "https://www.googleapis.com/auth/devstorage.read_only",
-                                "https://www.googleapis.com/auth/logging.write",
-                                "https://www.googleapis.com/auth/monitoring",
-                                "https://www.googleapis.com/auth/service.management.readonly",
-                                "https://www.googleapis.com/auth/servicecontrol",
-                                "https://www.googleapis.com/auth/trace.append"
-                            ]
-                        },
-                        "initial_node_count": 1,
-                        "name": "default-pool"
-                    }
-                }
-            }
-        },
-        {
-            "name": "fetch-our-nodepool",
-            "type": "probe",
-            "provider": {
-                "type": "python",
-                "module": "chaosgcp.gke.nodepool.probes",
-                "func": "get_nodepool",
-                "secrets": ["gcp"],
-                "arguments": {
-                    "parent": "projects/.../locations/.../clusters/.../nodePools/default-pool"
-                }
-            }
-        },
-        {
-            "name": "swap-our-nodepool",
-            "type": "action",
-            "provider": {
-                "type": "python",
-                "module": "chaosgcp.gke.nodepool.actions",
-                "func": "swap_nodepool",
-                "secrets": ["gcp", "k8s"],
-                "arguments": {
-                    "parent": "projects/.../locations/.../clusters/...",
-                    "delete_old_node_pool": true,
-                    "old_node_pool_id": "default-pool",
-                    "new_nodepool_body": {
-                        "config": { 
-                            "oauth_scopes": [
-                                "gke-version-default",
-                                "https://www.googleapis.com/auth/devstorage.read_only",
-                                "https://www.googleapis.com/auth/logging.write",
-                                "https://www.googleapis.com/auth/monitoring",
-                                "https://www.googleapis.com/auth/service.management.readonly",
-                                "https://www.googleapis.com/auth/servicecontrol",
-                                "https://www.googleapis.com/auth/trace.append"
-                            ]
-                        },
-                        "initial_node_count": 1,
-                        "name": "default-pool-1"
-                    }
-                }
-            }
-        }
-    ]
-}
-```
 
 ## Contribute
 
