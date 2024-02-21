@@ -6,7 +6,7 @@
 <h4 align="center">Google Cloud Platform Extension for the Chaos Toolkit</h4>
 
 <p align="center">
-   <a href="https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/releases">
+   <a href="https://pypi.org/project/chaostoolkit-google-cloud-platform/">
    <img alt="Release" src="https://img.shields.io/pypi/v/chaostoolkit-google-cloud-platform.svg">
    <a href="#">
    <img alt="Build" src="https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/actions/workflows/build.yaml/badge.svg">
