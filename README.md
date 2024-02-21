@@ -116,13 +116,6 @@ the rules of the DCO before submitting a PR.
 
 [dco]: https://github.com/probot/dco#how-it-works
 
-If you wish to add a new function to this extension, that is related to a 
-Google Cloud product that is not available yet in this package, please use 
-the product short name or acronym as a first level subpackage (eg. iam, gke, 
-sql, storage, ...). See the list of [GCP products and services][gcp_products].
-
-[gcp_products] https://cloud.google.com/products/
-
 ### Develop
 
 If you wish to develop on this project, make sure to install the development
