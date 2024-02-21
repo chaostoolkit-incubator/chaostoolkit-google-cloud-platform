@@ -3,7 +3,7 @@ requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
 [project]
-name = "chaostoolkit-lib"
+name = "chaostoolkit-google-cloud-platform"
 dynamic = ["version"]
 description = "Google Cloud Platform extension for the Chaos Toolkit"
 authors = [
