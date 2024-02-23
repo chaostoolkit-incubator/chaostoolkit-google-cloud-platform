@@ -15,7 +15,7 @@
    <a href="https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/blob/master/LICENSE.md">
    <img alt="License" src="https://img.shields.io/github/license/chaostoolkit-incubator/chaostoolkit-google-cloud-platform">
    <a href="#">
-   <img alt="Python version" src="https://img.shields.io/pypi/pyversions/chaostoolkit-lib.svg">
+   <img alt="Python version" src="https://img.shields.io/pypi/pyversions/chaostoolkit-google-cloud-platform.svg">
    <a href="https://pkg.go.dev/github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform">
 </p>
 
