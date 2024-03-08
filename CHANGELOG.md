@@ -8,6 +8,7 @@
 
 * Allow to retrieve the project id from the `GCP_PROJECT_ID` environment
   variable
+* Bump dependencies
 
 ## [0.16.1][] - 2024-02-21
 
