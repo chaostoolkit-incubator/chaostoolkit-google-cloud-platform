@@ -4,6 +4,11 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.16.1...HEAD
 
+### Changed
+
+* Allow to retrieve the project id from the `GCP_PROJECT_ID` environment
+  variable
+
 ## [0.16.1][] - 2024-02-21
 
 [0.16.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.16.0...0.16.1

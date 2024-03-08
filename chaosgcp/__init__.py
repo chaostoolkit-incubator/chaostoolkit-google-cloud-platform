@@ -69,7 +69,8 @@ def get_context(
     Collate all the GCP context information.
     """
     return GCPContext(
-        project_id=project_id or configuration.get("gcp_project_id"),
+        project_id=project_id
+        or configuration.get("gcp_project_id", os.getenv("GCP_PROJECT_ID")),
         cluster_name=configuration.get("gcp_gke_cluster_name"),
         region=region or configuration.get("gcp_region"),
         zone=zone or configuration.get("gcp_zone"),
