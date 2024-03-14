@@ -2,7 +2,9 @@
 from typing import Any, Dict
 
 from chaosk8s.node.actions import drain_nodes
+from chaoslib.exceptions import ActivityFailed
 from chaoslib.types import Configuration, Secrets
+from google.cloud import container_v1
 from logzero import logger
 
 from chaosgcp import context_from_parent_path, get_parent, to_dict
@@ -180,6 +182,56 @@ def rollback_nodepool(
     response = client.rollback_node_pool_upgrade(name=parent)
 
     logger.debug("NodePool upgrade rollback: {}".format(str(response)))
+
+    if wait_until_complete:
+        ctx = context_from_parent_path(parent)
+        response = wait_on_operation(client, response, ctx)
+
+    return response
+
+
+def resize_nodepool(
+    pool_size: int = 1,
+    node_pool_id: str = None,
+    parent: str = None,
+    wait_until_complete: bool = True,
+    project_id: str = None,
+    region: str = None,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> Dict[str, Any]:
+    """
+    Resize a cluster nodepool.
+
+    Specify the nodepool through the `parent`
+    argument as follows `projects/*/locations/*/clusters/*/nodePools/*` or
+    set `node_pool_id` and optionally the `project_id` and `region`. If not
+    passed, these two will be loaded from the configuration.
+
+    If `wait_until_complete` is set to `True` (the default), the function
+    will block until the node pool is ready. Otherwise, will return immediatly
+    with the operation information.
+
+    See: https://cloud.google.com/python/docs/reference/container/latest/google.cloud.container_v1.services.cluster_manager.ClusterManagerClient#google_cloud_container_v1_services_cluster_manager_ClusterManagerClient_set_node_pool_size
+    """  # noqa: E501
+    if not parent and not node_pool_id:
+        raise ActivityFailed("you must pass `node_pool_id` or `parent`")
+
+    parent = get_parent(
+        parent,
+        node_pool_id=node_pool_id,
+        configuration=configuration,
+        project_id=project_id,
+        region=region,
+    )
+    client = get_client(configuration, secrets)
+    request = container_v1.SetNodePoolSizeRequest(
+        parent=parent,
+        node_count=pool_size,
+    )
+    response = client.set_node_pool_size(request=request)
+
+    logger.debug("NodePool resize: {}".format(str(response)))
 
     if wait_until_complete:
         ctx = context_from_parent_path(parent)

@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.17.1...HEAD
 
+### Added
+
+* The `chaosgcp.gke.nodepool.actions.resize_nodepool` action
+
 ## [0.17.1][] - 2024-03-08
 
 [0.17.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.17.0...0.17.1

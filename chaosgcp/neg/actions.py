@@ -44,12 +44,12 @@ def detach_network_endpoint_group(
     )
 
     if endpoints:
-        params[
-            "network_endpoint_groups_detach_endpoints_request_resource"
-        ] = compute_v1.NetworkEndpointGroupsDetachEndpointsRequest(
-            network_endpoints=[
-                compute_v1.NetworkEndpoint(**e) for e in endpoints
-            ]
+        params["network_endpoint_groups_detach_endpoints_request_resource"] = (
+            compute_v1.NetworkEndpointGroupsDetachEndpointsRequest(
+                network_endpoints=[
+                    compute_v1.NetworkEndpoint(**e) for e in endpoints
+                ]
+            )
         )
 
     request = compute_v1.DetachNetworkEndpointsNetworkEndpointGroupRequest(
@@ -92,12 +92,12 @@ def attach_network_endpoint_group(
     )
 
     if endpoints:
-        params[
-            "network_endpoint_groups_detach_endpoints_request_resource"
-        ] = compute_v1.NetworkEndpointGroupsAttachEndpointsRequest(
-            network_endpoints=[
-                compute_v1.NetworkEndpoint(**e) for e in endpoints
-            ]
+        params["network_endpoint_groups_detach_endpoints_request_resource"] = (
+            compute_v1.NetworkEndpointGroupsAttachEndpointsRequest(
+                network_endpoints=[
+                    compute_v1.NetworkEndpoint(**e) for e in endpoints
+                ]
+            )
         )
 
     request = compute_v1.AttachNetworkEndpointsNetworkEndpointGroupRequest(
