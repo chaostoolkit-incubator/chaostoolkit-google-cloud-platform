@@ -19,8 +19,8 @@ __all__ = [
 
 def get_metrics(
     metric_type: str,
-    metric_labels_filters: Optional[Dict[str, str]] = None,
-    resource_labels_filters: Optional[Dict[str, str]] = None,
+    metric_labels_filters: Optional[Union[str, Dict[str, str]]] = None,
+    resource_labels_filters: Optional[Union[str, Dict[str, str]]] = None,
     end_time: str = "now",
     window: str = "5 minutes",
     aligner: int = 0,
@@ -61,9 +61,21 @@ def get_metrics(
         q = q.reduce(reducer, *reducer_group_by)
 
     if metric_labels_filters:
+        if isinstance(metric_labels_filters, str):
+            mlf = metric_labels_filters
+            metric_labels_filters = {}
+            for f in mlf.split(","):
+                k, v = f.split("=", 1)
+                metric_labels_filters[k] = v
         q = q.select_metrics(**metric_labels_filters)
 
     if resource_labels_filters:
+        if isinstance(resource_labels_filters, str):
+            rlf = resource_labels_filters
+            resource_labels_filters = {}
+            for f in rlf.split(","):
+                k, v = f.split("=", 1)
+                resource_labels_filters[k] = v
         q = q.select_resources(**resource_labels_filters)
 
     series = []

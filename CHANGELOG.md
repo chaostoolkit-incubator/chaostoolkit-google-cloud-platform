@@ -2,7 +2,15 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.18.1...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.19.0...HEAD
+
+## [0.19.0][] - 2024-03-14
+
+[0.19.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.18.1...0.19.0
+
+### Changed
+
+* Support string filters in `get_metrics`
 
 ## [0.18.1][] - 2024-03-14
 
