@@ -2,11 +2,19 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.17.1...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.18.0...HEAD
+
+## [0.18.0][] - 2024-03-14
+
+[0.18.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.17.1...0.18.0
 
 ### Added
 
 * The `chaosgcp.gke.nodepool.actions.resize_nodepool` action
+
+### Changed
+
+* Bump dependencies
 
 ## [0.17.1][] - 2024-03-08
 
