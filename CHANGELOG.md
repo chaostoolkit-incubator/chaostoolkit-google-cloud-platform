@@ -2,7 +2,15 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.19.0...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.20.0...HEAD
+
+## [0.20.0][] - 2024-03-14
+
+[0.20.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.19.0...0.20.0
+
+### Added
+
+* The `run_mql_query` probe in the monitoring package
 
 ## [0.19.0][] - 2024-03-14
 

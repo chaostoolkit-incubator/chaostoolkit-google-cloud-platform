@@ -14,6 +14,7 @@ __all__ = [
     "get_slo_burn_rate",
     "get_slo_budget",
     "valid_slo_ratio_during_window",
+    "run_mql_query",
 ]
 
 
@@ -84,6 +85,30 @@ def get_metrics(
         series.append(d)
 
     return series
+
+
+def run_mql_query(
+    project: str,
+    mql: str,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> List[Dict[str, Any]]:
+    """
+    Execute a MQL query and return its results.
+
+    Use the project name or id.
+    """
+    credentials = load_credentials(secrets)
+    client = monitoring_v3.QueryServiceClient(credentials=credentials)
+
+    request = monitoring_v3.QueryTimeSeriesRequest(
+        name=f"projects/{project}",
+        query=mql,
+    )
+
+    results = client.query_time_series(request=request)
+
+    list(map(lambda p: p.__class__.to_dict(p), results))
 
 
 def get_slo_health(
