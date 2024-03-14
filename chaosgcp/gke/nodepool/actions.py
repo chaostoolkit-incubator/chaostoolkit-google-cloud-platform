@@ -19,6 +19,7 @@ __all__ = [
     "delete_nodepool",
     "swap_nodepool",
     "rollback_nodepool",
+    "resize_nodepool"
 ]
 
 

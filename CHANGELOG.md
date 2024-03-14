@@ -2,7 +2,15 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.18.0...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.18.1...HEAD
+
+## [0.18.1][] - 2024-03-14
+
+[0.18.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.18.0...0.18.1
+
+### Fixed
+
+* Expose `chaosgcp.gke.nodepool.actions.resize_nodepool` action
 
 ## [0.18.0][] - 2024-03-14
 
