@@ -2,7 +2,15 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.21.0...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.21.1...HEAD
+
+## [0.21.1][] - 2024-03-15
+
+[0.21.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.21.0...0.21.1
+
+### Fixed
+
+* `get_backend_service_health` requires to be iterated over each network group
 
 ## [0.21.0][] - 2024-03-15
 
