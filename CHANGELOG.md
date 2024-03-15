@@ -2,7 +2,15 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.20.0...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.20.1...HEAD
+
+## [0.20.1][] - 2024-03-15
+
+[0.20.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.20.0...0.20.1
+
+### Fixed
+
+* Make sure `run_mql_query` returns the values it computed
 
 ## [0.20.0][] - 2024-03-14
 

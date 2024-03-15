@@ -108,7 +108,7 @@ def run_mql_query(
 
     results = client.query_time_series(request=request)
 
-    list(map(lambda p: p.__class__.to_dict(p), results))
+    return list(map(lambda p: p.__class__.to_dict(p), results))
 
 
 def get_slo_health(
