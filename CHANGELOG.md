@@ -2,7 +2,15 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.20.1...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.21.0...HEAD
+
+## [0.21.0][] - 2024-03-15
+
+[0.21.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.20.1...0.21.0
+
+### Added
+
+* The `get_backend_service_health` probe in the load balancing package
 
 ## [0.20.1][] - 2024-03-15
 
