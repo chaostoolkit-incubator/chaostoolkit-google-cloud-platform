@@ -26,3 +26,4 @@ configuration = {
     "gcp_region": "us-west1",
     "gcp_gke_cluster_name": "demos-cluster",
 }
+

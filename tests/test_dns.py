@@ -39,3 +39,4 @@ def test_update_dns_a_record(credentials, dns_client):
   )
 
   assert response["type"] == "A"
+  
