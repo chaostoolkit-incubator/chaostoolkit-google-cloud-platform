@@ -1,4 +1,4 @@
-"""
+"""Configuration values for dns tests.
 
 This file is where all the configuration values for dns test to run.
 
