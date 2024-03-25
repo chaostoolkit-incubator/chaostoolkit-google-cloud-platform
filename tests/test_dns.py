@@ -1,4 +1,4 @@
-"""A one-line summary of the module or program, terminated by a period.
+"""
 
 Tests for dns functions in the dns/actions.py 
 

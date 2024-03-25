@@ -1,4 +1,4 @@
-"""A one-line summary of the module or program, terminated by a period.
+"""
 
 This file is where all the configuration values for dns test to run.
 

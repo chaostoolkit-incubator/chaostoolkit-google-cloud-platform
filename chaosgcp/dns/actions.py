@@ -1,4 +1,4 @@
-"""A one-line summary of the module or program, terminated by a period.
+"""
 
 This file has the function to update the DNS A record
 
