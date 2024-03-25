@@ -42,7 +42,7 @@ def update_dns_a_record(
       existing_type: the existing type of record 
       secrets: authorization token
   Returns:
-      JSON Response
+      JSON Response which is in form of dictionary
   """
   service = client("dns", "v1", secrets=secrets)
 

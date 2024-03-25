@@ -1,8 +1,4 @@
-"""
-
-Tests for dns functions in the dns/actions.py 
-
-"""
+"""Tests for dns functions in the dns/actions.py."""
 # Copyright 2023 Google LLC.
 # SPDX-License-Identifier: Apache-2.0
 from unittest import mock
