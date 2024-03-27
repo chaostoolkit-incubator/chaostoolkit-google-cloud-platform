@@ -4,6 +4,28 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.21.1...HEAD
 
+### Added
+
+* The `chaosgcp.cloudlogging.controls.journal` control to send the journal
+  to GCP Cloud Logging:
+
+  ```json
+  "controls": [
+        {
+            "name": "gcp-journal-logger",
+            "provider": {
+                "type": "python",
+                "module": "chaosgcp.cloudlogging.controls.journal",
+                "arguments": {
+                    "labels": {
+                        "appid": "123456"
+                    }
+                }
+            }
+        }
+    ]
+  ```
+
 ## [0.21.1][] - 2024-03-15
 
 [0.21.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.21.0...0.21.1
