@@ -2,7 +2,12 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.21.1...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.22.0...HEAD
+
+
+## [0.22.0][] - 2024-03-27
+
+[0.22.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.21.1...0.22.0
 
 ### Added
 
