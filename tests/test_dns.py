@@ -1,15 +1,16 @@
 """Tests for dns functions in the dns/actions.py."""
-# Copyright 2023 Google LLC.
-# SPDX-License-Identifier: Apache-2.0
+
 from unittest import mock
-from chaosgcp.dns.actions import update_dns_a_record
+
+from chaosgcp.dns.actions import update_dns_record
+
 import fixtures
 
 
 @mock.patch("build", autospec=True)
 @mock.patch("credentials", autospec=True)
-def test_update_dns_a_record(credentials, dns_client):
-  """description of the test_update_dns_a_record.
+def test_update_dns_record(credentials, dns_client):
+  """description of the test_update_dns_record.
   
   Args:
     credentials: description of credentials
@@ -30,12 +31,12 @@ def test_update_dns_a_record(credentials, dns_client):
   recordsets_svc.patch.return_value = recordsets_patch
   service.resourceRecordSets.return_value = recordsets_svc
 
-  response = update_dns_a_record(
+  response = update_dns_record(
       name=name,
       zone_name=zone_name,
       ip_address="10.2.0.6",
       secrets=fixtures.secrets,
-      project=project_id,
+      project_id=project_id,
   )
 
   assert response["type"] == "A"
