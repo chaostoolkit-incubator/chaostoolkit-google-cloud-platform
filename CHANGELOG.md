@@ -4,6 +4,13 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.22.0...HEAD
 
+## [0.23.0][] - 2024-04-10
+
+[0.23.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.22.0...0.23.0
+
+### Added
+
+* The `chaosgcp.dns.actions` activities to update a DNS record
 
 ## [0.22.0][] - 2024-03-27
 
