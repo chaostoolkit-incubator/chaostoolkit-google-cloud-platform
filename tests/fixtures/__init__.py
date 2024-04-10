@@ -6,6 +6,12 @@ resources needed for running tests in test files.
 """
 # -*- coding: utf-8 -*-
 
+import fixtures.cloudbuild  # noqa
+import fixtures.cloudrun  # noqa
+import fixtures.dns  # noqa
+import fixtures.nodepool  # noqa
+import fixtures.sql  # noqa
+
 secrets = {"service_account_file": "tests/fixtures/fake_creds.json"}
 
 secrets_with_k8s = {
