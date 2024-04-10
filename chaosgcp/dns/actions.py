@@ -7,19 +7,18 @@ Typical usage example in an experiment json file:
   "module": "chaosgcp.dns.actions",
   "func": "update_service",
 """
-
-# -*- coding: utf-8 -*-
+import logging
 from typing import Any, Dict
+
+from chaoslib.exceptions import ActivityFailed
+from chaoslib.types import Configuration, Secrets
 
 from chaosgcp import client
 
-from chaoslib.exceptions import ActivityFailed
-
-import logging
-
-from chaoslib.types import Configuration, Secrets
 
 __all__ = ["update_dns_record"]
+
+logger = logging.getLogger("chaostoolkit")
 
 
 def update_dns_record(
@@ -50,8 +49,6 @@ def update_dns_record(
         JSON Response which is in form of dictionary
     """
     service = client("dns", "v1", secrets=secrets)
-
-    logger = logging.getLogger("chaostoolkit")
 
     dns_record_body = {
         "kind": kind,
