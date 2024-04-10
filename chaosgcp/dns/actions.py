@@ -13,6 +13,10 @@ from typing import Any, Dict
 
 from chaosgcp import client
 
+from chaoslib.exceptions import ActivityFailed
+
+import logging
+
 from chaoslib.types import Configuration, Secrets
 
 __all__ = ["update_dns_record"]
@@ -27,8 +31,8 @@ def update_dns_record(
     ttl: int = 5,
     record_type: str = "A",
     existing_type: str = "A",
-    secrets: Secrets = None,
     configuration: Configuration = None,
+    secrets: Secrets = None,
 ) -> Dict[str, Any]:
   """Updates the DNS A record entry, It cannot be undone.
 
@@ -46,6 +50,8 @@ def update_dns_record(
       JSON Response which is in form of dictionary
   """
   service = client("dns", "v1", secrets=secrets)
+
+  logger = logging.getLogger("chaostoolkit")
 
   dns_record_body = {
       "kind": kind,
@@ -66,7 +72,7 @@ def update_dns_record(
   try:
     response = request.execute()
   except Exception as e:
-    print("Exception occurred: "+ str(e))
-    return {}
+    logger.debug(f"Patching DNS record sets failed: {str(e)}", exc_info=True)
+    raise ActivityFailed("patch DNS record sets failed")
 
   return response.__class__.to_dict(response)

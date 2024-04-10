@@ -277,3 +277,11 @@ have a changed behavior with this version!
 -   Refactored wait_on_operation to accept multiple & various keyword arguments
 -   Expose a load_credentials function in `chaosgcp` to load credentials
     from secrets.
+
+## [Unreleased][]
+
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.22.0...HEAD
+
+### Added
+
+* DNS action to patch record sets
