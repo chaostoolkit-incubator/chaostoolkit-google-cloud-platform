@@ -34,45 +34,47 @@ def update_dns_record(
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
-  """Updates the DNS A record entry, It cannot be undone.
+    """Updates the DNS A record entry, It cannot be undone.
 
-  Args:
-      project_id : the project ID in which the DNS record is present
-      ip_address: the IP address for the A record that needs to be changed
-      name: the name of the dns record entry 
-      zone_name: the name of the dns zone name which needs to be changed
-      kind : the type of dns record set
-      ttl: time to live for dns record change 
-      record_type: the record type for the name
-      existing_type: the existing type of record 
-      secrets: authorization token
-  Returns:
-      JSON Response which is in form of dictionary
-  """
-  service = client("dns", "v1", secrets=secrets)
+    Args:
+        project_id : the project ID in which the DNS record is present
+        ip_address: the IP address for the A record that needs to be changed
+        name: the name of the dns record entry
+        zone_name: the name of the dns zone name which needs to be changed
+        kind : the type of dns record set
+        ttl: time to live for dns record change
+        record_type: the record type for the name
+        existing_type: the existing type of record
+        secrets: authorization token
+    Returns:
+        JSON Response which is in form of dictionary
+    """
+    service = client("dns", "v1", secrets=secrets)
 
-  logger = logging.getLogger("chaostoolkit")
+    logger = logging.getLogger("chaostoolkit")
 
-  dns_record_body = {
-      "kind": kind,
-      "name": name,
-      "rrdatas": [ip_address],
-      "ttl": ttl,
-      "type": record_type,
-  }
+    dns_record_body = {
+        "kind": kind,
+        "name": name,
+        "rrdatas": [ip_address],
+        "ttl": ttl,
+        "type": record_type,
+    }
 
-  request = service.resourceRecordSets().patch(
-      project=project_id,
-      managedZone=zone_name,
-      name=name,
-      type=existing_type,
-      body=dns_record_body,
-  )
-  
-  try:
-    response = request.execute()
-  except Exception as e:
-    logger.debug(f"Patching DNS record sets failed: {str(e)}", exc_info=True)
-    raise ActivityFailed("patch DNS record sets failed")
+    request = service.resourceRecordSets().patch(
+        project=project_id,
+        managedZone=zone_name,
+        name=name,
+        type=existing_type,
+        body=dns_record_body,
+    )
 
-  return response.__class__.to_dict(response)
+    try:
+        response = request.execute()
+    except Exception as e:
+        logger.debug(
+            f"Patching DNS record sets failed: {str(e)}", exc_info=True
+        )
+        raise ActivityFailed("patch DNS record sets failed")
+
+    return response.__class__.to_dict(response)

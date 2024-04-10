@@ -10,34 +10,33 @@ import fixtures
 @mock.patch("build", autospec=True)
 @mock.patch("credentials", autospec=True)
 def test_update_dns_record(credentials, dns_client):
-  """description of the test_update_dns_record.
-  
-  Args:
-    credentials: description of credentials
-    dns_client: description of dns
-  """
-  project_id = fixtures.configuration["gcp_project_id"]
-  zone_name = "plsqlzone"
-  name = "8144911341bc.38ftc5jekg33w.us-central1.sql.goog."
-  credentials.from_service_account_file.return_value = mock.MagicMock()
+    """description of the test_update_dns_record.
 
-  service = mock.MagicMock()
-  dns_client.return_value = service
+    Args:
+      credentials: description of credentials
+      dns_client: description of dns
+    """
+    project_id = fixtures.configuration["gcp_project_id"]
+    zone_name = "plsqlzone"
+    name = "8144911341bc.38ftc5jekg33w.us-central1.sql.goog."
+    credentials.from_service_account_file.return_value = mock.MagicMock()
 
-  recordsets_svc = mock.MagicMock()
-  recordsets_patch = mock.MagicMock()
+    service = mock.MagicMock()
+    dns_client.return_value = service
 
-  recordsets_patch.execute.return_value = fixtures.dns.response
-  recordsets_svc.patch.return_value = recordsets_patch
-  service.resourceRecordSets.return_value = recordsets_svc
+    recordsets_svc = mock.MagicMock()
+    recordsets_patch = mock.MagicMock()
 
-  response = update_dns_record(
-      name=name,
-      zone_name=zone_name,
-      ip_address="10.2.0.6",
-      secrets=fixtures.secrets,
-      project_id=project_id,
-  )
+    recordsets_patch.execute.return_value = fixtures.dns.response
+    recordsets_svc.patch.return_value = recordsets_patch
+    service.resourceRecordSets.return_value = recordsets_svc
 
-  assert response["type"] == "A"
-  
+    response = update_dns_record(
+        name=name,
+        zone_name=zone_name,
+        ip_address="10.2.0.6",
+        secrets=fixtures.secrets,
+        project_id=project_id,
+    )
+
+    assert response["type"] == "A"
