@@ -7,6 +7,7 @@ Typical usage example in an experiment json file:
   "module": "chaosgcp.dns.actions",
   "func": "update_service",
 """
+
 import logging
 from typing import Any, Dict
 
@@ -72,6 +73,8 @@ def update_dns_record(
         logger.debug(
             f"Patching DNS record sets failed: {str(e)}", exc_info=True
         )
-        raise ActivityFailed("patch DNS record sets failed")
+        raise ActivityFailed(
+            f"patching DNS recordsets '{name}' in zone '{zone_name}' failed"
+        )
 
-    return response.__class__.to_dict(response)
+    return response

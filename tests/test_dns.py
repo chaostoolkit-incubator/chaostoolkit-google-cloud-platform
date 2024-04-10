@@ -7,9 +7,9 @@ from chaosgcp.dns.actions import update_dns_record
 import fixtures
 
 
-@mock.patch("build", autospec=True)
-@mock.patch("credentials", autospec=True)
-def test_update_dns_record(credentials, dns_client):
+@mock.patch("chaosgcp.build", autospec=True)
+@mock.patch("chaosgcp.Credentials", autospec=True)
+def test_update_dns_record(Credentials, dns_client):
     """description of the test_update_dns_record.
 
     Args:
@@ -19,7 +19,7 @@ def test_update_dns_record(credentials, dns_client):
     project_id = fixtures.configuration["gcp_project_id"]
     zone_name = "plsqlzone"
     name = "8144911341bc.38ftc5jekg33w.us-central1.sql.goog."
-    credentials.from_service_account_file.return_value = mock.MagicMock()
+    Credentials.from_service_account_file.return_value = mock.MagicMock()
 
     service = mock.MagicMock()
     dns_client.return_value = service
