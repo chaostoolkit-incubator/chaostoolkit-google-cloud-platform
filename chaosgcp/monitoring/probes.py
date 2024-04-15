@@ -14,13 +14,14 @@ __all__ = [
     "get_slo_burn_rate",
     "get_slo_budget",
     "valid_slo_ratio_during_window",
+    "run_mql_query",
 ]
 
 
 def get_metrics(
     metric_type: str,
-    metric_labels_filters: Optional[Dict[str, str]] = None,
-    resource_labels_filters: Optional[Dict[str, str]] = None,
+    metric_labels_filters: Optional[Union[str, Dict[str, str]]] = None,
+    resource_labels_filters: Optional[Union[str, Dict[str, str]]] = None,
     end_time: str = "now",
     window: str = "5 minutes",
     aligner: int = 0,
@@ -61,9 +62,21 @@ def get_metrics(
         q = q.reduce(reducer, *reducer_group_by)
 
     if metric_labels_filters:
+        if isinstance(metric_labels_filters, str):
+            mlf = metric_labels_filters
+            metric_labels_filters = {}
+            for f in mlf.split(","):
+                k, v = f.split("=", 1)
+                metric_labels_filters[k] = v
         q = q.select_metrics(**metric_labels_filters)
 
     if resource_labels_filters:
+        if isinstance(resource_labels_filters, str):
+            rlf = resource_labels_filters
+            resource_labels_filters = {}
+            for f in rlf.split(","):
+                k, v = f.split("=", 1)
+                resource_labels_filters[k] = v
         q = q.select_resources(**resource_labels_filters)
 
     series = []
@@ -72,6 +85,30 @@ def get_metrics(
         series.append(d)
 
     return series
+
+
+def run_mql_query(
+    project: str,
+    mql: str,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> List[Dict[str, Any]]:
+    """
+    Execute a MQL query and return its results.
+
+    Use the project name or id.
+    """
+    credentials = load_credentials(secrets)
+    client = monitoring_v3.QueryServiceClient(credentials=credentials)
+
+    request = monitoring_v3.QueryTimeSeriesRequest(
+        name=f"projects/{project}",
+        query=mql,
+    )
+
+    results = client.query_time_series(request=request)
+
+    return list(map(lambda p: p.__class__.to_dict(p), results))
 
 
 def get_slo_health(
@@ -278,3 +315,30 @@ def valid_slo_ratio_during_window(
             good += 1
 
     return ((good * 100.0) / total) >= expected_ratio
+
+
+def query_time_series(
+    mql_query: str,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> List[Dict[str, Any]]:
+    """
+    Query time series using a MQL query.
+
+    See also: https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.timeSeries/query
+    """
+    credentials = load_credentials(secrets)
+    project = credentials.project_id
+
+    client = monitoring_v3.QueryServiceClient(credentials=credentials)
+    request = monitoring_v3.QueryTimeSeriesRequest(
+        name=f"projects/{project}",
+        query=mql_query,
+    )
+
+    return list(
+        map(
+            lambda p: p.__class__.to_dict(p),
+            client.query_time_series(request=request),
+        )
+    )

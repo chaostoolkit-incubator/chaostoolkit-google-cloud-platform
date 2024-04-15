@@ -1,5 +1,17 @@
+"""Configuration values for all tests.
+
+This file is where all the configuration values for all the
+resources needed for running tests in test files.
+
+"""
 # -*- coding: utf-8 -*-
-from fixtures import cloudbuild, cloudrun, compute, nodepool, sql, storage  # noqa
+
+import fixtures.cloudbuild  # noqa
+import fixtures.cloudrun  # noqa
+import fixtures.compute  # noqa
+import fixtures.dns  # noqa
+import fixtures.nodepool  # noqa
+import fixtures.sql  # noqa
 
 secrets = {"service_account_file": "tests/fixtures/fake_creds.json"}
 

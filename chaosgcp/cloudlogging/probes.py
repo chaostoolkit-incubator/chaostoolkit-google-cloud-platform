@@ -15,13 +15,15 @@ def get_logs_between_timestamps(
     end_time: str = "now",
     window: str = "1h",
     order_by: str = "asc",
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> List[Dict[str, Any]]:
     """
     Read logs during an interval and return a list of entries.
     """
-    context = get_context(configuration, secrets)
+    context = get_context(configuration, project_id=project_id, region=region)
     client = logging.Client(project=context.project_id)
 
     start_time, end_time = parse_interval(end_time, window)

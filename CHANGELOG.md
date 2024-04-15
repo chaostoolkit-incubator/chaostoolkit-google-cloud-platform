@@ -2,7 +2,164 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.14.1...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.23.0...HEAD
+
+## [0.23.0][] - 2024-04-10
+
+[0.23.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.22.0...0.23.0
+
+### Added
+
+* The `chaosgcp.dns.actions` activities to update a DNS record
+
+## [0.22.0][] - 2024-03-27
+
+[0.22.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.21.1...0.22.0
+
+### Added
+
+* The `chaosgcp.cloudlogging.controls.journal` control to send the journal
+  to GCP Cloud Logging:
+
+  ```json
+  "controls": [
+        {
+            "name": "gcp-journal-logger",
+            "provider": {
+                "type": "python",
+                "module": "chaosgcp.cloudlogging.controls.journal",
+                "arguments": {
+                    "labels": {
+                        "appid": "123456"
+                    }
+                }
+            }
+        }
+    ]
+  ```
+
+## [0.21.1][] - 2024-03-15
+
+[0.21.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.21.0...0.21.1
+
+### Fixed
+
+* `get_backend_service_health` requires to be iterated over each network group
+
+## [0.21.0][] - 2024-03-15
+
+[0.21.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.20.1...0.21.0
+
+### Added
+
+* The `get_backend_service_health` probe in the load balancing package
+
+## [0.20.1][] - 2024-03-15
+
+[0.20.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.20.0...0.20.1
+
+### Fixed
+
+* Make sure `run_mql_query` returns the values it computed
+
+## [0.20.0][] - 2024-03-14
+
+[0.20.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.19.0...0.20.0
+
+### Added
+
+* The `run_mql_query` probe in the monitoring package
+
+## [0.19.0][] - 2024-03-14
+
+[0.19.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.18.1...0.19.0
+
+### Changed
+
+* Support string filters in `get_metrics`
+
+## [0.18.1][] - 2024-03-14
+
+[0.18.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.18.0...0.18.1
+
+### Fixed
+
+* Expose `chaosgcp.gke.nodepool.actions.resize_nodepool` action
+
+## [0.18.0][] - 2024-03-14
+
+[0.18.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.17.1...0.18.0
+
+### Added
+
+* The `chaosgcp.gke.nodepool.actions.resize_nodepool` action
+
+### Changed
+
+* Bump dependencies
+
+## [0.17.1][] - 2024-03-08
+
+[0.17.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.17.0...0.17.1
+
+### Changed
+
+* Bump dependencies
+
+## [0.17.0][] - 2024-03-08
+
+[0.17.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.17.0...0.17.0
+
+### Changed
+
+* Allow to retrieve the project id from the `GCP_PROJECT_ID` environment
+  variable
+* Bump dependencies
+
+## [0.16.1][] - 2024-02-21
+
+[0.16.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.16.0...0.16.1
+
+### Fixed
+
+* Remove trailing function call in monitoring/actions.py module
+
+## [0.16.0][] - 2024-02-21
+
+[0.16.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.15.0...0.16.0
+
+### Changed
+
+* Switched from `setuptools`to [pdm](https://pdm-project.org) to package and
+  manage the project. This also brings a much stricter dependency management
+  support
+* Read package version using `importlib_metadata`
+* Drops supports for Python 3.7 as it's been EOL since June 2023
+* Adds Code of Conduct file
+
+## [0.15.0][] - 2023-12-08
+
+[0.15.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.14.1...0.15.0
+
+### Changed
+
+* All actions and probes now take optional `project_id` and `region` arguments
+  so that they can be set on per activity basis. In that case, they take
+  precedence over the configuration payload. But this also means, the configuration
+  block can be left unset entirely for these fields
+* It is not expected anymore that you set a service account file to authenticate
+  When none is provided, we delegate to the GCP client library to figure it out.
+  This allows for newer authentication approaches supported by that client
+  without relying on a less secure service account
+
+### Breaking
+
+* In the `chaosgcp.cloudrun.probes.get_service` probe, the `name` argument has
+  been repurposed and has been renamed to `parent`. The `name` now expects
+  the service name without its parent path as a prefix.
+* The extension will not raise an `ActivityFailed` exception when it could not
+  load credentials explicitely set from the secrets. This is so the underlying
+  client can attempt to load credentials directly and natively
 
 ## [0.14.1][] - 2023-10-24
 
@@ -277,3 +434,11 @@ have a changed behavior with this version!
 -   Refactored wait_on_operation to accept multiple & various keyword arguments
 -   Expose a load_credentials function in `chaosgcp` to load credentials
     from secrets.
+
+## [Unreleased][]
+
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.22.0...HEAD
+
+### Added
+
+* DNS action to patch record sets

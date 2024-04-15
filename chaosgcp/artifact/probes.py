@@ -20,16 +20,24 @@ __all__ = [
 def list_docker_image_tags(
     repository: str,
     package_name: str,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> List[Dict[str, Any]]:
     """
     List docker image tags of a package in the given repository.
     """
-    context = get_context(configuration, secrets)
-    client = artifactregistry_v1.ArtifactRegistryClient()
+    context = get_context(
+        configuration=configuration, project_id=project_id, region=region
+    )
+    credentials = load_credentials(secrets)
+    client = artifactregistry_v1.ArtifactRegistryClient(credentials=credentials)
 
-    parent = f"projects/{context.project_id}/locations/{context.region}/repositories/{repository}/packages/{package_name}"  # noqa
+    project_id = context.project_id
+    region = context.region
+
+    parent = f"projects/{project_id}/locations/{region}/repositories/{repository}/packages/{package_name}"  # noqa
 
     request = artifactregistry_v1.ListTagsRequest(
         parent=parent,
@@ -48,16 +56,24 @@ def list_docker_image_tags(
 def get_most_recent_docker_image(
     repository: str,
     package_name: str,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
     """
     Get most recent tag for a package in repository.
     """
-    context = get_context(configuration, secrets)
-    client = artifactregistry_v1.ArtifactRegistryClient()
+    context = get_context(
+        configuration=configuration, project_id=project_id, region=region
+    )
+    credentials = load_credentials(secrets)
+    client = artifactregistry_v1.ArtifactRegistryClient(credentials=credentials)
 
-    parent = f"projects/{context.project_id}/locations/{context.region}/repositories/{repository}/packages/{package_name}"  # noqa
+    project_id = context.project_id
+    region = context.region
+
+    parent = f"projects/{project_id}/locations/{region}/repositories/{repository}/packages/{package_name}"  # noqa
 
     request = artifactregistry_v1.ListTagsRequest(
         parent=parent,
@@ -72,16 +88,24 @@ def get_docker_image_version_from_tag(
     repository: str,
     package_name: str,
     tag: str = "latest",
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
     """
     Get image version (sha256) for most recent tag.
     """
-    context = get_context(configuration, secrets)
-    client = artifactregistry_v1.ArtifactRegistryClient()
+    context = get_context(
+        configuration=configuration, project_id=project_id, region=region
+    )
+    credentials = load_credentials(secrets)
+    client = artifactregistry_v1.ArtifactRegistryClient(credentials=credentials)
 
-    name = f"projects/{context.project_id}/locations/{context.region}/repositories/{repository}/packages/{package_name}/tags/{tag}"  # noqa
+    project_id = context.project_id
+    region = context.region
+
+    name = f"projects/{project_id}/locations/{region}/repositories/{repository}/packages/{package_name}/tags/{tag}"  # noqa
 
     request = artifactregistry_v1.GetTagRequest(name=name)
 
@@ -93,24 +117,31 @@ def get_container_most_recent_image_vulnerabilities_occurences(
     repository: str,
     package_name: str,
     kind: str = "VULNERABILITY",
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
     """
     List all occurrences for a given container image tag.
     """
-    context = get_context(configuration, secrets)
+    context = get_context(
+        configuration=configuration, project_id=project_id, region=region
+    )
     image = get_most_recent_docker_image(
         repository, package_name, configuration, secrets
     )
     _, version = image["version"].rsplit(":", 1)
 
-    url = f"https://{context.region}-docker.pkg.dev/{context.project_id}/{repository}/{package_name}@sha256:{version}"  # noqa
+    project_id = context.project_id
+    region = context.region
+
+    url = f"https://{region}-docker.pkg.dev/{project_id}/{repository}/{package_name}@sha256:{version}"  # noqa
 
     creds = load_credentials(secrets=secrets)
     client = containeranalysis_v1.ContainerAnalysisClient(credentials=creds)
     grafeas_client = client.get_grafeas_client()
-    project_name = f"projects/{context.project_id}"
+    project_name = f"projects/{project_id}"
     response = grafeas_client.list_occurrences(
         parent=project_name, filter=f'kind="{kind}" AND resourceUrl="{url}"'
     )
@@ -126,6 +157,8 @@ def get_container_most_recent_image_vulnerabilities_occurences(
 def list_severe_or_critical_vulnerabilities_in_most_recent_image(
     repository: str,
     package_name: str,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> List[Dict[str, Any]]:
@@ -137,6 +170,8 @@ def list_severe_or_critical_vulnerabilities_in_most_recent_image(
             repository=repository,
             package_name=package_name,
             kind="VULNERABILITY",
+            project_id=project_id,
+            region=region,
             configuration=configuration,
             secrets=secrets,
         )
@@ -153,6 +188,8 @@ def list_severe_or_critical_vulnerabilities_in_most_recent_image(
 def has_most_recent_image_any_severe_or_critical_vulnerabilities(
     repository: str,
     package_name: str,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> bool:
@@ -164,6 +201,8 @@ def has_most_recent_image_any_severe_or_critical_vulnerabilities(
             list_severe_or_critical_vulnerabilities_in_most_recent_image(
                 repository=repository,
                 package_name=package_name,
+                project_id=project_id,
+                region=region,
                 configuration=configuration,
                 secrets=secrets,
             )

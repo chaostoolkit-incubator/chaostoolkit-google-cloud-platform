@@ -2,7 +2,8 @@
 import os.path
 import time
 from datetime import datetime
-from typing import Any, Dict, List, Tuple
+from importlib.metadata import version, PackageNotFoundError
+from typing import Any, Dict, List, Optional, Tuple
 
 import dateparser
 import httplib2
@@ -39,7 +40,11 @@ __all__ = [
     "context_from_parent_path",
     "parse_interval",
 ]
-__version__ = "0.14.1"
+
+try:
+    __version__ = version("chaostoolkit-google-cloud-platform")
+except PackageNotFoundError:
+    __version__ = "unknown"
 
 
 def get_service(
@@ -55,16 +60,20 @@ def get_service(
 
 
 def get_context(
-    configuration: Configuration, secrets: Secrets = None
+    configuration: Configuration,
+    project_id: str = None,
+    region: str = None,
+    zone: str = None,
 ) -> GCPContext:
     """
     Collate all the GCP context information.
     """
     return GCPContext(
-        project_id=configuration.get("gcp_project_id"),
+        project_id=project_id
+        or configuration.get("gcp_project_id", os.getenv("GCP_PROJECT_ID")),
         cluster_name=configuration.get("gcp_gke_cluster_name"),
-        region=configuration.get("gcp_region"),
-        zone=configuration.get("gcp_zone"),
+        region=region or configuration.get("gcp_region"),
+        zone=zone or configuration.get("gcp_zone"),
         parent=configuration.get("gcp_parent"),
     )
 
@@ -138,11 +147,15 @@ def wait_on_extended_operation(
             return None
 
 
-def load_credentials(secrets: Secrets = None) -> Credentials:
+def load_credentials(secrets: Secrets = None) -> Optional[Credentials]:
     """
-    Load GCP credentials from the experiment secrets
+    Load GCP credentials from the experiment secrets. When no credentials could
+    be located, this returns `None` so that the GCP client underneath can
+    gather the information itself. It's only valuable to specify these
+    credentials explicitely when you have want to override the default
+    auth from whereve you are logged in.
 
-    To authenticate, you need to create a service account manually and either
+    To authenticate, you dan create a service account manually and either
     pass the filename or the content of the file into the `secrets` object.
 
     So, in the experiment, use one of the followings:
@@ -217,20 +230,10 @@ def load_credentials(secrets: Secrets = None) -> Credentials:
         credentials = Credentials.from_service_account_info(
             service_account_info
         )
-    else:
-        raise FailedActivity(
-            "missing GCP credentials settings in secrets of this activity"
-        )
 
     if credentials is not None and credentials.expired:
         logger.debug("GCP credentials need to be refreshed as they expired")
         credentials.refresh(httplib2.Http())
-
-    if not credentials:
-        raise FailedActivity(
-            "missing a service account to authenticate with the "
-            "Google Cloud Platform"
-        )
 
     return credentials
 
@@ -261,13 +264,16 @@ def discover(discover_system: bool = True) -> Discovery:
 def get_parent(
     parent: str = None,
     node_pool_id: str = None,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
-    secrets: Secrets = None,
 ) -> str:
     if parent:
         return parent
 
-    ctx = get_context(configuration=configuration, secrets=secrets)
+    ctx = get_context(
+        configuration=configuration, project_id=project_id, region=region
+    )
     parent = ctx.get_cluster_parent()
 
     if not parent:
@@ -329,7 +335,9 @@ def load_exported_activities() -> List[DiscoveredActivities]:
     activities.extend(discover_probes("chaosgcp.cloudlogging.probes"))
     activities.extend(discover_probes("chaosgcp.artifact.probes"))
     activities.extend(discover_actions("chaosgcp.lb.actions"))
+    activities.extend(discover_actions("chaosgcp.lb.probes"))
     activities.extend(discover_probes("chaosgcp.neg.probes"))
     activities.extend(discover_actions("chaosgcp.neg.actions"))
     activities.extend(discover_actions("chaosgcp.compute.actions"))
+    activities.extend(discover_actions("chaosgcp.dns.actions"))
     return activities

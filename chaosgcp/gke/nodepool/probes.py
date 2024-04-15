@@ -13,6 +13,8 @@ __all__ = ["list_nodepools", "get_nodepool"]
 
 def list_nodepools(
     parent: str = None,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
@@ -25,7 +27,12 @@ def list_nodepools(
 
     See: https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.zones.clusters.nodePools/list
     """  # noqa: E501
-    parent = get_parent(parent, configuration=configuration, secrets=secrets)
+    parent = get_parent(
+        parent,
+        configuration=configuration,
+        project_id=project_id,
+        region=region,
+    )
     client = get_client(configuration, secrets)
     response = client.list_node_pools(parent=parent)
     logger.debug("NodePool listing: {}".format(str(response)))
@@ -35,6 +42,8 @@ def list_nodepools(
 def get_nodepool(
     node_pool_id: str = None,
     parent: str = None,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
@@ -82,7 +91,12 @@ def get_nodepool(
 
     See: https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.zones.clusters.nodePools/get
     """  # noqa: E501
-    parent = get_parent(parent, node_pool_id, configuration, secrets)
+    parent = get_parent(
+        parent,
+        configuration=configuration,
+        project_id=project_id,
+        region=region,
+    )
     client = get_client(configuration, secrets)
     request = container_v1.GetNodePoolRequest(name=parent)
     response = client.get_node_pool(request)
