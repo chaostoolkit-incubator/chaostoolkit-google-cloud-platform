@@ -1,5 +1,28 @@
 # Changelog
 
+#### Added  2024-04-26
+
+* The `chaosgcp.iam.controls.policy` control to Manage temporary, time-bound IAM roles for the specified project and members.
+* This controls grants specified IAM roles to the provided members, with an expiration time determined by the given expiry_time_in_minutes  befor experiment and revokes the specified IAM roles from the provided members after the experiment:
+
+  ```json
+    "controls": [
+        {
+            "name": "gcp-iampolicy-timebound",
+            "provider": {
+                "type": "python",
+                "module": "chaosgcp.iam.controls.policy",
+                "arguments": {
+                    "project_id":"mysampleproject",
+                    "roles": ["roles/storage.admin"],
+                    "members": ["serviceAccount:dp-sa11@mysampleproject.iam.gserviceaccount.com"],
+                    "expiry_time_in_minutes": 10
+                }
+            }
+        }
+    ]
+
+
 ## [Unreleased][]
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.24.0...HEAD
