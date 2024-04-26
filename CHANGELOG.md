@@ -3,7 +3,7 @@
 #### Added  2024-04-26
 
 * The `chaosgcp.iam.controls.policy` control to Manage temporary, time-bound IAM roles for the specified project and members.
-* This controls grants specified IAM roles to the provided members, with an expiration time determined by the given expiry_time_in_minutes  befor experiment and revokes the specified IAM roles from the provided members after the experiment:
+* This controls grants specified IAM roles to the provided members, with an expiration time determined by the given expiry_time_in_minutes  before experiment and revokes the specified IAM roles from the provided members after the experiment:
 
   ```json
     "controls": [
