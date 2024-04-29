@@ -1,15 +1,8 @@
 # Copyright 2023 Google LLC.
 # SPDX-License-Identifier: Apache-2.0
 from unittest.mock import MagicMock, patch
-
-import fixtures
-
-from unittest.mock import MagicMock, patch
-
-import fixtures
-
 from chaosgcp.compute.actions import compute_v1
-from chaosgcp.compute.actions import set_instance_tags
+import fixtures
 
 @patch("chaosgcp.compute.actions.compute_v1.types.Tags", autospec=True)
 @patch("chaosgcp.compute.actions.compute_v1.SetTagsInstanceRequest", autospec=True)
@@ -27,14 +20,35 @@ def test_set_instance_tags(Credentials,client,instance_req,settag_req,tags):
     Credentials.from_service_account_file.return_value = MagicMock()
     
 
-    instance_req.return_value=compute_v1.GetInstanceRequest(instance=instance_name, project=project_id,zone=zone_name)
-    instance_req.assert_called_with(instance=instance_name, project=project_id,zone=zone_name)
+    instance_req.return_value=compute_v1.GetInstanceRequest(
+        instance=instance_name, 
+        project=project_id,
+        zone=zone_name
+    )
+    instance_req.assert_called_with(
+        instance=instance_name, 
+        project=project_id,
+        zone=zone_name
+    )
     client.get.return_value=fixtures
-    settag_req.return_value=compute_v1.SetTagsInstanceRequest(instance=instance_name,
+    settag_req.return_value=compute_v1.SetTagsInstanceRequest(
+        instance=instance_name,
         project=project_id,
         zone=zone_name,
-        tags_resource=tags(fingerprint=fixtures.compute.response_get["tags"]["fingerprint"],items=tags_list))
-    settag_req.assert_called_with(instance=instance_name, project=project_id,zone=zone_name,tags_resource=tags(fingerprint=fixtures.compute.response_get["tags"]["fingerprint"],items=tags_list))
+        tags_resource=tags(
+            fingerprint=fixtures.compute.response_get["tags"]["fingerprint"],
+            items=tags_list
+        )
+    )
+    settag_req.assert_called_with(
+        instance=instance_name, 
+        project=project_id,
+        zone=zone_name,
+        tags_resource=tags(
+            fingerprint=fixtures.compute.response_get["tags"]["fingerprint"],
+            items=tags_list
+        )
+    )
     
     client.set_tags.return_value = compute_v1.Operation(name="op1")
     client.set_tags(settag_req)
