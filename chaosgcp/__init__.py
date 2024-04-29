@@ -338,5 +338,6 @@ def load_exported_activities() -> List[DiscoveredActivities]:
     activities.extend(discover_actions("chaosgcp.lb.probes"))
     activities.extend(discover_probes("chaosgcp.neg.probes"))
     activities.extend(discover_actions("chaosgcp.neg.actions"))
+    activities.extend(discover_actions("chaosgcp.compute.actions"))
     activities.extend(discover_actions("chaosgcp.dns.actions"))
     return activities

@@ -8,6 +8,7 @@ resources needed for running tests in test files.
 
 import fixtures.cloudbuild  # noqa
 import fixtures.cloudrun  # noqa
+import fixtures.compute  # noqa
 import fixtures.dns  # noqa
 import fixtures.nodepool  # noqa
 import fixtures.sql  # noqa
