@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:95b5a260a3579f3d7a66dc8a380278c342e13ea5e00b522901edaa754001a820"
+content_hash = "sha256:c903a953719f1197d51bab407c56161613f88407bf10895c83362962347dc039"
 
 [[package]]
 name = "backports-zoneinfo"
@@ -574,6 +574,24 @@ dependencies = [
 files = [
     {file = "google-cloud-monitoring-2.19.3.tar.gz", hash = "sha256:37641e537986fd2227f8738b879d605a8cdf4c315cdc60e86e109347ab1ca1d7"},
     {file = "google_cloud_monitoring-2.19.3-py2.py3-none-any.whl", hash = "sha256:448016170deb4f16fdb57d12f639a0b61e865f7a22ec9a85b3e12295046b62b0"},
+]
+
+[[package]]
+name = "google-cloud-network-connectivity"
+version = "2.4.3"
+requires_python = ">=3.7"
+summary = "Google Cloud Network Connectivity API client library"
+groups = ["default"]
+dependencies = [
+    "google-api-core[grpc]!=2.0.*,!=2.1.*,!=2.10.*,!=2.2.*,!=2.3.*,!=2.4.*,!=2.5.*,!=2.6.*,!=2.7.*,!=2.8.*,!=2.9.*,<3.0.0dev,>=1.34.1",
+    "google-auth!=2.24.0,!=2.25.0,<3.0.0dev,>=2.14.1",
+    "grpc-google-iam-v1<1.0.0dev,>=0.12.4",
+    "proto-plus<2.0.0dev,>=1.22.3",
+    "protobuf!=3.20.0,!=3.20.1,!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,<5.0.0dev,>=3.19.5",
+]
+files = [
+    {file = "google-cloud-network-connectivity-2.4.3.tar.gz", hash = "sha256:d5fb763723fef1824f657c04be508eaa0b87132a53850ee2c1a3d7c8f5cb873e"},
+    {file = "google_cloud_network_connectivity-2.4.3-py2.py3-none-any.whl", hash = "sha256:7fd2b34e146fbac864ce254df67315eb1c7eb749a76ceec61f1ef8bfa2f703a4"},
 ]
 
 [[package]]

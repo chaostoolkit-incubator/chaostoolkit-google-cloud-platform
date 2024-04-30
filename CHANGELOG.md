@@ -6,10 +6,11 @@
 
 ## [0.24.0][] - 2024-04-30
 
-[0.23.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.23.0...0.24.0
+[0.24.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.23.0...0.24.0
 
 ### Added
 
+* The `chaosgcp.networkconnectivity.actions` activities to set policy based route
 * The `chaosgcp.compute.actions` activities to set tags on resources
 * Ensuring actions return a response as per their signature
 
