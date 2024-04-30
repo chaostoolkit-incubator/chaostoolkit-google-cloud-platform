@@ -4,6 +4,11 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.23.0...HEAD
 
+### Added
+
+* The `chaosgcp.compute.actions` activities to set tags on resources
+* Ensuring actions return a response as per their signature
+
 ## [0.23.0][] - 2024-04-10
 
 [0.23.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.22.0...0.23.0

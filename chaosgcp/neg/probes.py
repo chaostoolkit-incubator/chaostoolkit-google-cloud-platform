@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 from chaoslib.types import Configuration, Secrets
 from google.cloud import compute_v1
 
-from chaosgcp import get_context, load_credentials
+from chaosgcp import get_context, load_credentials, to_dict
 
 __all__ = [
     "get_network_endpoint_group",
@@ -40,7 +40,7 @@ def get_network_endpoint_group(
 
     response = client.get(request=request)
 
-    return response.__class__.to_dict(response)
+    return to_dict(response)
 
 
 def list_network_endpoint_groups(
@@ -69,4 +69,4 @@ def list_network_endpoint_groups(
 
     response = client.list(request=request)
 
-    return response.__class__.to_dict(response)
+    return to_dict(response)

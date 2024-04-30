@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from chaoslib.types import Configuration, Secrets
 from google.cloud import compute_v1
 
-from chaosgcp import get_context, load_credentials, wait_on_extended_operation
+from chaosgcp import (
+    get_context,
+    load_credentials,
+    to_dict,
+    wait_on_extended_operation,
+)
 
 __all__ = [
     "detach_network_endpoint_group",
@@ -20,7 +25,7 @@ def detach_network_endpoint_group(
     region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
-) -> None:
+) -> Dict[str, Any]:
     """
     Detach a list of network endpoints from the specified network endpoint
     group.
@@ -59,6 +64,10 @@ def detach_network_endpoint_group(
     operation = client.detach_network_endpoints(request=request)
     wait_on_extended_operation(operation=operation)
 
+    response = operation.result()
+
+    return to_dict(response)
+
 
 def attach_network_endpoint_group(
     network_endpoint_group: str,
@@ -68,7 +77,7 @@ def attach_network_endpoint_group(
     region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
-) -> None:
+) -> Dict[str, Any]:
     """
     Attach a list of network endpoints to the specified network endpoint
     group.
@@ -106,3 +115,7 @@ def attach_network_endpoint_group(
 
     operation = client.attach_network_endpoints(request=request)
     wait_on_extended_operation(operation=operation)
+
+    response = operation.result()
+
+    return to_dict(response)

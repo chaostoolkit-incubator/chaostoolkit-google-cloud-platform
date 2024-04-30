@@ -1,1 +1,1 @@
-response_get={"tags":{"fingerprint":"fingerprint"}}
+response_get = {"tags": {"fingerprint": "fingerprint"}}
