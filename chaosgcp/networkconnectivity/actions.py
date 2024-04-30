@@ -5,14 +5,13 @@ from typing import Any, Dict
 from chaoslib.types import Configuration, Secrets
 from google.cloud import networkconnectivity_v1
 
-__all__ = [
-    "create_policy_based_route", "delete_policy_based_route"
-]
+__all__ = ["create_policy_based_route", "delete_policy_based_route"]
+
 
 def delete_policy_based_route(
-        name_value: str,
-)-> Dict[str, Any]:
-    """ Delete a policy based route
+    name_value: str,
+) -> Dict[str, Any]:
+    """Delete a policy based route
     Please refer to this: https://t.ly/VnEPU
 
     :param name_value: the name of the route,
@@ -44,7 +43,7 @@ def create_policy_based_route(
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
-    """ Create a policy based route
+    """Create a policy based route
     Please refer to this: https://t.ly/soPz7
 
     :param parent_value: for example: "projects/${var.project_id}/locations/global",
@@ -64,15 +63,15 @@ def create_policy_based_route(
     policy_based_route = networkconnectivity_v1.PolicyBasedRoute()
     policy_based_route.next_hop_ilb_ip = next_hop_ilb_ip
     policy_based_route.network = network
-    policy_based_route.name= name
+    policy_based_route.name = name
     policy_based_route.priority = priority
     policy_based_route.filter.protocol_version = "IPV4"
     policy_based_route.filter.src_range = src_range
     policy_based_route.filter.dest_range = dest_range
 
     request = networkconnectivity_v1.CreatePolicyBasedRouteRequest(
-        parent = parent_value,
-        policy_based_route_id= name,
+        parent=parent_value,
+        policy_based_route_id=name,
         policy_based_route=policy_based_route,
     )
 

@@ -3,10 +3,20 @@
 
 from unittest.mock import MagicMock, patch
 from google.cloud import networkconnectivity_v1
-from chaosgcp.networkconnectivity.actions import create_policy_based_route, delete_policy_based_route
+from chaosgcp.networkconnectivity.actions import (
+    create_policy_based_route,
+    delete_policy_based_route,
+)
 
-@patch("chaosgcp.networkconnectivity.actions.networkconnectivity_v1.CreatePolicyBasedRouteRequest", autospec=True)
-@patch("chaosgcp.networkconnectivity.actions.networkconnectivity_v1.PolicyBasedRoutingServiceClient", autospec=True)
+
+@patch(
+    "chaosgcp.networkconnectivity.actions.networkconnectivity_v1.CreatePolicyBasedRouteRequest",
+    autospec=True,
+)
+@patch(
+    "chaosgcp.networkconnectivity.actions.networkconnectivity_v1.PolicyBasedRoutingServiceClient",
+    autospec=True,
+)
 @patch("chaosgcp.Credentials", autospec=True)
 def test_create_policy_based_route(Credentials, client, create_route_req):
     parent_value = "projects/test-project/locations/global"
@@ -27,11 +37,18 @@ def test_create_policy_based_route(Credentials, client, create_route_req):
     client.return_value.create_policy_based_route.return_value = response_mock
 
     response_mock_to_dict = MagicMock()
-    response_mock.__class__.to_dict = MagicMock(return_value=response_mock_to_dict)
-
+    response_mock.__class__.to_dict = MagicMock(
+        return_value=response_mock_to_dict
+    )
 
     result = create_policy_based_route(
-        parent_value, name, next_hop_ilb_ip, network, src_range, dest_range, priority
+        parent_value,
+        name,
+        next_hop_ilb_ip,
+        network,
+        src_range,
+        dest_range,
+        priority,
     )
 
     assert result == response_mock_to_dict
@@ -41,8 +58,15 @@ def test_create_policy_based_route(Credentials, client, create_route_req):
         request=request
     )
 
-@patch("chaosgcp.networkconnectivity.actions.networkconnectivity_v1.DeletePolicyBasedRouteRequest", autospec=True)
-@patch("chaosgcp.networkconnectivity.actions.networkconnectivity_v1.PolicyBasedRoutingServiceClient", autospec=True)
+
+@patch(
+    "chaosgcp.networkconnectivity.actions.networkconnectivity_v1.DeletePolicyBasedRouteRequest",
+    autospec=True,
+)
+@patch(
+    "chaosgcp.networkconnectivity.actions.networkconnectivity_v1.PolicyBasedRoutingServiceClient",
+    autospec=True,
+)
 @patch("chaosgcp.Credentials", autospec=True)
 def test_delete_policy_based_route(Credentials, client, delete_route_req):
     route_name = "test-route"
@@ -57,7 +81,9 @@ def test_delete_policy_based_route(Credentials, client, delete_route_req):
     client.return_value.delete_policy_based_route.return_value = response_mock
 
     response_mock_to_dict = MagicMock()
-    response_mock.__class__.to_dict = MagicMock(return_value=response_mock_to_dict)
+    response_mock.__class__.to_dict = MagicMock(
+        return_value=response_mock_to_dict
+    )
 
     result = delete_policy_based_route(route_name)
 
