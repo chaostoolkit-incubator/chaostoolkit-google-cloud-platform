@@ -28,7 +28,9 @@ def delete_policy_based_route(
     )
 
     # Make the request
-    client.delete_policy_based_route(request=request)
+    response = client.delete_policy_based_route(request=request)
+
+    return response.__class__.to_dict(response)
 
 
 def create_policy_based_route(
@@ -75,4 +77,6 @@ def create_policy_based_route(
     )
 
     # Make the request
-    client.create_policy_based_route(request=request)
+    response = client.create_policy_based_route(request=request)
+
+    return response.__class__.to_dict(response)
