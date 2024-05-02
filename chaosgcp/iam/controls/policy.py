@@ -11,36 +11,57 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import datetime
+import logging
+import time
+from datetime import timezone
+from typing import List, Dict
 
-from typing import List
+
 from chaoslib.exceptions import InterruptExecution
 from chaoslib.types import Configuration, Experiment, Journal, Secrets
-import google.auth
-import googleapiclient.discovery
-import datetime
-import time
-import logging
-from datetime import timezone
 
-logger = logging.getLogger("chaostoolkit")
+from chaosgcp import client
 
 __all__ = ["before_experiment_control", "after_experiment_control"]
 
+logger = logging.getLogger("chaostoolkit")
+# To get the current time, which will be used while granting and revoking conditional role
 set_current_time = datetime.datetime.now(timezone.utc)
 
 
 def before_experiment_control(
     context: Experiment,
     project_id: str,
-    roles: List,
-    members: List,
+    roles: List[str],
+    members: List[str],
+    iam_propogation_sleep_time_in_minutes: int = 2,
+    expiry_time_in_minutes: int = 10,
     configuration: Configuration = None,
     secrets: Secrets = None,
-    iam_propogation_sleep_time_in_minutes=2,
-    expiry_time_in_minutes=10,
 ) -> None:
-    """
-    to ADD IAM roles
+    """Set IAM roles for chaos experiments.
+
+    This function temporarily adds specified IAM roles to designated members
+    within a project for the duration of a chaos experiment. It calculates an
+    expiration timestamp and applies a time-bound IAM condition to ensure
+    automatic role removal after the experiment concludes.
+
+    Args:
+        context: The Experiment context
+        project_id: The ID of the project where IAM roles will be managed.
+        roles: A list of IAM role names to be added to members.
+        members: A list of member identities (e.g., emails) to receive roles.
+        configuration: (Optional) Configuration object for the experiment.
+        secrets: (Optional) Secrets object containing sensitive information.
+        iam_propogation_sleep_time_in_minutes: (Optional) Time (in minutes) to
+            allow for IAM changes to propagate (default: 2).
+        expiry_time_in_minutes: (Optional) Duration (in minutes) after which
+            the IAM roles should expire (default: 10).
+
+    Raises:
+        InterruptExecution: If an error occurs while adding the IAM roles,
+            preventing the experiment from proceeding.
     """
     # Generate expiration timestamp (current time + expiration_minutes)
     expire_time_minutes = (
@@ -63,6 +84,7 @@ def before_experiment_control(
             roles_iam_condition,
             "add",
             iam_propogation_sleep_time_in_minutes,
+            secrets=secrets,
         )
     except Exception as e:
         logger.error(e, exc_info=True)
@@ -75,15 +97,37 @@ def after_experiment_control(
     context: Experiment,
     state: Journal,
     project_id: str,
-    roles: List,
-    members: List,
-    iam_propogation_sleep_time_in_minutes=2,
-    expiry_time_in_minutes=10,
+    roles: List[str],
+    members: List[str],
+    iam_propogation_sleep_time_in_minutes: int = 2,
+    expiry_time_in_minutes: int = 10,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> None:
-    """
-    to remove IAM roles
+    """Cleans up IAM roles after chaos experiments.
+
+    This function removes temporary IAM roles that were granted to designated
+    members within a project during a chaos experiment. It calculates an
+    expiration timestamp (which should have already passed) and applies a
+    time-bound IAM condition to facilitate the removal process.
+
+    Args:
+        context: The Experiment context
+        state: The Journal object
+        project_id: The ID of the project where IAM roles will be managed.
+        roles: A list of IAM role names to be removed from members.
+        members: A list of member identities (e.g., emails) to have roles
+            removed.
+        iam_propogation_sleep_time_in_minutes: (Optional) Time (in minutes) to
+            allow for IAM changes to propagate (default: 2).
+        expiry_time_in_minutes: (Optional) Duration (in minutes) after which
+            the IAM roles should have expired (default: 10).
+        configuration: (Optional) Configuration object for the experiment.
+        secrets: (Optional) Secrets object containingsensitive information.
+
+    Raises:
+        InterruptExecution: If an error occurs while removing the IAM roles,
+            potentially indicating an issue with the cleanup process.
     """
     # Generate expiration timestamp (current time + expiration_minutes)
     expire_time_minutes = (
@@ -106,6 +150,7 @@ def after_experiment_control(
             roles_iam_condition,
             "remove",
             iam_propogation_sleep_time_in_minutes,
+            secrets=secrets,
         )
     except Exception as e:
         logger.error(e, exc_info=True)
@@ -116,11 +161,12 @@ def after_experiment_control(
 
 def manage_time_bound_temporary_iam_roles(
     project_id: str,
-    members: list[str],
-    roles: list[str],
-    roles_iam_condition: dict[str, str],
+    members: List[str],
+    roles: List[str],
+    roles_iam_condition: Dict[str, str],
     manage_type: str,
     iam_propogation_sleep_time_in_minutes: int = 2,
+    secrets: Secrets = None,
 ) -> None:
     """Manages temporary, time-bound IAM roles for the specified project and members.
 
@@ -129,9 +175,9 @@ def manage_time_bound_temporary_iam_roles(
 
     Args:
         project_id: The ID of the project where the roles will be managed.
-        members: A list of member email addresses or IDs to grant/revoke roles to.
-        roles: A list of IAM role names to grant/revoke.
-        roles_iam_condition: A dictionary representing the IAM condition that
+        members: A List of member email addresses or IDs to grant/revoke roles to.
+        roles: A List of IAM role names to grant/revoke.
+        roles_iam_condition: A Dictionary representing the IAM condition that
             enforces the expiration time. It should have the following keys:
             - "title": A descriptive title for the condition.
             - "description": A brief explanation of the condition's purpose.
@@ -163,24 +209,9 @@ def manage_time_bound_temporary_iam_roles(
             manage_type="add",
         )
     """
-    # Type checks for arguments
-    if not isinstance(project_id, str):
-        raise TypeError("project_id must be a string")
-    if not isinstance(members, list):
-        raise TypeError("members must be a list of strings")
-    if not isinstance(roles, list):
-        raise TypeError("roles must be a list of strings")
-    if not isinstance(roles_iam_condition, dict):
-        raise TypeError("roles_iam_condition must be a dictionary")
-    if not isinstance(manage_type, str):
-        raise TypeError("manage_type must be a string")
-    if not isinstance(iam_propogation_sleep_time_in_minutes, int):
-        raise TypeError(
-            "iam_propogation_sleep_time_in_minutes must be an integer"
-        )
 
     # Initializes service.
-    crm_service = initialize_service()
+    crm_service = initialize_service(secrets=secrets)
 
     if manage_type == "add":
         logger.info("Adding Conditional Roles..")
@@ -206,19 +237,22 @@ def manage_time_bound_temporary_iam_roles(
         raise ValueError("Invalid manage type: must be 'add' or 'remove'")
 
 
-def initialize_service() -> dict:
+def initialize_service(
+    secrets: Secrets = None,
+) -> Dict:
     """Initializes a Cloud Resource Manager service."""
 
-    credentials, _ = google.auth.default(
-        scopes=["https://www.googleapis.com/auth/cloud-platform"]
-    )
-    crm_service = googleapiclient.discovery.build(
-        "cloudresourcemanager", "v1", credentials=credentials
-    )
+    # credentials, _ = google.auth.default(
+    #    scopes=["https://www.googleapis.com/auth/cloud-platform"]
+    # )
+    # crm_service = googleapiclient.discovery.build(
+    #    "cloudresourcemanager", "v1", credentials=credentials
+    # )
+    crm_service = client("cloudresourcemanager", "v1", secrets=secrets)
     return crm_service
 
 
-def get_policy(crm_service, project_id: str, version: int = 3) -> dict:
+def get_policy(crm_service, project_id: str, version: int = 3) -> Dict:
     """Gets IAM policy for a project."""
     logger.info("Getting IAM policy for a project.")
     policy = (
@@ -232,7 +266,7 @@ def get_policy(crm_service, project_id: str, version: int = 3) -> dict:
     return policy
 
 
-def set_policy(crm_service, project_id: str, policy: str) -> dict:
+def set_policy(crm_service, project_id: str, policy: str) -> Dict:
     """Sets IAM policy for a project."""
     logger.info("Setting IAM policy for a project.")
     policy = (
@@ -246,9 +280,9 @@ def set_policy(crm_service, project_id: str, policy: str) -> dict:
 def modify_policy_add_roles(
     crm_service,
     project_id: str,
-    roles: list[str],
-    member: list[str],
-    iam_condition: dict[str, str],
+    roles: List[str],
+    member: List[str],
+    iam_condition: Dict[str, str],
     iam_propogation_sleep_time_in_minutes: int,
 ) -> None:
     """Adds a member to multiple roles with an IAM condition (for new roles)."""
@@ -280,9 +314,9 @@ def modify_policy_add_roles(
 def modify_policy_remove_roles(
     crm_service,
     project_id: str,
-    roles: list[str],
-    member: list[str],
-    iam_condition: dict[str, str],
+    roles: List[str],
+    member: List[str],
+    iam_condition: Dict[str, str],
 ) -> None:
     policy = get_policy(crm_service, project_id)
     logger.info(
