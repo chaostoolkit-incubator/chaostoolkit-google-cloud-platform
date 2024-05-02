@@ -22,6 +22,7 @@ dependencies = [
     "google-cloud-artifact-registry>=1.11.1",
     "google-cloud-containeranalysis>=2.14.1",
     "google-cloud-compute>=1.16.1",
+    "google-cloud-network-connectivity>=2.4.2",
     "dateparser>=1.2.0",
     "grafeas>=1.9.1",
     "chaostoolkit-kubernetes>=0.34.1",

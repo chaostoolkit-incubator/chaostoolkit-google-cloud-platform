@@ -25,11 +25,19 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.24.0...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.25.0...HEAD
+
+## [0.25.0][] - 2024-04-30
+
+[0.25.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.24.0...0.25.0
+
+### Added
+
+* The `chaosgcp.networkconnectivity.actions` activities to set policy based route
 
 ## [0.24.0][] - 2024-04-30
 
-[0.23.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.23.0...0.24.0
+[0.24.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.23.0...0.24.0
 
 ### Added
 
