@@ -2,9 +2,14 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.25.0...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.26.0...HEAD
+
+## [0.26.0][] - 2024-05-06
+
+[0.26.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.25.0...0.26.0
 
 #### Added
+
 * The `chaosgcp.iam.controls.policy` control to Manage temporary, 
 * time-bound IAM roles for the specified project and members.
 * This controls grants specified IAM roles to the provided members,
