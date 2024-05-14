@@ -7,6 +7,7 @@
 #### Changed
 
 * Drop `logzero` and use `logger = logging.getLOgger("chaostoolkit")` instead
+* Bump dependencies
 
 ## [0.26.0][] - 2024-05-06
 
