@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:c903a953719f1197d51bab407c56161613f88407bf10895c83362962347dc039"
+content_hash = "sha256:32d956408f7bd638842ef42108c748b1de888df586178e96e88f28af26fed75a"
 
 [[package]]
 name = "backports-zoneinfo"

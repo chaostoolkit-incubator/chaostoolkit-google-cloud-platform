@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.27.0...HEAD
 
+## [0.27.0][] - 2024-05-14
+
+[0.27.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.26.0...0.27.0
+
 #### Changed
 
 * Drop `logzero` and use `logger = logging.getLOgger("chaostoolkit")` instead
