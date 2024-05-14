@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 import os.path
 import time
 from datetime import datetime
@@ -22,7 +23,6 @@ from chaoslib.types import (
 from google.api_core.extended_operation import ExtendedOperation
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import Resource, build
-from logzero import logger
 
 from chaosgcp.types import GCPContext
 
@@ -41,6 +41,7 @@ __all__ = [
     "parse_interval",
 ]
 
+logger = logging.getLogger("chaostoolkit")
 try:
     __version__ = version("chaostoolkit-google-cloud-platform")
 except PackageNotFoundError:

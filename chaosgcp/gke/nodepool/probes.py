@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
+import logging
 from typing import Any, Dict
 
 from chaoslib.types import Configuration, Secrets
 from google.cloud import container_v1
-from logzero import logger
 
 from chaosgcp import get_parent, to_dict
 from chaosgcp.gke.nodepool import get_client
 
 __all__ = ["list_nodepools", "get_nodepool"]
+logger = logging.getLogger("chaostoolkit")
 
 
 def list_nodepools(

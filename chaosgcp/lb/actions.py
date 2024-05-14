@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
 from typing import Any, Dict
 
 from chaoslib.exceptions import ActivityFailed
 from chaoslib.types import Configuration, Secrets
 from google.cloud import compute_v1
-from logzero import logger
 
 from chaosgcp import get_context, load_credentials, wait_on_extended_operation
 
@@ -13,6 +13,7 @@ __all__ = [
     "inject_traffic_faults",
     "remove_fault_injection_traffic_policy",
 ]
+logger = logging.getLogger("chaostoolkit")
 
 
 def inject_traffic_delay(

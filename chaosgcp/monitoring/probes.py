@@ -1,10 +1,10 @@
+import logging
 from typing import Any, Dict, List, Optional, Union
 
 from chaoslib.types import Configuration, Secrets
 from google.cloud import monitoring_v3
 from google.cloud.monitoring_v3.query import Query
 from google.cloud.monitoring_v3.types.metric import TimeSeries
-from logzero import logger
 
 from chaosgcp import load_credentials, parse_interval
 
@@ -16,6 +16,7 @@ __all__ = [
     "valid_slo_ratio_during_window",
     "run_mql_query",
 ]
+logger = logging.getLogger("chaostoolkit")
 
 
 def get_metrics(
