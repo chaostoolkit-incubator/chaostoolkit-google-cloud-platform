@@ -4,6 +4,30 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.27.0...HEAD
 
+#### Added
+
+* `suspend_vm_instance` and `resume_vm_instance` functions to 
+* `chaosgcp.compute.actions`. These functions suspend a running
+* GCE VM instance and resume any suspended GCE VM respectively.
+* They can be called for action in experiments as follows:
+
+  ```json
+   {
+	"name" : "Suspend VM",
+	"type" : "action",
+        "provider": {
+            	"type": "python",
+		        "module": "chaosgcp.compute.actions",
+		        "func": "suspend_vm_instance",
+                "arguments" : {
+                    "project_id" : "prj-shared-ntwk-prod",
+                    "zone" : "us-central1-b",
+                    "instance_name" : "mig-exp-ig-24w1"
+                }
+            }
+        }
+* Added test cases for both the functions as well.
+
 ## [0.27.0][] - 2024-05-14
 
 [0.27.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.26.0...0.27.0

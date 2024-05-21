@@ -1,5 +1,17 @@
-# Copyright 2023 Google LLC.
-# SPDX-License-Identifier: Apache-2.0
+# Copyright 2024 Google LLC
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import logging
 from typing import Any, Dict
 
@@ -62,3 +74,63 @@ def set_instance_tags(
     response = operation.result()
 
     return to_dict(response)
+
+
+def suspend_vm_instance(
+    project_id: str, zone: str, instance_name: str, secrets: Secrets = None
+):
+    """
+    Suspend a GCE VM instance
+
+    :param project_id : the project ID in which the GCE VM is present
+    :param zone: the name of the zone where the GCE VM is present
+    :param instance_name : the name of the GCE VM to be suspended
+    """
+
+    credentials = load_credentials(secrets)
+
+    # Create a client
+    client = compute_v1.InstancesClient(credentials=credentials)
+
+    # Make the request to delete
+    operation = client.suspend(
+        project=project_id, zone=zone, instance=instance_name
+    )
+
+    wait_on_extended_operation(operation)
+
+    if operation.error_code:
+        logger.error(
+            f"Error during instance suspension: [Code: {operation.error_code}]: {operation.error_message}"
+        )
+    else:
+        logger.info("Instance suspended successfully")
+
+
+def resume_vm_instance(
+    project_id: str, zone: str, instance_name: str, secrets: Secrets = None
+) -> Dict[str, Any]:
+    """
+    Resume a suspended GCE VM instance
+
+    :param project_id : the project ID in which the GCE VM is present
+    :param zone: the name of the zone where the GCE VM is present
+    :param instance_name : the name of the GCE VM to be resumed
+    """
+
+    credentials = load_credentials(secrets)
+
+    client = compute_v1.InstancesClient(credentials=credentials)
+
+    operation = client.resume(
+        project=project_id, zone=zone, instance=instance_name
+    )
+
+    wait_on_extended_operation(operation)
+
+    if operation.error_code:
+        logger.error(
+            f"Error during instance resumption: [Code: {operation.error_code}]: {operation.error_message}"
+        )
+    else:
+        logger.info("Instance resumed successfully")
