@@ -29,6 +29,10 @@
 * Added test cases for both the functions as well.
 * Added the `chaosgcp.lb.probes.get_fault_injection_traffic_policy` probe
 
+#### Changed
+
+* Bumped dependencies
+
 ## [0.27.0][] - 2024-05-14
 
 [0.27.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.26.0...0.27.0
