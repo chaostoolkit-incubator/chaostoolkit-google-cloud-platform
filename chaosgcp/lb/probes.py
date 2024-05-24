@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
+import logging
 from typing import Any, Dict, List
 
+from chaoslib.exceptions import ActivityFailed
 from chaoslib.types import Configuration, Secrets
 from google.cloud import compute_v1
 
-from chaosgcp import get_context, load_credentials
+from chaosgcp import get_context, load_credentials, wait_on_extended_operation
 
-__all__ = [
-    "get_backend_service_health",
-]
+__all__ = ["get_backend_service_health", "get_fault_injection_traffic_policy"]
+logger = logging.getLogger("chaostoolkit")
 
 
 def get_backend_service_health(
@@ -72,3 +73,112 @@ def get_backend_service_health(
             health_per_group.append(response.__class__.to_dict(response))
 
     return health_per_group
+
+
+def get_fault_injection_traffic_policy(
+    url_map: str,
+    target_name: str,
+    target_path: str = "/*",
+    regional: bool = False,
+    project_id: str = None,
+    region: str = None,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> Dict[str, Any]:
+    """
+    Get the fault injection policy from url map at a given path.
+
+    The `target_name` argument is the the name of a path matcher in the
+    URL map. The `target_path` argument is the path within the path matcher.
+    Be sure to put the exact one you are targeting.
+
+    For instance:
+
+    ```json
+    {
+        "type: "probe",
+        "name": "get-fault-injection-policy",
+        "provider": {
+            "type": "python",
+            "module": "chaosgcp.lb.probes",
+            "func": "get_fault_injection_traffic_policy",
+            "arguments": {
+                "url_map": "demo-urlmap",
+                "target_name": "allpaths",
+                "target_path": "/*",
+            }
+        }
+    }
+    ```
+
+    Set `regional` to talk to a regional LB.
+
+    See: https://cloud.google.com/load-balancing/docs/l7-internal/setting-up-traffic-management#configure_fault_injection
+    """  # noqa: E501
+    credentials = load_credentials(secrets)
+    context = get_context(configuration, project_id=project_id, region=region)
+
+    region = context.region
+    project = context.project_id
+
+    if regional:
+        if not region:
+            raise ActivityFailed(
+                "when `regional` is set, the `gcp_region` configuration key "
+                "must also be set"
+            )
+        client = compute_v1.RegionUrlMapsClient(credentials=credentials)
+        request = compute_v1.GetRegionUrlMapRequest(
+            project=project,
+            url_map=url_map,
+            region=region,
+        )
+    else:
+        client = compute_v1.UrlMapsClient(credentials=credentials)
+        request = compute_v1.GetUrlMapRequest(
+            project=project,
+            url_map=url_map,
+        )
+
+    urlmap = client.get(request=request)
+
+    fault = None
+
+    for pm in urlmap.path_matchers:
+        if pm.name == target_name:
+            path_matcher_found = True
+            for pr in pm.path_rules:
+                for p in pr.paths:
+                    if p == target_path:
+                        path_found = True
+                        fault = pr.route_action.fault_injection_policy
+                        break
+
+    if not path_matcher_found:
+        logger.debug(
+            f"Failed to find path matcher '{target_name}' in URL map '{url_map}'"
+        )
+
+    if not path_found:
+        logger.debug(
+            f"Failed to find path '{target_path}' in path matcher '{target_name}'"
+        )
+
+    if regional:
+        request = compute_v1.UpdateRegionUrlMapRequest(
+            project=project,
+            url_map=url_map,
+            url_map_resource=urlmap,
+            region=region,
+        )
+    else:
+        request = compute_v1.UpdateUrlMapRequest(
+            project=project,
+            url_map=url_map,
+            url_map_resource=urlmap,
+        )
+
+    operation = client.update(request=request)
+    wait_on_extended_operation(operation=operation)
+
+    return fault.__class__.to_dict(fault)

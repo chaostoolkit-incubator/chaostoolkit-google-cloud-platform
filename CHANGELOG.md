@@ -27,6 +27,7 @@
             }
         }
 * Added test cases for both the functions as well.
+* Added the `chaosgcp.lb.probes.get_fault_injection_traffic_policy` probe
 
 ## [0.27.0][] - 2024-05-14
 
