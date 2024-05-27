@@ -6,7 +6,7 @@ from google.cloud import monitoring_v3
 from google.cloud.monitoring_v3.query import Query
 from google.cloud.monitoring_v3.types.metric import TimeSeries
 
-from chaosgcp import load_credentials, parse_interval
+from chaosgcp import get_context, load_credentials, parse_interval
 
 __all__ = [
     "get_metrics",
@@ -29,6 +29,8 @@ def get_metrics(
     aligner_minutes: int = 1,
     reducer: int = 0,
     reducer_group_by: Optional[List[str]] = None,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> List[Dict[str, Any]]:
@@ -91,6 +93,8 @@ def get_metrics(
 def run_mql_query(
     project: str,
     mql: str,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> List[Dict[str, Any]]:
@@ -120,6 +124,8 @@ def get_slo_health(
     per_series_aligner: str = "ALIGN_MEAN",
     cross_series_reducer: int = "REDUCE_COUNT",
     group_by_fields: Optional[Union[str, List[str]]] = None,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> List[Dict[str, Any]]:
@@ -136,7 +142,8 @@ def get_slo_health(
     csr = monitoring_v3.Aggregation.Reducer[cross_series_reducer]
 
     credentials = load_credentials(secrets)
-    project = credentials.project_id
+    context = get_context(configuration, project_id=project_id, region=region)
+    project = context.project_id
     start, end = parse_interval(end_time, window)
 
     client = monitoring_v3.ServiceMonitoringServiceClient(
@@ -179,6 +186,8 @@ def get_slo_burn_rate(
     end_time: str = "now",
     window: str = "5 minutes",
     loopback_period: str = "300s",
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> List[Dict[str, Any]]:
@@ -191,7 +200,8 @@ def get_slo_burn_rate(
     See also: https://cloud.google.com/stackdriver/docs/solutions/slo-monitoring/api/timeseries-selectors
     """  # noqa: E501
     credentials = load_credentials(secrets)
-    project = credentials.project_id
+    context = get_context(configuration, project_id=project_id, region=region)
+    project = context.project_id
     start, end = parse_interval(end_time, window)
 
     client = monitoring_v3.ServiceMonitoringServiceClient(
@@ -222,6 +232,8 @@ def get_slo_budget(
     name: str,
     end_time: str = "now",
     window: str = "5 minutes",
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> List[Dict[str, Any]]:
@@ -234,7 +246,8 @@ def get_slo_budget(
     See also: https://cloud.google.com/stackdriver/docs/solutions/slo-monitoring/api/timeseries-selectors
     """  # noqa: E501
     credentials = load_credentials(secrets)
-    project = credentials.project_id
+    context = get_context(configuration, project_id=project_id, region=region)
+    project = context.project_id
     start, end = parse_interval(end_time, window)
 
     client = monitoring_v3.ServiceMonitoringServiceClient(
@@ -271,6 +284,8 @@ def valid_slo_ratio_during_window(
     per_series_aligner: str = "ALIGN_MEAN",
     cross_series_reducer: int = "REDUCE_COUNT",
     group_by_fields: Optional[Union[str, List[str]]] = None,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> bool:
@@ -300,6 +315,8 @@ def valid_slo_ratio_during_window(
         per_series_aligner,
         cross_series_reducer,
         group_by_fields,
+        project_id,
+        region,
         configuration,
         secrets,
     )
@@ -320,6 +337,8 @@ def valid_slo_ratio_during_window(
 
 def query_time_series(
     mql_query: str,
+    project_id: str = None,
+    region: str = None,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> List[Dict[str, Any]]:
@@ -329,7 +348,8 @@ def query_time_series(
     See also: https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.timeSeries/query
     """
     credentials = load_credentials(secrets)
-    project = credentials.project_id
+    context = get_context(configuration, project_id=project_id, region=region)
+    project = context.project_id
 
     client = monitoring_v3.QueryServiceClient(credentials=credentials)
     request = monitoring_v3.QueryTimeSeriesRequest(
