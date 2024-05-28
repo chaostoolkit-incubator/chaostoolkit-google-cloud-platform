@@ -7,7 +7,10 @@ from chaoslib.types import Configuration, Secrets
 from google.cloud import compute_v1
 
 from chaosgcp import get_context, load_credentials, wait_on_extended_operation
-from chaosgcp.lb import get_path_matcher
+from chaosgcp.lb import (
+    get_fault_injection_policy,
+    remove_fault_injection_policy,
+)
 
 __all__ = [
     "inject_traffic_delay",
@@ -99,9 +102,8 @@ def inject_traffic_delay(
 
     urlmap = client.get(request=request)
 
-    found_pr = get_path_matcher(urlmap, target_name, target_path)
+    fip = get_fault_injection_policy(urlmap, target_name, target_path)
 
-    fip = found_pr.route_action.fault_injection_policy
     fip.delay.percentage = float(impacted_percentage)
     fip.delay.fixed_delay.seconds = int(delay_in_seconds)
     fip.delay.fixed_delay.nanos = int(delay_in_nanos)
@@ -202,9 +204,8 @@ def inject_traffic_faults(
 
     urlmap = client.get(request=request)
 
-    found_pr = get_path_matcher(urlmap, target_name, target_path)
+    fip = get_fault_injection_policy(urlmap, target_name, target_path)
 
-    fip = found_pr.route_action.fault_injection_policy
     fip.abort.percentage = float(impacted_percentage)
     fip.abort.http_status = http_status
 
@@ -295,9 +296,7 @@ def remove_fault_injection_traffic_policy(
 
     urlmap = client.get(request=request)
 
-    found_pr = get_path_matcher(urlmap, target_name, target_path)
-
-    found_pr.route_action.fault_injection_policy = None
+    remove_fault_injection_policy(urlmap, target_name, target_path)
 
     if regional:
         request = compute_v1.UpdateRegionUrlMapRequest(

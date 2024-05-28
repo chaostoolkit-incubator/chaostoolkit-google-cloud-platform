@@ -7,7 +7,7 @@ from chaoslib.types import Configuration, Secrets
 from google.cloud import compute_v1
 
 from chaosgcp import get_context, load_credentials, wait_on_extended_operation
-from chaosgcp.lb import get_path_matcher
+from chaosgcp.lb import get_fault_injection_policy
 
 
 __all__ = ["get_backend_service_health", "get_fault_injection_traffic_policy"]
@@ -144,9 +144,7 @@ def get_fault_injection_traffic_policy(
 
     urlmap = client.get(request=request)
 
-    found_pr = get_path_matcher(urlmap, target_name, target_path)
-
-    fault = found_pr.route_action.fault_injection_policy
+    fault = get_fault_injection_policy(urlmap, target_name, target_path)
 
     if regional:
         request = compute_v1.UpdateRegionUrlMapRequest(
