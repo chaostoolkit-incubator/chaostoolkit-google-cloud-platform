@@ -7,6 +7,8 @@ from chaoslib.types import Configuration, Secrets
 from google.cloud import compute_v1
 
 from chaosgcp import get_context, load_credentials, wait_on_extended_operation
+from chaosgcp.lb import get_path_matcher
+
 
 __all__ = ["get_backend_service_health", "get_fault_injection_traffic_policy"]
 logger = logging.getLogger("chaostoolkit")
@@ -142,27 +144,9 @@ def get_fault_injection_traffic_policy(
 
     urlmap = client.get(request=request)
 
-    fault = None
+    found_pr = get_path_matcher(urlmap, target_name, target_name)
 
-    for pm in urlmap.path_matchers:
-        if pm.name == target_name:
-            path_matcher_found = True
-            for pr in pm.path_rules:
-                for p in pr.paths:
-                    if p == target_path:
-                        path_found = True
-                        fault = pr.route_action.fault_injection_policy
-                        break
-
-    if not path_matcher_found:
-        logger.debug(
-            f"Failed to find path matcher '{target_name}' in URL map '{url_map}'"
-        )
-
-    if not path_found:
-        logger.debug(
-            f"Failed to find path '{target_path}' in path matcher '{target_name}'"
-        )
+    fault = found_pr.route_action.fault_injection_policy
 
     if regional:
         request = compute_v1.UpdateRegionUrlMapRequest(
