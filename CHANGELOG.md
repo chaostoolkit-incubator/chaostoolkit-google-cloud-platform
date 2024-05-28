@@ -2,7 +2,11 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.30.0...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.30.1...HEAD
+
+## [0.30.1][] - 2024-05-28
+
+[0.30.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.30.0...0.30.1
 
 ### Fixed
 
@@ -11,7 +15,7 @@
 
 ## [0.30.0][] - 2024-05-28
 
-[0.29.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.29.0...0.30.0
+[0.30.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.29.0...0.30.0
 
 ### Changed
 
