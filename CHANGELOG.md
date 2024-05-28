@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.30.0...HEAD
 
+### Fixed
+
+* Fioxed returned type in `chaosgcp.lb.get_path_matcher`
+
 ## [0.30.0][] - 2024-05-28
 
 [0.29.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.29.0...0.30.0

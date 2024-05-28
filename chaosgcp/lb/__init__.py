@@ -11,7 +11,7 @@ __all__ = ["get_path_matcher"]
 
 def get_path_matcher(
     urlmap: compute.UrlMap, target_name: str, target_path: str
-) -> str:
+) -> compute.PathMatcher:
     url_map = urlmap.name
     path_matcher_found = False
     found_pr = None
