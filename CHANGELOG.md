@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.30.1...HEAD
 
+### Changed
+
+* Removed unusued `(` character
+
 ## [0.30.1][] - 2024-05-28
 
 [0.30.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.30.0...0.30.1
