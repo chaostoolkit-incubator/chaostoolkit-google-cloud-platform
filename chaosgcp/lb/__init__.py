@@ -68,4 +68,6 @@ def get_path_matcher(
         )
         raise ActivityFailed("failed to match the appropriate route/path")
 
+    logger.debug(f"Found path '({target_path}' in '{target_name}'")
+
     return found_pr

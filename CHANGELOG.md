@@ -6,7 +6,8 @@
 
 ### Fixed
 
-* Fioxed returned type in `chaosgcp.lb.get_path_matcher`
+* Fixed returned type in `chaosgcp.lb.get_path_matcher`
+* Fixed load balancer activities to use `target_path` where appropriate
 
 ## [0.30.0][] - 2024-05-28
 

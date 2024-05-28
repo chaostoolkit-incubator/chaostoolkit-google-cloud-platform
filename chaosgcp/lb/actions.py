@@ -99,7 +99,7 @@ def inject_traffic_delay(
 
     urlmap = client.get(request=request)
 
-    found_pr = get_path_matcher(urlmap, target_name, target_name)
+    found_pr = get_path_matcher(urlmap, target_name, target_path)
 
     fip = found_pr.route_action.fault_injection_policy
     fip.delay.percentage = float(impacted_percentage)
@@ -202,7 +202,7 @@ def inject_traffic_faults(
 
     urlmap = client.get(request=request)
 
-    found_pr = get_path_matcher(urlmap, target_name, target_name)
+    found_pr = get_path_matcher(urlmap, target_name, target_path)
 
     fip = found_pr.route_action.fault_injection_policy
     fip.abort.percentage = float(impacted_percentage)
@@ -295,7 +295,7 @@ def remove_fault_injection_traffic_policy(
 
     urlmap = client.get(request=request)
 
-    found_pr = get_path_matcher(urlmap, target_name, target_name)
+    found_pr = get_path_matcher(urlmap, target_name, target_path)
 
     found_pr.route_action.fault_injection_policy = None
 

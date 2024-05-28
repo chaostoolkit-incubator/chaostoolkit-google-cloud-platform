@@ -144,7 +144,7 @@ def get_fault_injection_traffic_policy(
 
     urlmap = client.get(request=request)
 
-    found_pr = get_path_matcher(urlmap, target_name, target_name)
+    found_pr = get_path_matcher(urlmap, target_name, target_path)
 
     fault = found_pr.route_action.fault_injection_policy
 
