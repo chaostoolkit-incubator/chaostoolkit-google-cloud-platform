@@ -2,7 +2,83 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.26.0...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.31.0...HEAD
+
+## [0.31.0][] - 2024-05-28
+
+[0.31.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.30.1...0.31.0
+
+### Changed
+
+* Removed unusued `(` character
+* Refactored code to locate the appropriate target
+
+## [0.30.1][] - 2024-05-28
+
+[0.30.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.30.0...0.30.1
+
+### Fixed
+
+* Fixed returned type in `chaosgcp.lb.get_path_matcher`
+* Fixed load balancer activities to use `target_path` where appropriate
+
+## [0.30.0][] - 2024-05-28
+
+[0.30.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.29.0...0.30.0
+
+### Changed
+
+* Support for route rules in `chaosgcp.lb` activities
+
+## [0.29.0][] - 2024-05-27
+
+[0.29.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.28.0...0.29.0
+
+### Changed
+
+* Make sure region and project can be passed to monitoring probes
+
+## [0.28.0][] - 2024-05-24
+
+[0.28.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.27.0...0.28.0
+
+#### Added
+
+* `suspend_vm_instance` and `resume_vm_instance` functions to 
+* `chaosgcp.compute.actions`. These functions suspend a running
+* GCE VM instance and resume any suspended GCE VM respectively.
+* They can be called for action in experiments as follows:
+
+  ```json
+   {
+	"name" : "Suspend VM",
+	"type" : "action",
+        "provider": {
+            	"type": "python",
+		        "module": "chaosgcp.compute.actions",
+		        "func": "suspend_vm_instance",
+                "arguments" : {
+                    "project_id" : "prj-shared-ntwk-prod",
+                    "zone" : "us-central1-b",
+                    "instance_name" : "mig-exp-ig-24w1"
+                }
+            }
+        }
+* Added test cases for both the functions as well.
+* Added the `chaosgcp.lb.probes.get_fault_injection_traffic_policy` probe
+
+#### Changed
+
+* Bumped dependencies
+
+## [0.27.0][] - 2024-05-14
+
+[0.27.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.26.0...0.27.0
+
+#### Changed
+
+* Drop `logzero` and use `logger = logging.getLOgger("chaostoolkit")` instead
+* Bump dependencies
 
 ## [0.26.0][] - 2024-05-06
 

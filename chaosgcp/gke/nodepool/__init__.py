@@ -1,3 +1,4 @@
+import logging
 import re
 import time
 from typing import Any, Dict
@@ -5,10 +6,11 @@ from typing import Any, Dict
 from chaoslib.exceptions import ActivityFailed
 from chaoslib.types import Configuration, Secrets
 from google.cloud import container_v1
-from logzero import logger
 
 from chaosgcp import load_credentials
 from chaosgcp.types import GCPContext
+
+logger = logging.getLogger("chaostoolkit")
 
 
 def get_client(

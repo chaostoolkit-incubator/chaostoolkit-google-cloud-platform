@@ -1,18 +1,23 @@
 # -*- coding: utf-8 -*-
+import logging
 from typing import Any, Dict
 
 from chaoslib.exceptions import ActivityFailed
 from chaoslib.types import Configuration, Secrets
 from google.cloud import compute_v1
-from logzero import logger
 
 from chaosgcp import get_context, load_credentials, wait_on_extended_operation
+from chaosgcp.lb import (
+    get_fault_injection_policy,
+    remove_fault_injection_policy,
+)
 
 __all__ = [
     "inject_traffic_delay",
     "inject_traffic_faults",
     "remove_fault_injection_traffic_policy",
 ]
+logger = logging.getLogger("chaostoolkit")
 
 
 def inject_traffic_delay(
@@ -41,6 +46,9 @@ def inject_traffic_delay(
     The `target_name` argument is the the name of a path matcher in the
     URL map. The `target_path` argument is the path within the path matcher.
     Be sure to put the exact one you are targeting.
+
+    This action supports looking into path rules as well as route rules
+    (with prefix match, full path match or regex match).
 
     For instance:
 
@@ -94,31 +102,11 @@ def inject_traffic_delay(
 
     urlmap = client.get(request=request)
 
-    path_matcher_found = False
-    path_found = False
+    fip = get_fault_injection_policy(urlmap, target_name, target_path)
 
-    for pm in urlmap.path_matchers:
-        if pm.name == target_name:
-            path_matcher_found = True
-            for pr in pm.path_rules:
-                for p in pr.paths:
-                    if p == target_path:
-                        path_found = True
-                        fip = pr.route_action.fault_injection_policy
-                        fip.delay.percentage = float(impacted_percentage)
-                        fip.delay.fixed_delay.seconds = int(delay_in_seconds)
-                        fip.delay.fixed_delay.nanos = int(delay_in_nanos)
-                        break
-
-    if not path_matcher_found:
-        logger.debug(
-            f"Failed to find path matcher '{target_name}' in URL map '{url_map}'"
-        )
-
-    if not path_found:
-        logger.debug(
-            f"Failed to find path '{target_path}' in path matcher '{target_name}'"
-        )
+    fip.delay.percentage = float(impacted_percentage)
+    fip.delay.fixed_delay.seconds = int(delay_in_seconds)
+    fip.delay.fixed_delay.nanos = int(delay_in_nanos)
 
     if regional:
         request = compute_v1.UpdateRegionUrlMapRequest(
@@ -216,30 +204,10 @@ def inject_traffic_faults(
 
     urlmap = client.get(request=request)
 
-    path_matcher_found = False
-    path_found = False
+    fip = get_fault_injection_policy(urlmap, target_name, target_path)
 
-    for pm in urlmap.path_matchers:
-        if pm.name == target_name:
-            path_matcher_found = True
-            for pr in pm.path_rules:
-                for p in pr.paths:
-                    if p == target_path:
-                        path_found = True
-                        fip = pr.route_action.fault_injection_policy
-                        fip.abort.percentage = float(impacted_percentage)
-                        fip.abort.http_status = http_status
-                        break
-
-    if not path_matcher_found:
-        logger.debug(
-            f"Failed to find path matcher '{target_name}' in URL map '{url_map}'"
-        )
-
-    if not path_found:
-        logger.debug(
-            f"Failed to find path '{target_path}' in path matcher '{target_name}'"
-        )
+    fip.abort.percentage = float(impacted_percentage)
+    fip.abort.http_status = http_status
 
     if regional:
         request = compute_v1.UpdateRegionUrlMapRequest(
@@ -328,28 +296,7 @@ def remove_fault_injection_traffic_policy(
 
     urlmap = client.get(request=request)
 
-    path_matcher_found = False
-    path_found = False
-
-    for pm in urlmap.path_matchers:
-        if pm.name == target_name:
-            path_matcher_found = True
-            for pr in pm.path_rules:
-                for p in pr.paths:
-                    if p == target_path:
-                        path_found = True
-                        pr.route_action.fault_injection_policy = None
-                        break
-
-    if not path_matcher_found:
-        logger.debug(
-            f"Failed to find path matcher '{target_name}' in URL map '{url_map}'"
-        )
-
-    if not path_found:
-        logger.debug(
-            f"Failed to find path '{target_path}' in path matcher '{target_name}'"
-        )
+    remove_fault_injection_policy(urlmap, target_name, target_path)
 
     if regional:
         request = compute_v1.UpdateRegionUrlMapRequest(

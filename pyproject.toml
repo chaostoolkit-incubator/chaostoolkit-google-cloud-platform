@@ -26,7 +26,7 @@ dependencies = [
     "dateparser>=1.2.0",
     "grafeas>=1.9.1",
     "chaostoolkit-kubernetes>=0.34.1",
-    "chaostoolkit-lib>=1.42.0",
+    "chaostoolkit-lib>=1.43.0",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",

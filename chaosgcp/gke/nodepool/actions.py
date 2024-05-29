@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
+import logging
 from typing import Any, Dict
 
 from chaosk8s.node.actions import drain_nodes
 from chaoslib.exceptions import ActivityFailed
 from chaoslib.types import Configuration, Secrets
 from google.cloud import container_v1
-from logzero import logger
 
 from chaosgcp import context_from_parent_path, get_parent, to_dict
 from chaosgcp.gke.nodepool import (
@@ -21,6 +21,7 @@ __all__ = [
     "rollback_nodepool",
     "resize_nodepool",
 ]
+logger = logging.getLogger("chaostoolkit")
 
 
 def create_new_nodepool(

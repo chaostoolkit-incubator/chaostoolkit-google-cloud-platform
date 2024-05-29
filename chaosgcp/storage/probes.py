@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
+import logging
 
 from chaoslib.exceptions import ActivityFailed
 from chaoslib.types import Configuration, Secrets
-from logzero import logger
 
 from chaosgcp import storage
 
 __all__ = ["object_exists"]
+logger = logging.getLogger("chaostoolkit")
 
 
 def object_exists(

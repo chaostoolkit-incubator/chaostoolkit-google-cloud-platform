@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
+import logging
 from typing import Any, Dict, List, Optional
 
 from chaoslib.exceptions import ActivityFailed
 from chaoslib.types import Configuration, Secrets
-from logzero import logger
 
 from chaosgcp import get_context, get_service, wait_on_operation
 from chaosgcp.sql.probes import describe_instance
@@ -16,6 +16,7 @@ __all__ = [
     "disable_replication",
     "enable_replication",
 ]
+logger = logging.getLogger("chaostoolkit")
 
 
 def trigger_failover(
