@@ -336,7 +336,10 @@ def valid_slo_ratio_during_window(
             if pt["value"]["double_value"] >= min_level:
                 good += 1
         elif "int64_value" in pt["value"]:
-            if pt["value"]["int64_value"] >= min_level:
+            # because this is an int64, this is returned a string
+            # Python3 should automatically handle this on 64 machines
+            # Rust would be more explicit here
+            if int(pt["value"]["int64_value"]) >= min_level:
                 good += 1
         elif "bool_value" in pt["value"]:
             if pt["value"]["bool_value"] == min_level:

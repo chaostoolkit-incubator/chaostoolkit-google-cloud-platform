@@ -2,7 +2,17 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.32.0...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.32.1...HEAD
+
+## [0.32.1][] - 2024-05-31
+
+[0.32.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.32.0...0.32.1
+
+### Fixed
+
+* Convert string to int. GCP returns int64 as a string to let the client to make
+  the decision how to convert it. Python doesn't differentiate explicitely so we
+  are left to let the Python VM make the right decision for us
 
 ## [0.32.0][] - 2024-05-31
 
