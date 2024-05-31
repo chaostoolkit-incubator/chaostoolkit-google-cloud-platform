@@ -2,7 +2,16 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.31.0...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.32.0...HEAD
+
+## [0.32.0][] - 2024-05-31
+
+[0.32.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.31.0...0.32.0
+
+### Added
+
+* Support for more typed value when verifying SLO with
+  `valid_slo_ratio_during_window`
 
 ## [0.31.0][] - 2024-05-28
 
