@@ -7,6 +7,7 @@ from google.cloud import container_v1
 from chaosgcp.gke.nodepool.actions import (
     create_new_nodepool,
     delete_nodepool,
+    kill_pod,
     swap_nodepool,
 )
 
@@ -176,3 +177,37 @@ def test_swap_nodepool_without_delete(
     )
 
     client.delete_node_pool.assert_not_called()
+
+
+@patch("kubernetes.config.load_kube_config")
+@patch("kubernetes.client.CoreV1Api")
+@patch("kubernetes.watch.Watch")
+def test_kill_pod(mock_watch, mock_core_v1, mock_load_kube_config):
+    """Tests the kill_pod function."""
+
+    namespace = "my-namespace"
+    pod_name = "my-pod"
+    timeout = 30
+
+    # Mock pod data
+    mock_pod = MagicMock()
+    mock_pod.metadata.name = pod_name
+    mock_core_v1.return_value.list_namespaced_pod.return_value.items = [
+        mock_pod
+    ]
+
+    # Mock watch events to simulate successful deletion
+    event_deleted = {"type": "DELETED", "object": mock_pod}
+    mock_watch.return_value.stream.return_value = [event_deleted]
+
+    # Call the function
+    kill_pod(namespace, timeout)
+
+    # Assertions
+    mock_load_kube_config.assert_called_once()
+    mock_core_v1.return_value.list_namespaced_pod.assert_called_once_with(
+        namespace
+    )
+    mock_core_v1.return_value.delete_namespaced_pod.assert_called_once_with(
+        pod_name, namespace
+    )
