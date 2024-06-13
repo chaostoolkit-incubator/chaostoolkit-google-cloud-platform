@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from typing import Any, Dict
+from kubernetes import client as k8s_client, config as k8s_config, watch
 
 from chaosk8s.node.actions import drain_nodes
 from chaoslib.exceptions import ActivityFailed
@@ -240,3 +241,45 @@ def resize_nodepool(
         response = wait_on_operation(client, response, ctx)
 
     return response
+
+
+def kill_pod(namespace: str, 
+             timeout_seconds: int = 60):
+    """
+    Kills the first pod found within the specified Kubernetes namespace.
+
+    Args:
+        namespace: The Kubernetes namespace where the pod resides.
+        timeout_seconds: Optional maximum time (in seconds) to wait for pod deletion. Defaults to 60.
+
+    Loads Kubernetes configuration.
+    Fetches the first pod's name from the namespace.
+    Issues a delete command to Kubernetes.
+    Monitors for the deletion event using a watch mechanism.
+    Logs a success message once the pod is confirmed deleted.
+    If the timeout is reached without deletion, raises a TimeoutError.
+    """
+    k8s_config.load_kube_config()
+    core_v1 = k8s_client.CoreV1Api()
+
+    # List pods in the namespace
+    core_v1 = k8s_client.CoreV1Api()
+
+    # List pods belonging to the namespace
+    pod_name = core_v1.list_namespaced_pod(namespace).items[0].metadata.name
+
+    # Delete the pod
+    core_v1.delete_namespaced_pod(pod_name, namespace)
+
+    # Watch for pod deletion
+    w = watch.Watch()
+    for event in w.stream(
+        core_v1.list_namespaced_pod,
+        namespace=namespace,
+        timeout_seconds=timeout_seconds,
+        field_selector=f"metadata.name={pod_name}",
+    ):
+        if event["type"] == "DELETED":
+            logger.info(f"Pod {pod_name} successfully killed")
+            w.stop()
+            return
