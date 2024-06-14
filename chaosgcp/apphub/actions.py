@@ -16,12 +16,12 @@ import logging
 from typing import Dict, Any
 
 from chaoslib.types import Configuration, Secrets
-
+from chaosgcp.lb.actions import inject_traffic_faults
 from google.cloud import compute_v1, apphub_v1
 from google.cloud import resourcemanager_v3
-import inject_traffic_delay
 
-__all__ = ["apphub_list_app_services", "inject_fault_if_url_map_exists_app_hub"]
+
+__all__ = ["inject_fault_if_url_map_exists_app_hub"]
 logger = logging.getLogger("chaostoolkit")
 
 
@@ -53,15 +53,12 @@ def apphub_list_app_services(
 def get_project_number(project_id):
     """Retrieves the project number for the specified Google Cloud Project ID."""
     client = resourcemanager_v3.ProjectsClient()
-
     # Construct the project name (required format)
     project_name = f"projects/{project_id}"
-
     try:
         project = client.get_project(name=project_name)
-        return project.name.split("/")[
-            -1
-        ]  # Extract number from 'projects/123456789'
+        return project.name.split("/")[-1]
+        # Extract number from 'projects/123456789'
     except Exception as e:
         logger.error(f"Error retrieving project number: {e}")
         return None
@@ -180,41 +177,49 @@ def url_map_exists(url_map_value, project_id, region, application_name):
             apphub_app_list_services(project_id, region, application_name),
             get_url_map_essentials(project_id),
         )
-    except Exception as e:
-        logger.error(f"Error retrieving URL map information: {e}")
-
-    for umap in availableUrlMaps:
-        index = umap.find("/urlMaps/")
-        if index != -1 and umap[index + len("/urlMaps/") :] == url_map_value:
-            logger.info(
-                "given url_map is found within the URL maps associated with the specified AppHub application"
-            )
+        for umap in availableUrlMaps:
+            index = umap.find("/urlMaps/")
+            if (
+                index != -1
+                and umap[index + len("/urlMaps/") :] == url_map_value
+            ):
+                logger.info(
+                    "given url_map is found within the URL maps associated with the specified AppHub application"
+                )
             return True  # Found, so return True immediately
 
-    return False
+    except Exception as e:
+        logger.error(f"Error retrieving URL map information: {e}")
+        return False
 
 
 def inject_fault_if_url_map_exists_app_hub(
     application_name,
-    region: str,
     url_map: str,
+    project_id: str,
+    region: str,
     target_name: str,
     target_path: str = "/*",
     impacted_percentage: float = 50.0,
-    delay_in_seconds: int = 1,
-    delay_in_nanos: int = 0,
-    regional: bool = False,
-    project_id: str = None,
+    http_status: int = 400,
+    regional: bool = True,
     configuration: Configuration = None,
     secrets: Secrets = None,
 ) -> Dict[str, Any]:
     """Processes a URL map if it exists within the specified AppHub application.
 
     Args:
+        application_name (str): The name of the AppHub application.
         url_map (str): The URL map value to check for.
         project_id (str): The Google Cloud project ID.
         region (str): The region of the AppHub application.
-        application_name (str): The name of the AppHub application.
+        target_name (str): the the name of a path matcher in the URL map.
+        target_path (str): default "/*",
+        impacted_percentage: float default 50.0,
+        http_status (int) default 400,
+        regional: (bool) default True,
+        configuration: (Configuration) default None,
+        secrets: (Secrets) default None, 
     """
 
     if url_map_exists(url_map, project_id, region, application_name):
@@ -222,13 +227,12 @@ def inject_fault_if_url_map_exists_app_hub(
         logger.info(
             f"URL map '{url_map}' found. Proceeding with Fault Injection Action "
         )
-        return inject_traffic_delay(
+        return inject_traffic_faults(
             url_map,
             target_name,
             target_path,
             impacted_percentage,
-            delay_in_seconds,
-            delay_in_nanos,
+            http_status,
             regional,
             project_id,
             region,
@@ -238,4 +242,3 @@ def inject_fault_if_url_map_exists_app_hub(
     else:
         logger.info(f"URL map '{url_map}' not found, Can't Proceed Further")
         return None
-
