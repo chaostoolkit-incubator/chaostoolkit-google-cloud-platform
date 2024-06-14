@@ -186,7 +186,7 @@ def url_map_exists(url_map_value, project_id, region, application_name):
                 logger.info(
                     "given url_map is found within the URL maps associated with the specified AppHub application"
                 )
-            return True  # Found, so return True immediately
+                return True  # Found, so return True immediately
 
     except Exception as e:
         logger.error(f"Error retrieving URL map information: {e}")
