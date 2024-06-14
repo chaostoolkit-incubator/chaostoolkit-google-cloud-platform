@@ -16,12 +16,18 @@ import logging
 from typing import Dict, Any
 
 from chaoslib.types import Configuration, Secrets
-from chaosgcp.lb.actions import inject_traffic_faults
+from chaosgcp.lb.actions import (
+    inject_traffic_faults,
+    remove_fault_injection_traffic_policy,
+)
 from google.cloud import compute_v1, apphub_v1
 from google.cloud import resourcemanager_v3
 
 
-__all__ = ["inject_fault_if_url_map_exists_app_hub"]
+__all__ = [
+    "inject_fault_if_url_map_exists_app_hub",
+    "remove_fault_if_url_map_exists_app_hub",
+]
 logger = logging.getLogger("chaostoolkit")
 
 
@@ -219,7 +225,7 @@ def inject_fault_if_url_map_exists_app_hub(
         http_status (int) default 400,
         regional: (bool) default True,
         configuration: (Configuration) default None,
-        secrets: (Secrets) default None, 
+        secrets: (Secrets) default None,
     """
 
     if url_map_exists(url_map, project_id, region, application_name):
@@ -241,4 +247,51 @@ def inject_fault_if_url_map_exists_app_hub(
         )
     else:
         logger.info(f"URL map '{url_map}' not found, Can't Proceed Further")
+        return None
+
+
+def remove_fault_if_url_map_exists_app_hub(
+    application_name,
+    url_map: str,
+    project_id: str,
+    region: str,
+    target_name: str,
+    target_path: str = "/*",
+    regional: bool = True,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> Dict[str, Any]:
+    """Processes a URL map if it exists within the specified AppHub application.
+
+    Args:
+        application_name (str): The name of the AppHub application.
+        url_map (str): The URL map value to check for.
+        project_id (str): The Google Cloud project ID.
+        region (str): The region of the AppHub application.
+        target_name (str): the the name of a path matcher in the URL map.
+        target_path (str): default "/*",
+        impacted_percentage: float default 50.0,
+        http_status (int) default 400,
+        regional: (bool) default True,
+        configuration: (Configuration) default None,
+        secrets: (Secrets) default None,
+    """
+
+    if url_map_exists(url_map, project_id, region, application_name):
+        # URL map exists, proceed with your processing logic here
+        logger.info(
+            f"URL map '{url_map}' found. Proceeding with Rollback of Fault Injection Action "
+        )
+        return remove_fault_injection_traffic_policy(
+            url_map,
+            target_name,
+            target_path,
+            regional,
+            project_id,
+            region,
+            configuration,
+            secrets,
+        )
+    else:
+        logger.info(f"URL map '{url_map}' not found, Can't RollBack ")
         return None
