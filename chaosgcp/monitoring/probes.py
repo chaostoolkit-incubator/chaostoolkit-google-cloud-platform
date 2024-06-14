@@ -277,7 +277,7 @@ def get_slo_budget(
 def valid_slo_ratio_during_window(
     name: str,
     expected_ratio: float = 0.90,
-    min_level: float = 0.90,
+    min_level: Union[float, int, bool, str] = 0.90,
     end_time: str = "now",
     window: str = "5 minutes",
     alignment_period: int = 60,
@@ -304,8 +304,11 @@ def valid_slo_ratio_during_window(
     The `name` argument is a full path to an SLO such as
     `"projects/<project_id>/services/<service_name>/serviceLevelObjectives/<slo_id>"`
 
+    This probe does not support point of type `distribution_value`.
+
     See also: https://cloud.google.com/stackdriver/docs/solutions/slo-monitoring/api/timeseries-selectors
     See also: https://cloud.google.com/python/docs/reference/monitoring/latest/google.cloud.monitoring_v3.types.Aggregation
+    See also: https://cloud.google.com/python/docs/reference/monitoring/latest/google.cloud.monitoring_v3.types.TypedValue
     """  # noqa: E501
     response = get_slo_health(
         name,
@@ -329,8 +332,21 @@ def valid_slo_ratio_during_window(
     total = 0
     for pt in points:
         total += 1
-        if pt["value"]["double_value"] >= min_level:
-            good += 1
+        if "double_value" in pt["value"]:
+            if pt["value"]["double_value"] >= min_level:
+                good += 1
+        elif "int64_value" in pt["value"]:
+            # because this is an int64, this is returned a string
+            # Python3 should automatically handle this on 64 machines
+            # Rust would be more explicit here
+            if int(pt["value"]["int64_value"]) >= min_level:
+                good += 1
+        elif "bool_value" in pt["value"]:
+            if pt["value"]["bool_value"] == min_level:
+                good += 1
+        elif "string_value" in pt["value"]:
+            if pt["value"]["string_value"] == min_level:
+                good += 1
 
     return ((good * 100.0) / total) >= expected_ratio
 
