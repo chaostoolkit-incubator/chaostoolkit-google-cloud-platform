@@ -326,6 +326,10 @@ def valid_slo_ratio_during_window(
 
     logger.debug(f"Return SLO health: {response}")
 
+    if not response:
+        logger.debug("SLO has no data for that period of time")
+        return False
+
     points = response[0]["points"]
 
     good = 0

@@ -4,6 +4,11 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.32.1...HEAD
 
+### Changed
+
+* Always return falsey from `chaosgcp.monitoring.proves.valid_slo_ratio_during_window`
+  when no data was found for the SLO
+
 ## [0.32.1][] - 2024-05-31
 
 [0.32.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.32.0...0.32.1
