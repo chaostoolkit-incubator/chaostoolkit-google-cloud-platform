@@ -79,7 +79,7 @@ def get_route_action(
         )
         raise ActivityFailed("failed to match the appropriate path matcher")
 
-    if not route_action:
+    if route_action is None:
         logger.debug(
             f"Failed to find path '{target_path}' in path matcher '{target_name}'"
         )

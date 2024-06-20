@@ -10,6 +10,10 @@
   when no data was found for the SLO
 * Bump dependencies
 
+# Fixed
+
+* Allow for empty route action block in load balancer actions
+
 ## [0.32.1][] - 2024-05-31
 
 [0.32.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.32.0...0.32.1
