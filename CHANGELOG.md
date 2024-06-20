@@ -8,6 +8,7 @@
 
 * Always return falsey from `chaosgcp.monitoring.proves.valid_slo_ratio_during_window`
   when no data was found for the SLO
+* Bump dependencies
 
 ## [0.32.1][] - 2024-05-31
 
