@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:32d956408f7bd638842ef42108c748b1de888df586178e96e88f28af26fed75a"
+content_hash = "sha256:96f05d4b9f168c14fe5e11eb07e6a78182b3661df5e06df7acda337f943e4402"
 
 [[package]]
 name = "backports-zoneinfo"
@@ -438,6 +438,24 @@ files = [
 ]
 
 [[package]]
+name = "google-cloud-apphub"
+version = "0.1.0"
+requires_python = ">=3.7"
+summary = "Google Cloud Apphub API client library"
+groups = ["default"]
+dependencies = [
+    "google-api-core[grpc]!=2.0.*,!=2.1.*,!=2.10.*,!=2.2.*,!=2.3.*,!=2.4.*,!=2.5.*,!=2.6.*,!=2.7.*,!=2.8.*,!=2.9.*,<3.0.0dev,>=1.34.1",
+    "google-auth!=2.24.0,!=2.25.0,<3.0.0dev,>=2.14.1",
+    "grpc-google-iam-v1<1.0.0dev,>=0.12.4",
+    "proto-plus<2.0.0dev,>=1.22.3",
+    "protobuf!=3.20.0,!=3.20.1,!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,<5.0.0dev,>=3.19.5",
+]
+files = [
+    {file = "google-cloud-apphub-0.1.0.tar.gz", hash = "sha256:980cf634498a4fb633bcb320fc28806e87c66b89f021cd7d79edfc9b13df10ea"},
+    {file = "google_cloud_apphub-0.1.0-py3-none-any.whl", hash = "sha256:4db87a4701dd315c83dc64d41b2179a493472bb2658f7c3ea66b1e1d0bedf590"},
+]
+
+[[package]]
 name = "google-cloud-artifact-registry"
 version = "1.11.3"
 requires_python = ">=3.7"
@@ -593,6 +611,24 @@ dependencies = [
 files = [
     {file = "google-cloud-network-connectivity-2.4.3.tar.gz", hash = "sha256:d5fb763723fef1824f657c04be508eaa0b87132a53850ee2c1a3d7c8f5cb873e"},
     {file = "google_cloud_network_connectivity-2.4.3-py2.py3-none-any.whl", hash = "sha256:7fd2b34e146fbac864ce254df67315eb1c7eb749a76ceec61f1ef8bfa2f703a4"},
+]
+
+[[package]]
+name = "google-cloud-resource-manager"
+version = "1.12.3"
+requires_python = ">=3.7"
+summary = "Google Cloud Resource Manager API client library"
+groups = ["default"]
+dependencies = [
+    "google-api-core[grpc]!=2.0.*,!=2.1.*,!=2.10.*,!=2.2.*,!=2.3.*,!=2.4.*,!=2.5.*,!=2.6.*,!=2.7.*,!=2.8.*,!=2.9.*,<3.0.0dev,>=1.34.1",
+    "google-auth!=2.24.0,!=2.25.0,<3.0.0dev,>=2.14.1",
+    "grpc-google-iam-v1<1.0.0dev,>=0.12.4",
+    "proto-plus<2.0.0dev,>=1.22.3",
+    "protobuf!=3.20.0,!=3.20.1,!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,<5.0.0dev,>=3.19.5",
+]
+files = [
+    {file = "google-cloud-resource-manager-1.12.3.tar.gz", hash = "sha256:809851824119834e4f2310b2c4f38621c1d16b2bb14d5b9f132e69c79d355e7f"},
+    {file = "google_cloud_resource_manager-1.12.3-py2.py3-none-any.whl", hash = "sha256:92be7d6959927b76d90eafc4028985c37975a46ded5466a018f02e8649e113d4"},
 ]
 
 [[package]]
