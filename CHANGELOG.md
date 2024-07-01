@@ -2,7 +2,17 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.33.0...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.34.0...HEAD
+
+## [0.34.0][] - 2024-07-01
+
+[0.34.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.33.0...0.34.0
+
+### Added
+
+* Bringing `lueur` as an optional dependency to start creating higher level
+  actions/probes where data is automatically discovered from a live environment.
+  The goal is to reduce boiler plate wherever we can.
 
 ## [0.33.0][] - 2024-06-20
 

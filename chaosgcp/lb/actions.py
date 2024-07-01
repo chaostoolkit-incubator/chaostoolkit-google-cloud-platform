@@ -6,7 +6,12 @@ from chaoslib.exceptions import ActivityFailed
 from chaoslib.types import Configuration, Secrets
 from google.cloud import compute_v1
 
-from chaosgcp import get_context, load_credentials, wait_on_extended_operation
+from chaosgcp import (
+    get_context,
+    load_credentials,
+    wait_on_extended_operation,
+    is_lueur_installed,
+)
 from chaosgcp.lb import (
     get_fault_injection_policy,
     remove_fault_injection_policy,
@@ -316,3 +321,63 @@ def remove_fault_injection_traffic_policy(
     wait_on_extended_operation(operation=operation)
 
     return urlmap.__class__.to_dict(urlmap)
+
+
+if is_lueur_installed():
+    import asyncio
+
+    from lueur.api.gcp.lb import lb_config_from_url
+    from lueur.platform.gcp.lb import explore_lb
+
+    __all__.append("add_latency_to_endpoint")
+
+    def add_latency_to_endpoint(
+        url: str,
+        latency: float = 0.3,
+        percentage: float = 90.0,
+        project_id: str = None,
+        region: str = None,
+        configuration: Configuration = None,
+        secrets: Secrets = None,
+    ) -> Dict[str, Any]:
+        """
+        Add latency to a particular URL.
+
+        This is a high level shortcut to the `inject_traffic_delay` which
+        infers all the appropriate parameters from the URL itself. It does this
+        by querying the GCP project for all LB information and matches the
+        correct target from there.
+
+        This might no work on all combinaison of Load Balancer and backend
+        services that GCP support but should work well with LB + Cloud Run.
+
+        The `latency` is expressed in seconds with a default set to 0.3 seconds.
+        """
+        credentials = load_credentials(secrets)
+        context = get_context(
+            configuration, project_id=project_id, region=region
+        )
+
+        region = context.region
+        project = context.project_id
+
+        snapshot = asyncio.run(
+            explore_lb(project, region, credentials=credentials)
+        )
+
+        config = lb_config_from_url(snapshot=snapshot, url=url)
+
+        return inject_traffic_delay(
+            url_map=config.urlmap,
+            target_name=config.path,
+            target_path=config.path_matcher,
+            delay_in_seconds=0,
+            delay_in_nanos=int(latency * 1e9),
+            impacted_percentage=percentage,
+            latency=config.project,
+            regional=config.is_regional,
+            region=region,
+            project_id=project,
+            configuration=configuration,
+            secrets=secrets,
+        )

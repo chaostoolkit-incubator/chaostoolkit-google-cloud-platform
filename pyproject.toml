@@ -54,6 +54,10 @@ Repository = "https://github.com/chaostoolkit-incubator/chaostoolkit-google-clou
 Documentation = "https://chaostoolkit.org/drivers/gcp/"
 Changelog = "https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/blob/main/CHANGELOG.md"
 
+[project.optional-dependencies]
+lueur = [
+    "lueur[gcp]>=0.3.0; python_version >= \"3.11\"",
+]
 [tool]
 
 [tool.pdm]

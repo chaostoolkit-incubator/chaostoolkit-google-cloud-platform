@@ -39,6 +39,7 @@ __all__ = [
     "to_dict",
     "context_from_parent_path",
     "parse_interval",
+    "is_lueur_installed",
 ]
 
 logger = logging.getLogger("chaostoolkit")
@@ -313,6 +314,24 @@ def parse_interval(
         raise ActivityFailed("unparsable window value")
 
     return (start_time, end_time)
+
+
+def is_lueur_installed() -> bool:
+    """
+    Check that the lueur dependency is installed.
+    """
+    try:
+        import lueur  # noqa F401
+
+        return True
+    except ImportError:
+        pass
+
+    logger.debug(
+        "Lueur package not installed. Please refer to the documentation"
+    )
+
+    return False
 
 
 ###############################################################################
