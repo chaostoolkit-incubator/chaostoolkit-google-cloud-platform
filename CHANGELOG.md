@@ -2,7 +2,15 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.34.0...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.35.0...HEAD
+
+## [0.35.0][] - 2024-07-01
+
+[0.35.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.34.0...0.35.0
+
+### Added
+
+* Fix new LB actions so that they properly figure the LB settings
 
 ## [0.34.0][] - 2024-07-01
 

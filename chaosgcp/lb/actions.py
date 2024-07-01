@@ -324,12 +324,15 @@ def remove_fault_injection_traffic_policy(
 
 
 if is_lueur_installed():
+    # to get access to these, you will need to run `pip install lueur`
+
     import asyncio
 
     from lueur.api.gcp.lb import lb_config_from_url
+    from lueur.models import Discovery, GCPMeta
     from lueur.platform.gcp.lb import explore_lb
 
-    __all__.append("add_latency_to_endpoint")
+    __all__.extend(["add_latency_to_endpoint", "remove_latency_from_endpoint"])
 
     def add_latency_to_endpoint(
         url: str,
@@ -352,6 +355,8 @@ if is_lueur_installed():
         services that GCP support but should work well with LB + Cloud Run.
 
         The `latency` is expressed in seconds with a default set to 0.3 seconds.
+
+        Note: This action requires you install the `lueur` package first
         """
         credentials = load_credentials(secrets)
         context = get_context(
@@ -361,21 +366,105 @@ if is_lueur_installed():
         region = context.region
         project = context.project_id
 
-        snapshot = asyncio.run(
-            explore_lb(project, region, credentials=credentials)
+        logger.debug(
+            f"Discovery load balancer info on '{project}' in '{region}'"
         )
 
+        resources = asyncio.run(explore_lb(project, region, creds=credentials))
+
+        logger.debug(f"Found {len(resources)}")
+
+        snapshot = Discovery(
+            id="",
+            meta=GCPMeta(
+                name="gcp",
+                display="GCP",
+                kind="",
+                project=project,
+                region=region,
+            ),
+            resources=resources,
+        ).model_dump()
+
         config = lb_config_from_url(snapshot=snapshot, url=url)
+        if not config:
+            raise ActivityFailed(
+                f"failed to retrieve load balancer information for URL {url}"
+            )
+
+        logger.debug(f"Found LB info {config} for {url}")
 
         return inject_traffic_delay(
             url_map=config.urlmap,
-            target_name=config.path,
-            target_path=config.path_matcher,
+            target_name=config.path_matcher,
+            target_path=config.path,
             delay_in_seconds=0,
             delay_in_nanos=int(latency * 1e9),
             impacted_percentage=percentage,
-            latency=config.project,
             regional=config.is_regional,
+            region=region,
+            project_id=project,
+            configuration=configuration,
+            secrets=secrets,
+        )
+
+    def remove_latency_from_endpoint(
+        url: str,
+        project_id: str = None,
+        region: str = None,
+        configuration: Configuration = None,
+        secrets: Secrets = None,
+    ) -> Dict[str, Any]:
+        """
+        Remove latency from a particular URL.
+
+        This is a high level shortcut to the
+        `remove_fault_injection_traffic_policy` which infers all the appropriate
+        parameters from the URL itself. It does this by querying the GCP project
+        for all LB information and matches the correct target from there.
+
+        Note: This action requires you install the `lueur` package first
+        """
+        credentials = load_credentials(secrets)
+        context = get_context(
+            configuration, project_id=project_id, region=region
+        )
+
+        region = context.region
+        project = context.project_id
+
+        logger.debug(
+            f"Discovery load balancer info on '{project}' in '{region}'"
+        )
+
+        resources = asyncio.run(explore_lb(project, region, creds=credentials))
+
+        logger.debug(f"Found {len(resources)}")
+
+        snapshot = Discovery(
+            id="",
+            meta=GCPMeta(
+                name="gcp",
+                display="GCP",
+                kind="",
+                project=project,
+                region=region,
+            ),
+            resources=resources,
+        ).model_dump()
+
+        config = lb_config_from_url(snapshot=snapshot, url=url)
+        if not config:
+            raise ActivityFailed(
+                f"failed to retrieve load balancer information for URL {url}"
+            )
+
+        logger.debug(f"Found LB info {config} for {url}")
+
+        return remove_fault_injection_traffic_policy(
+            url_map=config.urlmap,
+            target_name=config.path_matcher,
+            target_path=config.path,
             region=region,
             project_id=project,
             configuration=configuration,
