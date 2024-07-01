@@ -2,7 +2,15 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.35.0...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.36.0...HEAD
+
+## [0.36.0][] - 2024-07-01
+
+[0.36.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.35.0...0.36.0
+
+### Added
+
+- New probes to fetch all SLO and their health for a given URL
 
 ## [0.35.0][] - 2024-07-01
 

@@ -1,8 +1,14 @@
+import json
+import re
 import logging
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
+from urllib.parse import urlparse
 
+from chaoslib.exceptions import ActivityFailed
 from chaoslib.types import Configuration, Secrets
+from google.cloud import compute_v1
 from google.cloud import monitoring_v3
+from google.cloud.compute_v1.types import compute
 from google.cloud.monitoring_v3.query import Query
 from google.cloud.monitoring_v3.types.metric import TimeSeries
 
@@ -15,6 +21,8 @@ __all__ = [
     "get_slo_budget",
     "valid_slo_ratio_during_window",
     "run_mql_query",
+    "get_slo_from_url",
+    "get_slo_health_from_url",
 ]
 logger = logging.getLogger("chaostoolkit")
 
@@ -383,3 +391,158 @@ def query_time_series(
             client.query_time_series(request=request),
         )
     )
+
+
+def get_slo_from_url(
+    url: str,
+    project_id: str = None,
+    region: str = None,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> List[Dict[str, Any]]:
+    """
+    Get all SLOs associated directly with a URL from the load balancer
+    perspective.
+    """  # noqa: E501
+    credentials = load_credentials(secrets)
+    context = get_context(configuration, project_id=project_id, region=region)
+    project = context.project_id
+    backend_services = get_backend_services_from_url(credentials, context, url)
+
+    client = monitoring_v3.ServiceMonitoringServiceClient(
+        credentials=credentials
+    )
+
+    request = monitoring_v3.ListServicesRequest(parent=f"projects/{project}")
+    services = client.list_services(request=request)
+
+    results = []
+
+    for service in services:
+        if service.gke_service:
+            request = monitoring_v3.ListServiceLevelObjectivesRequest(
+                parent=service.name, view="EXPLICIT"
+            )
+            slos = client.list_service_level_objectives(request=request)
+            for slo in slos:
+                slo_dict = slo.__class__.to_dict(slo)
+
+                # rather than exploring all potential sli combination
+                # we just want to know if the backend service is used by the slo
+                slo_str = json.dumps(slo_dict)
+                for bs in backend_services:
+                    if bs in slo_str:
+                        results.append(slo_dict)
+
+    return results
+
+
+def get_slo_health_from_url(
+    url: str,
+    end_time: str = "now",
+    window: str = "5 minutes",
+    alignment_period: int = 60,
+    per_series_aligner: str = "ALIGN_MEAN",
+    cross_series_reducer: int = "REDUCE_COUNT",
+    group_by_fields: Optional[Union[str, List[str]]] = None,
+    project_id: str = None,
+    region: str = None,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> List[Dict[str, Any]]:
+    """
+    Get all SLO healths associated directly with a URL from the load balancer
+    perspective.
+
+    Use this probe to efficientely retrieve the curerent health of SLOs
+    associated with a particular URL endpoint.
+    """  # noqa: E501
+    healths = []
+    slos = get_slo_from_url(url, project_id, region, configuration, secrets)
+    for slo in slos:
+        healths.append(
+            get_slo_health(
+                slo["name"],
+                end_time,
+                window,
+                alignment_period,
+                per_series_aligner,
+                cross_series_reducer,
+                group_by_fields,
+                project_id,
+                region,
+                configuration,
+                secrets,
+            )
+        )
+    return healths
+
+
+###############################################################################
+# Private functions
+###############################################################################
+def get_route_action_from_url(
+    urlmaps: List[compute.UrlMap], url: str
+) -> Tuple[compute.UrlMap, compute.HttpRouteAction]:
+    p = urlparse(url)
+    domain = p.netloc
+
+    found_urlmap = None
+    for urlmap in urlmaps:
+        if found_urlmap:
+            break
+
+        for host_rule in urlmap.host_rules:
+            if domain in host_rule.hosts:
+                found_urlmap = urlmap
+                break
+
+    for pm in found_urlmap.path_matchers:
+        for rr in pm.route_rules:
+            for mr in rr.match_rules:
+                if mr.prefix_match is not None:
+                    pattern = re.compile(f"^{mr.prefix_match}")
+                    if pattern.match(p.path):
+                        return (found_urlmap, rr.route_action)
+                elif mr.full_path_match is not None:
+                    pattern = re.compile(f"^{mr.full_path_match}$")
+                    if pattern.match(p.path):
+                        return (found_urlmap, rr.route_action)
+                elif mr.regex_match is not None:
+                    pattern = re.compile(f"^{mr.regex_match}$")
+                    if pattern.match(p.path):
+                        return (found_urlmap, rr.route_action)
+
+    raise ActivityFailed("failed to find a suitable route")
+
+
+def get_backend_services_from_url(credentials, context, url: str) -> List[str]:
+    region = context.region
+    project = context.project_id
+
+    if region:
+        if not region:
+            raise ActivityFailed(
+                "when `regional` is set, the `gcp_region` configuration key "
+                "must also be set"
+            )
+        client = compute_v1.RegionUrlMapsClient(credentials=credentials)
+        request = compute_v1.ListRegionUrlMapsRequest(
+            project=project,
+            region=region,
+        )
+    else:
+        client = compute_v1.UrlMapsClient(credentials=credentials)
+        request = compute_v1.ListUrlMapsRequest(
+            project=project,
+        )
+
+    urlmaps = client.list(request=request)
+    url_map, route_action = get_route_action_from_url(urlmaps, url)
+
+    backend_services = []
+    for bs in route_action.weighted_backend_services:
+        _, name = bs.backend_service.rsplit("/", 1)
+        backend_services.append(name)
+
+    return backend_services
