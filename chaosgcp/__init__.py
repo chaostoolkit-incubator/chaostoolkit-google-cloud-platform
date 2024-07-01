@@ -316,24 +316,6 @@ def parse_interval(
     return (start_time, end_time)
 
 
-def is_lueur_installed() -> bool:
-    """
-    Check that the lueur dependency is installed.
-    """
-    try:
-        import lueur  # noqa F401
-
-        return True
-    except ImportError:
-        pass
-
-    logger.debug(
-        "Lueur package not installed. Please refer to the documentation"
-    )
-
-    return False
-
-
 ###############################################################################
 # Private functions
 ###############################################################################

@@ -11,6 +11,7 @@
 ### Added
 
 * Fix new LB actions so that they properly figure the LB settings
+* Add the same actions for error faults
 
 ## [0.34.0][] - 2024-07-01
 

@@ -56,7 +56,6 @@ Changelog = "https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud
 
 [project.optional-dependencies]
 lueur = [
-    "lueur[gcp]>=0.3.0; python_version >= \"3.11\"",
 ]
 [tool]
 

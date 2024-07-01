@@ -10,17 +10,21 @@ from chaosgcp import (
     get_context,
     load_credentials,
     wait_on_extended_operation,
-    is_lueur_installed,
 )
 from chaosgcp.lb import (
     get_fault_injection_policy,
     remove_fault_injection_policy,
+    get_fault_injection_policy_from_url,
 )
 
 __all__ = [
     "inject_traffic_delay",
     "inject_traffic_faults",
     "remove_fault_injection_traffic_policy",
+    "add_latency_to_endpoint",
+    "remove_latency_from_endpoint",
+    "set_status_code_on_endpoint",
+    "reset_status_code_on_endpoint",
 ]
 logger = logging.getLogger("chaostoolkit")
 
@@ -323,150 +327,277 @@ def remove_fault_injection_traffic_policy(
     return urlmap.__class__.to_dict(urlmap)
 
 
-if is_lueur_installed():
-    # to get access to these, you will need to run `pip install lueur`
+def add_latency_to_endpoint(
+    url: str,
+    latency: float = 0.3,
+    percentage: float = 90.0,
+    project_id: str = None,
+    region: str = None,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> Dict[str, Any]:
+    """
+    Add latency to a particular URL.
 
-    import asyncio
+    This is a high level shortcut to the `inject_traffic_delay` which
+    infers all the appropriate parameters from the URL itself. It does this
+    by querying the GCP project for all LB information and matches the
+    correct target from there.
 
-    from lueur.api.gcp.lb import lb_config_from_url
-    from lueur.models import Discovery, GCPMeta
-    from lueur.platform.gcp.lb import explore_lb
+    This might no work on all combinaison of Load Balancer and backend
+    services that GCP support but should work well with LB + Cloud Run.
 
-    __all__.extend(["add_latency_to_endpoint", "remove_latency_from_endpoint"])
+    The `latency` is expressed in seconds with a default set to 0.3 seconds.
+    """
+    credentials = load_credentials(secrets)
+    context = get_context(configuration, project_id=project_id, region=region)
 
-    def add_latency_to_endpoint(
-        url: str,
-        latency: float = 0.3,
-        percentage: float = 90.0,
-        project_id: str = None,
-        region: str = None,
-        configuration: Configuration = None,
-        secrets: Secrets = None,
-    ) -> Dict[str, Any]:
-        """
-        Add latency to a particular URL.
+    region = context.region
+    project = context.project_id
 
-        This is a high level shortcut to the `inject_traffic_delay` which
-        infers all the appropriate parameters from the URL itself. It does this
-        by querying the GCP project for all LB information and matches the
-        correct target from there.
-
-        This might no work on all combinaison of Load Balancer and backend
-        services that GCP support but should work well with LB + Cloud Run.
-
-        The `latency` is expressed in seconds with a default set to 0.3 seconds.
-
-        Note: This action requires you install the `lueur` package first
-        """
-        credentials = load_credentials(secrets)
-        context = get_context(
-            configuration, project_id=project_id, region=region
-        )
-
-        region = context.region
-        project = context.project_id
-
-        logger.debug(
-            f"Discovery load balancer info on '{project}' in '{region}'"
-        )
-
-        resources = asyncio.run(explore_lb(project, region, creds=credentials))
-
-        logger.debug(f"Found {len(resources)}")
-
-        snapshot = Discovery(
-            id="",
-            meta=GCPMeta(
-                name="gcp",
-                display="GCP",
-                kind="",
-                project=project,
-                region=region,
-            ),
-            resources=resources,
-        ).model_dump()
-
-        config = lb_config_from_url(snapshot=snapshot, url=url)
-        if not config:
+    if region:
+        if not region:
             raise ActivityFailed(
-                f"failed to retrieve load balancer information for URL {url}"
+                "when `regional` is set, the `gcp_region` configuration key "
+                "must also be set"
             )
-
-        logger.debug(f"Found LB info {config} for {url}")
-
-        return inject_traffic_delay(
-            url_map=config.urlmap,
-            target_name=config.path_matcher,
-            target_path=config.path,
-            delay_in_seconds=0,
-            delay_in_nanos=int(latency * 1e9),
-            impacted_percentage=percentage,
-            regional=config.is_regional,
+        client = compute_v1.RegionUrlMapsClient(credentials=credentials)
+        request = compute_v1.ListRegionUrlMapsRequest(
+            project=project,
             region=region,
-            project_id=project,
-            configuration=configuration,
-            secrets=secrets,
+        )
+    else:
+        client = compute_v1.UrlMapsClient(credentials=credentials)
+        request = compute_v1.ListUrlMapsRequest(
+            project=project,
         )
 
-    def remove_latency_from_endpoint(
-        url: str,
-        project_id: str = None,
-        region: str = None,
-        configuration: Configuration = None,
-        secrets: Secrets = None,
-    ) -> Dict[str, Any]:
-        """
-        Remove latency from a particular URL.
+    urlmaps = client.list(request=request)
+    url_map, route_action = get_fault_injection_policy_from_url(urlmaps, url)
 
-        This is a high level shortcut to the
-        `remove_fault_injection_traffic_policy` which infers all the appropriate
-        parameters from the URL itself. It does this by querying the GCP project
-        for all LB information and matches the correct target from there.
+    urlmap_name = url_map.name
+    fip = route_action.fault_injection_policy
+    fip.delay.percentage = float(percentage)
+    fip.delay.fixed_delay.seconds = 0
+    fip.delay.fixed_delay.nanos = int(latency * 1e9)
 
-        Note: This action requires you install the `lueur` package first
-        """
-        credentials = load_credentials(secrets)
-        context = get_context(
-            configuration, project_id=project_id, region=region
+    if region:
+        request = compute_v1.UpdateRegionUrlMapRequest(
+            project=project,
+            url_map=urlmap_name,
+            url_map_resource=url_map,
+            region=region,
+        )
+    else:
+        request = compute_v1.UpdateUrlMapRequest(
+            project=project,
+            url_map=urlmap_name,
+            url_map_resource=url_map,
         )
 
-        region = context.region
-        project = context.project_id
+    operation = client.update(request=request)
+    wait_on_extended_operation(operation=operation)
 
-        logger.debug(
-            f"Discovery load balancer info on '{project}' in '{region}'"
-        )
+    return url_map.__class__.to_dict(url_map)
 
-        resources = asyncio.run(explore_lb(project, region, creds=credentials))
 
-        logger.debug(f"Found {len(resources)}")
+def remove_latency_from_endpoint(
+    url: str,
+    project_id: str = None,
+    region: str = None,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> Dict[str, Any]:
+    """
+    Remove latency from a particular URL.
 
-        snapshot = Discovery(
-            id="",
-            meta=GCPMeta(
-                name="gcp",
-                display="GCP",
-                kind="",
-                project=project,
-                region=region,
-            ),
-            resources=resources,
-        ).model_dump()
+    This is a high level shortcut to the
+    `remove_fault_injection_traffic_policy` which infers all the appropriate
+    parameters from the URL itself. It does this by querying the GCP project
+    for all LB information and matches the correct target from there.
+    """
+    credentials = load_credentials(secrets)
+    context = get_context(configuration, project_id=project_id, region=region)
 
-        config = lb_config_from_url(snapshot=snapshot, url=url)
-        if not config:
+    region = context.region
+    project = context.project_id
+
+    if region:
+        if not region:
             raise ActivityFailed(
-                f"failed to retrieve load balancer information for URL {url}"
+                "when `regional` is set, the `gcp_region` configuration key "
+                "must also be set"
             )
-
-        logger.debug(f"Found LB info {config} for {url}")
-
-        return remove_fault_injection_traffic_policy(
-            url_map=config.urlmap,
-            target_name=config.path_matcher,
-            target_path=config.path,
+        client = compute_v1.RegionUrlMapsClient(credentials=credentials)
+        request = compute_v1.ListRegionUrlMapsRequest(
+            project=project,
             region=region,
-            project_id=project,
-            configuration=configuration,
-            secrets=secrets,
         )
+    else:
+        client = compute_v1.UrlMapsClient(credentials=credentials)
+        request = compute_v1.ListUrlMapsRequest(
+            project=project,
+        )
+
+    urlmaps = client.list(request=request)
+
+    url_map, route_action = get_fault_injection_policy_from_url(urlmaps, url)
+
+    urlmap_name = url_map.name
+    route_action.fault_injection_policy = None
+
+    if region:
+        request = compute_v1.UpdateRegionUrlMapRequest(
+            project=project,
+            url_map=urlmap_name,
+            url_map_resource=url_map,
+            region=region,
+        )
+    else:
+        request = compute_v1.UpdateUrlMapRequest(
+            project=project,
+            url_map=urlmap_name,
+            url_map_resource=url_map,
+        )
+
+    operation = client.update(request=request)
+    wait_on_extended_operation(operation=operation)
+
+    return url_map.__class__.to_dict(url_map)
+
+
+def set_status_code_on_endpoint(
+    url: str,
+    status_code: int = 400,
+    percentage: float = 90.0,
+    project_id: str = None,
+    region: str = None,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> Dict[str, Any]:
+    """
+    Set the status code on a particular URL.
+
+    This is a high level shortcut to the `inject_traffic_faults` which
+    infers all the appropriate parameters from the URL itself. It does this
+    by querying the GCP project for all LB information and matches the
+    correct target from there.
+
+    This might no work on all combinaison of Load Balancer and backend
+    services that GCP support but should work well with LB + Cloud Run.
+    """
+    credentials = load_credentials(secrets)
+    context = get_context(configuration, project_id=project_id, region=region)
+
+    region = context.region
+    project = context.project_id
+
+    if region:
+        if not region:
+            raise ActivityFailed(
+                "when `regional` is set, the `gcp_region` configuration key "
+                "must also be set"
+            )
+        client = compute_v1.RegionUrlMapsClient(credentials=credentials)
+        request = compute_v1.ListRegionUrlMapsRequest(
+            project=project,
+            region=region,
+        )
+    else:
+        client = compute_v1.UrlMapsClient(credentials=credentials)
+        request = compute_v1.ListUrlMapsRequest(
+            project=project,
+        )
+
+    urlmaps = client.list(request=request)
+
+    url_map, route_action = get_fault_injection_policy_from_url(urlmaps, url)
+
+    urlmap_name = url_map.name
+    fip = route_action.fault_injection_policy
+    fip.abort.percentage = float(percentage)
+    fip.abort.http_status = status_code
+
+    if region:
+        request = compute_v1.UpdateRegionUrlMapRequest(
+            project=project,
+            url_map=urlmap_name,
+            url_map_resource=url_map,
+            region=region,
+        )
+    else:
+        request = compute_v1.UpdateUrlMapRequest(
+            project=project,
+            url_map=urlmap_name,
+            url_map_resource=url_map,
+        )
+
+    operation = client.update(request=request)
+    wait_on_extended_operation(operation=operation)
+
+    return url_map.__class__.to_dict(url_map)
+
+
+def reset_status_code_on_endpoint(
+    url: str,
+    project_id: str = None,
+    region: str = None,
+    configuration: Configuration = None,
+    secrets: Secrets = None,
+) -> Dict[str, Any]:
+    """
+    Remove the status code set on an endpoint
+
+    This is a high level shortcut to the
+    `remove_fault_injection_traffic_policy` which infers all the appropriate
+    parameters from the URL itself. It does this by querying the GCP project
+    for all LB information and matches the correct target from there.
+    """
+    credentials = load_credentials(secrets)
+    context = get_context(configuration, project_id=project_id, region=region)
+
+    region = context.region
+    project = context.project_id
+
+    if region:
+        if not region:
+            raise ActivityFailed(
+                "when `regional` is set, the `gcp_region` configuration key "
+                "must also be set"
+            )
+        client = compute_v1.RegionUrlMapsClient(credentials=credentials)
+        request = compute_v1.ListRegionUrlMapsRequest(
+            project=project,
+            region=region,
+        )
+    else:
+        client = compute_v1.UrlMapsClient(credentials=credentials)
+        request = compute_v1.ListUrlMapsRequest(
+            project=project,
+        )
+
+    urlmaps = client.list(request=request)
+
+    url_map, route_action = get_fault_injection_policy_from_url(urlmaps, url)
+
+    urlmap_name = url_map.name
+    route_action.fault_injection_policy = None
+
+    if region:
+        request = compute_v1.UpdateRegionUrlMapRequest(
+            project=project,
+            url_map=urlmap_name,
+            url_map_resource=url_map,
+            region=region,
+        )
+    else:
+        request = compute_v1.UpdateUrlMapRequest(
+            project=project,
+            url_map=urlmap_name,
+            url_map_resource=url_map,
+        )
+
+    operation = client.update(request=request)
+    wait_on_extended_operation(operation=operation)
+
+    return url_map.__class__.to_dict(url_map)
