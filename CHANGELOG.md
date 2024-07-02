@@ -2,7 +2,17 @@
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.36.1...HEAD
+[Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.36.2...HEAD
+
+## [0.36.2][] - 2024-07-02
+
+[0.36.2]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.36.1...0.36.2
+
+### Fixed
+
+- Remove the return statement from `detach_network_endpoint_group` and
+  `attach_network_endpoint_group` since the extended operation payload is set
+  to nothing anyway
 
 ## [0.36.1][] - 2024-07-02
 
