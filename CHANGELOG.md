@@ -6,7 +6,7 @@
 
 ## [0.36.1][] - 2024-07-02
 
-[0.36.0]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.36.0...0.36.1
+[0.36.1]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.36.0...0.36.1
 
 ### Fixed
 
