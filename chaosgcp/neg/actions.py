@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from chaoslib.types import Configuration, Secrets
 from google.cloud import compute_v1
@@ -7,7 +7,6 @@ from google.cloud import compute_v1
 from chaosgcp import (
     get_context,
     load_credentials,
-    to_dict,
     wait_on_extended_operation,
 )
 
