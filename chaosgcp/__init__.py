@@ -130,6 +130,8 @@ def wait_on_operation(
 def wait_on_extended_operation(
     operation: ExtendedOperation, frequency: int = 1, timeout: int = 60
 ) -> None:
+    # note that extended operations return nothing and set theyr result payload
+    # to None
     start = time.time()
 
     while True:

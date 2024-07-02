@@ -19,7 +19,7 @@ from chaoslib.types import Configuration, Secrets
 from google.cloud import compute_v1
 from google.cloud.compute_v1.types import Tags
 
-from chaosgcp import load_credentials, wait_on_extended_operation, to_dict
+from chaosgcp import load_credentials, wait_on_extended_operation
 
 __all__ = ["set_instance_tags"]
 logger = logging.getLogger("chaostoolkit")
@@ -32,14 +32,14 @@ def set_instance_tags(
     tags_list: list,
     configuration: Configuration = None,
     secrets: Secrets = None,
-) -> Dict[str, Any]:
+) -> None:
     """Set a Network Tags to a GCE VM instance
 
     :param project_id : the project ID in which the DNS record is present
     :param ip_address: the IP address for the A record that needs to be changed
     :param zone: the name of the zone where the GCE VM is provisioned
     :param tags_list : list of network tags to be set to the GCE VM instance
-    :return JSON Response which is in form of dictionary
+    :return nothing
     """
     credentials = load_credentials(secrets)
 
@@ -69,11 +69,8 @@ def set_instance_tags(
     operation = client.set_tags(request=request)
 
     # Handle the response
+    # do not return anything as extended operations do not carry a payload
     wait_on_extended_operation(operation)
-
-    response = operation.result()
-
-    return to_dict(response)
 
 
 def suspend_vm_instance(
