@@ -4,6 +4,61 @@
 
 [Unreleased]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.36.2...HEAD
 
+
+#### Added
+
+* The `chaosgcp.apphub.actions` Action to inject_fault / remove fault in apphub application based on given url_map, if exists in application in app_hub .
+
+  ```json
+  "method": [
+          {
+      "name" : "inject_fault_if_url_map_exists_app_hub",
+      "type" : "action",
+          "provider": {
+                      "type": "python",
+                  "module": "chaosgcp.apphub.actions",
+                  "func": "inject_fault_if_url_map_exists_app_hub",
+              "secrets": ["gcp"],
+                      "arguments": {
+                          "application_name":"myapphub-app1",
+                          "region":"us-central1",
+                          "project_id":"${gcp_project_id}",
+                          "url_map": "${url_map_name}",
+                          "target_name": "${url_map_target_name}",
+                          "target_path": "/*",
+                           "regional": true,
+                          "impacted_percentage": 100.0,
+                          "http_status": 503
+                      }
+              },
+              "pauses": {
+                      "after" : 35
+              }
+          }
+   ],
+   "rollbacks": [
+          {
+              "name" : "remove_fault_if_url_map_exists_app_hub",
+              "type" : "action",
+              "provider": {
+                              "type": "python",
+                              "module": "chaosgcp.apphub.actions",
+                              "func": "remove_fault_if_url_map_exists_app_hub",
+                              "secrets": ["gcp"],
+                              "arguments": {
+                                "application_name":"myapphub-app1",
+                                "region":"us-central1",
+                                "project_id":"${gcp_project_id}",
+                                "url_map": "${url_map_name}",
+                                "target_name": "${url_map_target_name}",
+                                "target_path": "/*",
+                                "regional" : true
+                              }
+                          }
+          }
+      ]
+   
+
 ## [0.36.2][] - 2024-07-02
 
 [0.36.2]: https://github.com/chaostoolkit-incubator/chaostoolkit-google-cloud-platform/compare/0.36.1...0.36.2
