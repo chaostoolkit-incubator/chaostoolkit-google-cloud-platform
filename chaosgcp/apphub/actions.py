@@ -60,7 +60,7 @@ def apphub_app_list_services(
     try:
         name_app = f"projects/{host_project_id}/locations/{location}/applications/{application_id}"
         credentials = load_credentials(secrets)
-        client = apphub_v1.AppHubClient()
+        client = apphub_v1.AppHubClient(credentials=credentials)
         request = apphub_v1.ListServicesRequest(parent=name_app)
         service_uris = []
         updated_uri = None
@@ -228,7 +228,7 @@ def inject_fault_if_url_map_exists_app_hub(
         secrets: (Secrets) default None,
     """
 
-    if url_map_exists(
+    if not url_map_exists(
         url_map,
         host_project_id,
         project_id,
@@ -237,11 +237,15 @@ def inject_fault_if_url_map_exists_app_hub(
         configuration,
         secrets,
     ):
-        # URL map exists, proceed with your processing logic here
-        logger.info(
-            f"Given URL map '{url_map}' found in given Apphub Application. Proceeding with Fault Injection Action "
+        raise ActivityFailed(
+            f"Given URL map '{url_map}' not found in given Apphub Application, Cannot Inject Fault "
         )
-        inject_traffic_faults(
+
+    # URL map exists, proceed with your processing logic here
+    logger.info(
+            f"Given URL map '{url_map}' found in given Apphub Application. Proceeding with Fault Injection Action "
+    )
+    inject_traffic_faults(
             url_map,
             target_name,
             target_path,
@@ -252,11 +256,7 @@ def inject_fault_if_url_map_exists_app_hub(
             region,
             configuration,
             secrets,
-        )
-    else:
-        raise ActivityFailed(
-            f"Given URL map '{url_map}' not found in given Apphub Application, Cannot Inject Fault "
-        )
+    )
 
 
 def remove_fault_if_url_map_exists_app_hub(
@@ -286,7 +286,7 @@ def remove_fault_if_url_map_exists_app_hub(
         secrets: (Secrets) default None,
     """
 
-    if url_map_exists(
+    if not url_map_exists(
         url_map,
         host_project_id,
         project_id,
@@ -295,11 +295,15 @@ def remove_fault_if_url_map_exists_app_hub(
         configuration,
         secrets,
     ):
-        # URL map exists, proceed with your processing logic here
-        logger.info(
-            f"URL map '{url_map}' - Rollback of Fault Injection Action "
+        raise ActivityFailed(
+            f"Given URL map '{url_map}' not found, RollBack not required "
         )
-        remove_fault_injection_traffic_policy(
+
+    # URL map exists, proceed with your processing logic here
+    logger.info(
+            f"URL map '{url_map}' - Rollback of Fault Injection Action "
+    )
+    remove_fault_injection_traffic_policy(
             url_map,
             target_name,
             target_path,
@@ -308,8 +312,6 @@ def remove_fault_if_url_map_exists_app_hub(
             region,
             configuration,
             secrets,
-        )
-    else:
-        raise ActivityFailed(
-            f"Given URL map '{url_map}' not found, RollBack not required "
-        )
+    )
+    
+        
