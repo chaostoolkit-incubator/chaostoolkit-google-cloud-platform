@@ -191,7 +191,6 @@ def manage_time_bound_temporary_iam_roles(
     Raises:
         TypeError: If any of the arguments are not of the expected type.
         ValueError: If `manage_type` is not "add" or "remove".
-        # (Add other potential exceptions based on your IAM implementation)
 
     Example:
         # Grant roles with a 15-minute expiration:

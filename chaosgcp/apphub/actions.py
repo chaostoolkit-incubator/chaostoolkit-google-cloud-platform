@@ -221,11 +221,11 @@ def inject_fault_if_url_map_exists_app_hub(
         region (str): The region of the AppHub application.
         target_name (str): the the name of a path matcher in the URL map.
         target_path (str): default "/*",
-        impacted_percentage: float default 50.0,
-        http_status (int) default 400,
-        regional: (bool) default True,
-        configuration: (Configuration) default None,
-        secrets: (Secrets) default None,
+        impacted_percentage (float): default 50.0,
+        http_status (int): default 400,
+        regional (bool): default True,
+        configuration (Configuration): default None,
+        secrets (Secrets): default None,
     """
 
     if not url_map_exists(
@@ -282,8 +282,8 @@ def remove_fault_if_url_map_exists_app_hub(
         target_name (str): the the name of a path matcher in the URL map.
         target_path (str): default "/*",
         regional: (bool) default True,
-        configuration: (Configuration) default None,
-        secrets: (Secrets) default None,
+        configuration (Configuration): default None,
+        secrets (Secrets): default None,
     """
 
     if not url_map_exists(
